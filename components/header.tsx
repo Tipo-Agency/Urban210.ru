@@ -94,7 +94,7 @@ export default function Header({ currentPage = "/" }: HeaderProps) {
             </motion.a>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button asChild className="bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20">
-                <Link href="/cabinet">Личный кабинет</Link>
+                <Link href="/auth">Авторизация</Link>
               </Button>
             </motion.div>
           </div>
@@ -162,7 +162,7 @@ export default function Header({ currentPage = "/" }: HeaderProps) {
                     <Phone className="w-4 h-4" /> +7 (421) 295-09-20
                   </a>
                   <Button asChild className="w-full bg-orange-500 text-white hover:bg-orange-600">
-                    <Link href="/cabinet">Личный кабинет</Link>
+                    <Link href="/auth">Авторизация</Link>
                   </Button>
                 </motion.div>
               </div>
