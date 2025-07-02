@@ -4,7 +4,6 @@ import type React from "react"
 import { useEffect, useState, useRef } from "react"
 import { useActionState } from "react"
 import { useFormStatus } from "react-dom"
-import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,9 +14,6 @@ import {
   Zap,
   HeartPulse,
   Users,
-  Phone,
-  Instagram,
-  MessageCircle,
   CheckCircle2,
   ArrowRight,
   Gift,
@@ -26,9 +22,20 @@ import {
   MapPin,
   Mountain,
   Timer,
+  GraduationCap,
+  RefreshCw,
+  Music,
+  Target,
+  Heart,
+  Activity,
+  Flame,
+  UserCheck,
 } from "lucide-react"
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion"
 import { submitLead } from "./actions"
+import Header from "@/components/header"
+import Footer from "@/components/footer"
+import TelegramChat from "@/components/telegram-chat"
 
 const AnimatedSection = ({
   children,
@@ -78,6 +85,12 @@ const PulseElement = ({ children }: { children: React.ReactNode }) => (
   >
     {children}
   </motion.div>
+)
+
+const StarIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-yellow-400">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+  </svg>
 )
 
 function SubmitButton() {
@@ -167,64 +180,7 @@ export default function Urban210Page() {
         />
       )}
 
-      <header
-        className={`sticky top-0 z-40 transition-all duration-500 ${headerBg ? "bg-black/90 backdrop-blur-xl shadow-2xl border-b border-orange-500/20" : "bg-transparent"}`}
-      >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <Link href="#" className="flex items-center shrink-0">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Image
-                  src="/logo-dark.png"
-                  alt="Urban210 Logo"
-                  width={140}
-                  height={40}
-                  priority
-                  className="object-contain"
-                />
-              </motion.div>
-            </Link>
-            <nav className="hidden lg:flex items-center space-x-8 text-sm font-medium text-gray-300">
-              {[
-                { href: "#membership", text: "Клубные карты" },
-                { href: "#tour", text: "3D-тур" },
-                { href: "#advantages", text: "Преимущества" },
-                { href: "#programs", text: "Программы" },
-                { href: "#contact", text: "Контакты" },
-              ].map((item) => (
-                <motion.a
-                  key={item.href}
-                  href={item.href}
-                  onClick={(e) => handleScrollTo(e, item.href.slice(1))}
-                  className="hover:text-orange-500 transition-colors relative"
-                  whileHover={{ y: -2 }}
-                >
-                  {item.text}
-                  <motion.div
-                    className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500"
-                    whileHover={{ width: "100%" }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.a>
-              ))}
-            </nav>
-            <div className="flex items-center space-x-4">
-              <motion.a
-                href="tel:+79242057500"
-                className="hidden sm:flex items-center gap-2 text-sm font-semibold hover:text-orange-500 transition-colors"
-                whileHover={{ scale: 1.05 }}
-              >
-                <Phone className="w-4 h-4" /> +7 (924) 205-75-00
-              </motion.a>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button asChild className="bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20">
-                  <a href="#">Личный кабинет</a>
-                </Button>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header currentPage="/" />
 
       <main className="pt-0">
         <section
@@ -369,9 +325,9 @@ export default function Urban210Page() {
             <div className="w-full h-full bg-gradient-conic from-orange-500 via-transparent to-orange-500" />
           </motion.div>
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center">
               <motion.div
-                className="lg:col-span-2"
+                className="lg:col-span-1"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -389,7 +345,7 @@ export default function Urban210Page() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <p className="flex items-center gap-2">
+                <p className="flex items-center gap-2 mb-2">
                   <span className="font-bold text-orange-500">ПН-ПТ</span> 06:30 - 23:30
                 </p>
                 <p className="flex items-center gap-2">
@@ -397,16 +353,16 @@ export default function Urban210Page() {
                 </p>
               </motion.div>
               <motion.div
-                className="flex flex-col items-start md:items-end space-y-2"
+                className="flex flex-col space-y-3"
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <motion.a
-                  href="#"
+                  href="/oferta#rules"
                   className="flex items-center gap-2 text-gray-300 hover:text-orange-500 transition-colors"
-                  whileHover={{ scale: 1.05, x: -5 }}
+                  whileHover={{ scale: 1.05, x: 5 }}
                 >
                   <FileText className="w-5 h-5 text-orange-500" /> Правила посещения
                 </motion.a>
@@ -474,6 +430,89 @@ export default function Urban210Page() {
           </div>
         </AnimatedSection>
 
+        <AnimatedSection id="group-programs" className="py-8 sm:py-10 bg-black relative">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">Групповые тренировки</h2>
+              <p className="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">
+                Откройте мир энергии и гармонии! Каждый класс – это целое событие, где энергия группы умножает ваши
+                усилия
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+              {[
+                { icon: Dumbbell, title: "Силовые", color: "from-red-500/20 to-red-600/10" },
+                { icon: Activity, title: "Функциональные", color: "from-blue-500/20 to-blue-600/10" },
+                { icon: Zap, title: "Степ-аэробика", color: "from-yellow-500/20 to-yellow-600/10" },
+                { icon: Music, title: "Танцевальные", color: "from-pink-500/20 to-pink-600/10" },
+                { icon: Heart, title: "Йога", color: "from-purple-500/20 to-purple-600/10" },
+                { icon: Target, title: "Пилатес", color: "from-green-500/20 to-green-600/10" },
+              ].map((program, i) => (
+                <motion.div
+                  key={program.title}
+                  className={`text-center p-4 bg-gradient-to-br ${program.color} rounded-xl border border-zinc-800 hover:border-orange-500/30 transition-all duration-300 group`}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                >
+                  <motion.div whileHover={{ scale: 1.2, rotate: 10 }} transition={{ duration: 0.3 }}>
+                    <program.icon className="w-8 h-8 text-orange-500 mx-auto mb-3 group-hover:drop-shadow-[0_0_10px_rgba(249,115,22,0.5)]" />
+                  </motion.div>
+                  <h3 className="text-sm font-semibold group-hover:text-orange-500 transition-colors">
+                    {program.title}
+                  </h3>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              className="text-center p-6 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-2xl border border-orange-500/30"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                <div className="flex items-center gap-3">
+                  <Flame className="w-6 h-6 text-orange-500 shrink-0" />
+                  <div className="text-left">
+                    <h4 className="font-semibold mb-1">Мотивация и энергия</h4>
+                    <p className="text-gray-400">Поддержка группы помогает достигать большего</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <UserCheck className="w-6 h-6 text-orange-500 shrink-0" />
+                  <div className="text-left">
+                    <h4 className="font-semibold mb-1">Профессиональные тренеры</h4>
+                    <p className="text-gray-400">Опытные инструкторы обеспечивают безопасность</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Sparkles className="w-6 h-6 text-orange-500 shrink-0" />
+                  <div className="text-left">
+                    <h4 className="font-semibold mb-1">Разнообразие программ</h4>
+                    <p className="text-gray-400">Широкий выбор направлений для всех уровней</p>
+                  </div>
+                </div>
+              </div>
+              <motion.div className="mt-6">
+                <Button asChild className="bg-orange-500 hover:bg-orange-600 text-white font-bold">
+                  <a href="/services">Узнать больше о программах</a>
+                </Button>
+              </motion.div>
+            </motion.div>
+          </div>
+        </AnimatedSection>
+
         <AnimatedSection id="promotions" className="py-8 sm:py-10 bg-black relative overflow-hidden">
           <motion.div
             className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent"
@@ -502,17 +541,29 @@ export default function Urban210Page() {
                 {
                   icon: Sparkles,
                   title: "Годовой абонемент",
-                  desc: "Самый выгодный фитнес — всего 14 000 ₽ за целый год без ограничений!",
+                  desc: "Самый выгодный фитнес — от 13 900 ₽ за целый год без ограничений!",
                   action: "Купить карту",
+                },
+                {
+                  icon: GraduationCap,
+                  title: "Скидка для студентов",
+                  desc: "Специальная скидка 66% для студентов! Фитнес стал еще доступнее.",
+                  action: "Получить скидку",
+                },
+                {
+                  icon: RefreshCw,
+                  title: "Трейд-ин",
+                  desc: "Обменяйте старый абонемент на новый со скидкой от 50% до 90%!",
+                  action: "Обменять",
                 },
               ].map((promo, i) => (
                 <motion.div
                   key={promo.title}
                   className="bg-gradient-to-br from-zinc-900 to-zinc-800 p-8 rounded-2xl border border-zinc-700 flex items-center gap-8 group hover:border-orange-500/50 transition-all duration-500"
-                  initial={{ opacity: 0, x: i === 0 ? -50 : 50 }}
+                  initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.2 }}
+                  transition={{ duration: 0.6, delay: (i % 2) * 0.2 }}
                   whileHover={{ scale: 1.02, y: -5 }}
                 >
                   <FloatingElement delay={i * 0.5}>
@@ -522,8 +573,15 @@ export default function Urban210Page() {
                     <h3 className="text-2xl font-bold group-hover:text-orange-500 transition-colors">{promo.title}</h3>
                     <p className="text-gray-400 mt-2 mb-4 group-hover:text-gray-300 transition-colors">{promo.desc}</p>
                     <ShineButton>
-                      {promo.action}
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      <a
+                        href="https://t.me/fcurbanmanagerbot"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center"
+                      >
+                        {promo.action}
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </a>
                     </ShineButton>
                   </div>
                 </motion.div>
@@ -583,7 +641,7 @@ export default function Urban210Page() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                <TabsList className="grid w-full grid-cols-4 max-w-3xl mx-auto bg-zinc-900/50 backdrop-blur-sm border border-zinc-800">
+                <TabsList className="grid w-full grid-cols-5 max-w-4xl mx-auto bg-zinc-900/50 backdrop-blur-sm border border-zinc-800">
                   <TabsTrigger value="crossfit" className="data-[state=active]:bg-orange-500">
                     Кроссфит
                   </TabsTrigger>
@@ -595,6 +653,9 @@ export default function Urban210Page() {
                   </TabsTrigger>
                   <TabsTrigger value="climbing" className="data-[state=active]:bg-orange-500">
                     Скалодром
+                  </TabsTrigger>
+                  <TabsTrigger value="spa" className="data-[state=active]:bg-orange-500">
+                    СПА
                   </TabsTrigger>
                 </TabsList>
               </motion.div>
@@ -647,6 +708,15 @@ export default function Urban210Page() {
                     "Безопасное снаряжение",
                     "Инструктаж для новичков",
                   ]}
+                />
+              </TabsContent>
+
+              <TabsContent value="spa" className="mt-8">
+                <ProgramCard
+                  title="СПА и восстановление"
+                  description="После интенсивных тренировок важно правильно восстанавливаться. Наша СПА-зона с сауной, хаммамом и зоной релаксации поможет вам полностью расслабиться и восстановить силы."
+                  image="/images/spa-recovery.png"
+                  features={["Финская сауна", "Турецкий хаммам", "Зона релаксации", "Массажные кресла"]}
                 />
               </TabsContent>
             </Tabs>
@@ -711,7 +781,7 @@ export default function Urban210Page() {
               >
                 <div
                   className="w-full h-full bg-cover bg-center"
-                  style={{ backgroundImage: "url('https://i.imgur.com/3Z3eZ8X.png')" }}
+                  style={{ backgroundImage: "url('/images/contact-gym.jpg')" }}
                 ></div>
               </motion.div>
             </div>
@@ -719,118 +789,8 @@ export default function Urban210Page() {
         </AnimatedSection>
       </main>
 
-      <footer className="bg-black border-t border-zinc-800 relative overflow-hidden">
-        <motion.div
-          className="absolute inset-0 opacity-5"
-          animate={{
-            background: [
-              "radial-gradient(circle at 20% 50%, #f97316 0%, transparent 50%)",
-              "radial-gradient(circle at 80% 50%, #f97316 0%, transparent 50%)",
-              "radial-gradient(circle at 20% 50%, #f97316 0%, transparent 50%)",
-            ],
-          }}
-          transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY }}
-        />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <motion.div
-              className="lg:col-span-1"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <Link href="#">
-                <motion.div whileHover={{ scale: 1.05 }}>
-                  <Image src="/logo-dark.png" alt="Urban210 Logo" width={140} height={40} className="object-contain" />
-                </motion.div>
-              </Link>
-              <p className="mt-4 text-sm text-gray-400">Современный фитнес-клуб для тех, кто стремится к большему.</p>
-              <div className="mt-6 flex space-x-4">
-                <SocialIcon href="#" icon={Instagram} />
-                <SocialIcon href="https://wa.me/79242057500" icon={MessageCircle} />
-              </div>
-            </motion.div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-8 lg:col-span-3">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-              >
-                <h4 className="font-semibold text-white">Навигация</h4>
-                <ul className="mt-4 space-y-2 text-sm">
-                  {[
-                    { href: "#membership", text: "Карты" },
-                    { href: "#advantages", text: "Преимущества" },
-                    { href: "#programs", text: "Программы" },
-                    { href: "#contact", text: "Контакты" },
-                  ].map((item) => (
-                    <li key={item.href}>
-                      <motion.a
-                        href={item.href}
-                        onClick={(e) => handleScrollTo(e, item.href.slice(1))}
-                        className="text-gray-400 hover:text-orange-500 transition-colors"
-                        whileHover={{ x: 5 }}
-                      >
-                        {item.text}
-                      </motion.a>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                <h4 className="font-semibold text-white">Информация</h4>
-                <ul className="mt-4 space-y-2 text-sm">
-                  <li>
-                    <motion.div whileHover={{ x: 5 }}>
-                      <Link href="#" className="text-gray-400 hover:text-orange-500 transition-colors">
-                        Политика конфиденциальности
-                      </Link>
-                    </motion.div>
-                  </li>
-                  <li>
-                    <motion.div whileHover={{ x: 5 }}>
-                      <Link href="#" className="text-gray-400 hover:text-orange-500 transition-colors">
-                        Договор-оферта
-                      </Link>
-                    </motion.div>
-                  </li>
-                </ul>
-              </motion.div>
-            </div>
-          </div>
-          <motion.div
-            className="mt-10 pt-8 border-t border-zinc-800 text-center text-sm text-gray-500"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <p>&copy; {new Date().getFullYear()} Urban210. Все права защищены.</p>
-          </motion.div>
-        </div>
-      </footer>
-
-      <motion.div
-        className="fixed bottom-5 right-5 z-50"
-        initial={{ scale: 0, rotate: -180 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ duration: 0.5, delay: 1 }}
-      >
-        <PulseElement>
-          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-            <Button className="rounded-full w-16 h-16 bg-orange-500 hover:bg-orange-600 shadow-lg shadow-orange-500/30">
-              <MessageCircle className="w-8 h-8" />
-            </Button>
-          </motion.div>
-        </PulseElement>
-      </motion.div>
+      <Footer />
+      <TelegramChat />
     </div>
   )
 }
@@ -945,24 +905,22 @@ const PricingCard = ({ title, price, period = "/мес", features, isPopular = f
       <AnimatePresence>
         {isPopular && (
           <motion.div
-            className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 rounded-full text-sm font-semibold tracking-wide"
+            className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 rounded-full text-sm font-semibold tracking-wide flex items-center gap-2"
             initial={{ opacity: 0, scale: 0, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0, y: 10 }}
             transition={{ duration: 0.3, delay: delay + 0.3 }}
           >
-            <motion.span
+            <motion.div
               animate={{
-                textShadow: [
-                  "0 0 0px rgba(255,255,255,0)",
-                  "0 0 10px rgba(255,255,255,0.5)",
-                  "0 0 0px rgba(255,255,255,0)",
-                ],
+                rotate: [0, 360],
+                scale: [1, 1.2, 1],
               }}
               transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
             >
-              ⭐ Хит продаж
-            </motion.span>
+              <StarIcon />
+            </motion.div>
+            <span>Хит продаж</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1002,7 +960,7 @@ const PricingCard = ({ title, price, period = "/мес", features, isPopular = f
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: delay + 0.3 + i * 0.1 }}
             >
-              <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-orange-500 shrink-0" />
               <span className="group-hover:text-gray-200 transition-colors">{feature}</span>
             </motion.li>
           ))}
@@ -1023,19 +981,6 @@ const PricingCard = ({ title, price, period = "/мес", features, isPopular = f
     </motion.div>
   )
 }
-
-const SocialIcon = ({ href, icon: Icon }: any) => (
-  <motion.a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="p-3 bg-zinc-800 rounded-full text-gray-400 hover:bg-orange-500 hover:text-white transition-all duration-300"
-    whileHover={{ scale: 1.1, rotate: 5 }}
-    whileTap={{ scale: 0.9 }}
-  >
-    <Icon className="w-5 h-5" />
-  </motion.a>
-)
 
 const ShineButton = ({
   children,

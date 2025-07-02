@@ -69,6 +69,7 @@ export default function RootLayout({
         <meta property="business:contact_data:region" content="Хабаровский край" />
         <meta property="business:contact_data:postal_code" content="680000" />
         <meta property="business:contact_data:country_name" content="Россия" />
+        <meta property="business:contact_data:telephone" content="+7-421-295-09-20" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -79,7 +80,7 @@ export default function RootLayout({
               description:
                 "Современный фитнес-клуб в Хабаровске с тренажерным залом, кроссфитом, скалодромом и спа-зоной",
               url: "https://urban210.ru",
-              telephone: "+7-924-205-75-00",
+              telephone: "+7-421-295-09-20",
               address: {
                 "@type": "PostalAddress",
                 streetAddress: "Пр-т 60-летия Октября, 210",
