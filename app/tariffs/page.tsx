@@ -1,6 +1,7 @@
 "use client"
 import { motion } from "framer-motion"
 import type React from "react"
+import { useEffect, useState } from "react"
 
 import { Zap, Users, Clock, Heart, Target, Award, CheckCircle2, Star, Sparkles, Gift } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -13,12 +14,18 @@ const AnimatedSection = ({
   className,
   id,
 }: { children: React.ReactNode; className?: string; id?: string }) => {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   return (
     <motion.section
       id={id}
       className={className}
       initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      whileInView={isMounted ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
@@ -38,6 +45,12 @@ const PricingCard = ({
   timeAccess,
   icon: Icon,
 }: any) => {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   return (
     <motion.div
       className={`relative p-8 rounded-2xl border h-full flex flex-col group ${
@@ -46,7 +59,7 @@ const PricingCard = ({
           : "bg-gradient-to-br from-zinc-900 to-zinc-800 border-zinc-800 hover:border-orange-500/30"
       }`}
       initial={{ opacity: 0, y: 50, rotateX: 15 }}
-      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+      whileInView={isMounted ? { opacity: 1, y: 0, rotateX: 0 } : { opacity: 0, y: 50, rotateX: 15 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay, ease: "backOut" }}
       whileHover={{
@@ -155,15 +168,22 @@ const PricingCard = ({
   )
 }
 
-const ServiceCard = ({ icon: Icon, title, description, delay = 0 }: any) => (
-  <motion.div
-    className="bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-xl border border-zinc-800 hover:border-orange-500/50 transition-all duration-500 group text-center"
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6, delay }}
-    whileHover={{ scale: 1.05, y: -5 }}
-  >
+const ServiceCard = ({ icon: Icon, title, description, delay = 0 }: any) => {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  return (
+    <motion.div
+      className="bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-xl border border-zinc-800 hover:border-orange-500/50 transition-all duration-500 group text-center"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={isMounted ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay }}
+      whileHover={{ scale: 1.05, y: -5 }}
+    >
     <motion.div
       className="inline-flex items-center justify-center w-12 h-12 bg-orange-500/10 rounded-full mb-4 group-hover:bg-orange-500/20 transition-colors"
       whileHover={{ scale: 1.2, rotate: 10 }}
@@ -173,9 +193,16 @@ const ServiceCard = ({ icon: Icon, title, description, delay = 0 }: any) => (
     <h3 className="text-lg font-semibold mb-2 group-hover:text-orange-500 transition-colors">{title}</h3>
     <p className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors">{description}</p>
   </motion.div>
-)
+  )
+}
 
 export default function TariffsPage() {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const tariffs = [
     {
       name: "Дневная карта",
@@ -252,43 +279,53 @@ export default function TariffsPage() {
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Animated background particles */}
-      <div className="absolute inset-0 z-0">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-orange-500/30 rounded-full"
-            initial={{
-              x: Math.random() * 1200,
-              y: Math.random() * 800,
-            }}
-            animate={{
-              y: [0, -100, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: Math.random() * 3 + 2,
-              repeat: Number.POSITIVE_INFINITY,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
-      </div>
+      {isMounted && (
+        <div className="absolute inset-0 z-0">
+          {[...Array(20)].map((_, i) => {
+            // Используем детерминированные значения на основе индекса
+            const x = ((i * 123) % 1200) + 50
+            const y = ((i * 456) % 800) + 50
+            const duration = 2 + ((i * 7) % 3)
+            const delay = ((i * 11) % 2)
+            
+            return (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 bg-orange-500/30 rounded-full"
+                initial={{
+                  x,
+                  y,
+                }}
+                animate={{
+                  y: [y, y - 100, y],
+                  opacity: [0, 1, 0],
+                }}
+                transition={{
+                  duration,
+                  repeat: Number.POSITIVE_INFINITY,
+                  delay,
+                }}
+              />
+            )
+          })}
+        </div>
+      )}
 
       <Header currentPage="/tariffs" />
 
       {/* Hero Section */}
-      <AnimatedSection className="pt-24 pb-16 bg-gradient-to-b from-zinc-900/50 to-black relative z-10">
+      <AnimatedSection className="pt-24 pb-16 bg-gradient-to-b bg-black relative z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center max-w-4xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={isMounted ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.8 }}
           >
             <motion.h1
               className="text-4xl md:text-6xl font-bold tracking-tight mb-6"
               initial={{ opacity: 0, y: 50, scale: 0.8 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
+              animate={isMounted ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.8 }}
               transition={{ duration: 1, delay: 0.2, ease: "backOut" }}
             >
               <span className="bg-gradient-to-r from-white via-orange-500 to-white bg-clip-text text-transparent">
@@ -298,7 +335,7 @@ export default function TariffsPage() {
             <motion.p
               className="text-xl text-gray-400 max-w-2xl mx-auto mb-8"
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={isMounted ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               Гибкие условия для достижения ваших фитнес-целей
@@ -306,7 +343,7 @@ export default function TariffsPage() {
             <motion.p
               className="text-lg text-orange-400 max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={isMounted ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
               Без скрытых платежей • Пробная тренировка бесплатно • Возврат в течение 14 дней

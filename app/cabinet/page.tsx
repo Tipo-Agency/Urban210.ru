@@ -348,10 +348,10 @@ export default function CabinetPage() {
                         <p>
                           <span className="text-gray-400">Действует до:</span> {userData.currentTariff.validUntil}
                         </p>
-                        <p>
+                        <div className="flex items-center">
                           <span className="text-gray-400">Статус:</span>
                           <Badge className="ml-2 bg-green-500/20 text-green-400 border-green-500/30">Активна</Badge>
-                        </p>
+                        </div>
                       </div>
                     </div>
                     <div>

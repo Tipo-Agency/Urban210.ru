@@ -640,85 +640,88 @@ export default function Urban210Page() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
+                className="mb-8"
               >
-                <TabsList className="grid w-full grid-cols-5 max-w-4xl mx-auto bg-zinc-900/50 backdrop-blur-sm border border-zinc-800">
-                  <TabsTrigger value="crossfit" className="data-[state=active]:bg-orange-500">
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 max-w-5xl mx-auto bg-transparent backdrop-blur-sm  gap-2 p-2 rounded-lg">
+                  <TabsTrigger value="crossfit" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-sm sm:text-base px-2 sm:px-4 py-2 rounded-md transition-all duration-200 bg-zinc-800/50 hover:bg-zinc-700/50">
                     Кроссфит
                   </TabsTrigger>
-                  <TabsTrigger value="group" className="data-[state=active]:bg-orange-500">
+                  <TabsTrigger value="group" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-sm sm:text-base px-2 sm:px-4 py-2 rounded-md transition-all duration-200 bg-zinc-800/50 hover:bg-zinc-700/50">
                     Групповые
                   </TabsTrigger>
-                  <TabsTrigger value="power" className="data-[state=active]:bg-orange-500">
+                  <TabsTrigger value="power" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-sm sm:text-base px-2 sm:px-4 py-2 rounded-md transition-all duration-200 bg-zinc-800/50 hover:bg-zinc-700/50">
                     Силовые
                   </TabsTrigger>
-                  <TabsTrigger value="climbing" className="data-[state=active]:bg-orange-500">
+                  <TabsTrigger value="climbing" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-sm sm:text-base px-2 sm:px-4 py-2 rounded-md transition-all duration-200 bg-zinc-800/50 hover:bg-zinc-700/50">
                     Скалодром
                   </TabsTrigger>
-                  <TabsTrigger value="spa" className="data-[state=active]:bg-orange-500">
+                  <TabsTrigger value="spa" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-sm sm:text-base px-2 sm:px-4 py-2 rounded-md transition-all duration-200 bg-zinc-800/50 hover:bg-zinc-700/50 col-span-2 sm:col-span-1">
                     СПА
                   </TabsTrigger>
                 </TabsList>
               </motion.div>
 
-              <TabsContent value="crossfit" className="mt-8">
-                <ProgramCard
-                  title="Кроссфит"
-                  description="Испытайте себя на прочность с нашими высокоинтенсивными интервальными тренировками. Развивайте выносливость, силу и скорость в специально оборудованной зоне."
-                  image="/images/crossfit.jpg"
-                  features={[
-                    "Функциональные движения",
-                    "Высокая интенсивность",
-                    "Групповые WOD",
-                    "Профессиональные тренеры",
-                  ]}
-                />
-              </TabsContent>
+              <div className="relative">
+                <TabsContent value="crossfit" className="mt-32 lg:mt-8">
+                  <ProgramCard
+                    title="Кроссфит"
+                    description="Испытайте себя на прочность с нашими высокоинтенсивными интервальными тренировками. Развивайте выносливость, силу и скорость в специально оборудованной зоне."
+                    image="/images/crossfit.jpg"
+                    features={[
+                      "Функциональные движения",
+                      "Высокая интенсивность",
+                      "Групповые WOD",
+                      "Профессиональные тренеры",
+                    ]}
+                  />
+                </TabsContent>
 
-              <TabsContent value="group" className="mt-8">
-                <ProgramCard
-                  title="Групповые занятия"
-                  description="Зарядитесь энергией в команде единомышленников! Йога, пилатес, зумба и многое другое. Динамичные тренировки, которые не дадут вам заскучать."
-                  image="/images/group-training.jpg"
-                  features={["Йога и пилатес", "Танцевальные направления", "Силовые классы", "Мотивирующая атмосфера"]}
-                />
-              </TabsContent>
+                <TabsContent value="group" className="mt-32 lg:mt-8">
+                  <ProgramCard
+                    title="Групповые занятия"
+                    description="Зарядитесь энергией в команде единомышленников! Йога, пилатес, зумба и многое другое. Динамичные тренировки, которые не дадут вам заскучать."
+                    image="/images/group-training.jpg"
+                    features={["Йога и пилатес", "Танцевальные направления", "Силовые классы", "Мотивирующая атмосфера"]}
+                  />
+                </TabsContent>
 
-              <TabsContent value="power" className="mt-8">
-                <ProgramCard
-                  title="Силовые тренировки"
-                  description="Наращивайте мышечную массу и силу под руководством наших лучших тренеров. Мы предлагаем индивидуальные программы, основанные на ваших целях и физической подготовке."
-                  image="/images/strength-training.jpg"
-                  features={[
-                    "Персональные программы",
-                    "Современные тренажеры",
-                    "Техника безопасности",
-                    "Отслеживание прогресса",
-                  ]}
-                />
-              </TabsContent>
+                <TabsContent value="power" className="mt-32 lg:mt-8">
+                  <ProgramCard
+                    title="Силовые тренировки"
+                    description="Наращивайте мышечную массу и силу под руководством наших лучших тренеров. Мы предлагаем индивидуальные программы, основанные на ваших целях и физической подготовке."
+                    image="/images/strength-training.jpg"
+                    features={[
+                      "Персональные программы",
+                      "Современные тренажеры",
+                      "Техника безопасности",
+                      "Отслеживание прогресса",
+                    ]}
+                  />
+                </TabsContent>
 
-              <TabsContent value="climbing" className="mt-8">
-                <ProgramCard
-                  title="Скалодром"
-                  description="Уникальная возможность заниматься скалолазанием в городских условиях! Развивайте координацию, силу и выносливость на нашей профессиональной скалодромной стене высотой 12 метров."
-                  image="/images/rest-recovery.jpg"
-                  features={[
-                    "Стена высотой 12м",
-                    "Разные уровни сложности",
-                    "Безопасное снаряжение",
-                    "Инструктаж для новичков",
-                  ]}
-                />
-              </TabsContent>
+                <TabsContent value="climbing" className="mt-32 lg:mt-8">
+                  <ProgramCard
+                    title="Скалодром"
+                    description="Уникальная возможность заниматься скалолазанием в городских условиях! Развивайте координацию, силу и выносливость на нашей профессиональной скалодромной стене высотой 12 метров."
+                    image="/images/rest-recovery.jpg"
+                    features={[
+                      "Стена высотой 12м",
+                      "Разные уровни сложности",
+                      "Безопасное снаряжение",
+                      "Инструктаж для новичков",
+                    ]}
+                  />
+                </TabsContent>
 
-              <TabsContent value="spa" className="mt-8">
-                <ProgramCard
-                  title="СПА и восстановление"
-                  description="После интенсивных тренировок важно правильно восстанавливаться. Наша СПА-зона с сауной, хаммамом и зоной релаксации поможет вам полностью расслабиться и восстановить силы."
-                  image="/images/spa-recovery.png"
-                  features={["Финская сауна", "Турецкий хаммам", "Зона релаксации", "Массажные кресла"]}
-                />
-              </TabsContent>
+                <TabsContent value="spa" className="mt-32 lg:mt-8">
+                  <ProgramCard
+                    title="СПА и восстановление"
+                    description="После интенсивных тренировок важно правильно восстанавливаться. Наша СПА-зона с сауной, хаммамом и зоной релаксации поможет вам полностью расслабиться и восстановить силы."
+                    image="/images/spa-recovery.png"
+                    features={["Финская сауна", "Турецкий хаммам", "Зона релаксации", "Массажные кресла"]}
+                  />
+                </TabsContent>
+              </div>
             </Tabs>
           </div>
         </AnimatedSection>

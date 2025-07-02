@@ -51,7 +51,7 @@ export default function Footer() {
             <p className="mt-4 text-sm text-gray-400">Современный фитнес-клуб для тех, кто стремится к большему.</p>
             <div className="mt-6 flex space-x-4">
               <motion.a
-                href="#"
+                href="https://www.instagram.com/fc.urban210?igsh=ajR2dGQ4ZHVmOGI1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 bg-zinc-800 rounded-full text-gray-400 hover:bg-orange-500 hover:text-white transition-all duration-300"
@@ -173,7 +173,9 @@ export default function Footer() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-orange-500" />
-                  <span className="text-sm">+7 (421) 295-09-20</span>
+                  <a href="tel:+74212950920" className="text-sm">
+                    <span>+7 (421) 295-09-20</span>
+                  </a>
                 </div>
               </div>
             </div>

@@ -16,6 +16,10 @@ export const metadata: Metadata = {
   creator: "Urban210",
   publisher: "Urban210",
   robots: "index, follow",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
     title: "Urban210 – Лучший фитнес-клуб Хабаровска | Безлимитный фитнес от 1300₽",
     description:
@@ -59,7 +63,7 @@ export default function RootLayout({
   return (
     <html lang="ru" className="dark">
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#f97316" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
