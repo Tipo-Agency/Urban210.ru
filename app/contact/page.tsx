@@ -138,7 +138,7 @@ export default function ContactPage() {
                     <Instagram className="w-5 h-5" />
                   </motion.a>
                   <motion.a
-                    href="https://wa.me/74212950920"
+                    href="https://wa.me/79242054109"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-3 bg-zinc-800 rounded-full text-gray-400 hover:bg-orange-500 hover:text-white transition-all duration-300"
@@ -148,7 +148,7 @@ export default function ContactPage() {
                     <WhatsAppIcon/>
                   </motion.a>
                   <motion.a
-                    href="https://wa.me/74212950920"
+                    href="https://t.me/urban210_bot"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-3 bg-zinc-800 rounded-full text-gray-400 hover:bg-orange-500 hover:text-white transition-all duration-300"
