@@ -1,6 +1,8 @@
 "use client"
 import { useActionState } from "react"
 import { useFormStatus } from "react-dom"
+import { useState, useEffect } from "react"
+import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -32,11 +34,23 @@ function SubmitButton() {
 }
 
 export default function ContactPage() {
+  const { toast } = useToast()
+  
   const [state, formAction] = useActionState(submitContactForm, {
     message: "",
     errors: {},
     success: false,
   })
+
+  useEffect(() => {
+    if (state.message && state.success && Object.keys(state.errors).length === 0) {
+      toast({
+        title: "Сообщение отправлено!",
+        description: state.message,
+        variant: "default",
+      })
+    }
+  }, [state, toast])
 
   return (
     <div className="bg-black text-gray-200 min-h-screen font-sans selection:bg-orange-500/30">

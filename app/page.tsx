@@ -8,7 +8,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import {
   Dumbbell,
   Zap,
@@ -128,11 +128,11 @@ export default function Urban210Page() {
   const textY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
 
   useEffect(() => {
-    if (state.message && !state.errors) {
+    if (state.message && state.success && Object.keys(state.errors).length === 0) {
       toast({
-        title: state.success ? "Заявка принята!" : "Ошибка",
+        title: "Заявка принята!",
         description: state.message,
-        variant: state.success ? "default" : "destructive",
+        variant: "default",
       })
     }
   }, [state, toast])
