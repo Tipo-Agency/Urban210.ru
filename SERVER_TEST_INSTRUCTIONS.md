@@ -26,6 +26,7 @@ curl -X GET \
   "http://212.19.27.201/urban210/hs/api/v3/price_list?type=membership&club_id=b5f85d29-6727-11e9-80cb-00155d066506" \
   -H "Content-Type: application/json" \
   -H "apikey: e3f63a57-4286-465a-b0dc-42a1123002e4" \
+  -H "Authorization: Basic QWRtaW5ib3Q6UmVrQk9UKjAxMkc=" \
   -v
 ```
 

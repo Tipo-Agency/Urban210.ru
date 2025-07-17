@@ -4,6 +4,11 @@ const EXTERNAL_API_URL = "http://212.19.27.201/urban210/hs/api/v3"
 const CLUB_ID = "b5f85d29-6727-11e9-80cb-00155d066506"
 const API_KEY = "e3f63a57-4286-465a-b0dc-42a1123002e4"
 
+// Базовая авторизация
+const USERNAME = "Adminbot"
+const PASSWORD = "RekBOT*012G"
+const AUTH_HEADER = "Basic " + Buffer.from(`${USERNAME}:${PASSWORD}`).toString('base64')
+
 export async function GET() {
   try {
     const response = await fetch(
@@ -13,6 +18,7 @@ export async function GET() {
         headers: {
           'Content-Type': 'application/json',
           'apikey': API_KEY,
+          'Authorization': AUTH_HEADER,
         },
         // Добавляем таймаут для запроса
         signal: AbortSignal.timeout(10000), // 10 секунд

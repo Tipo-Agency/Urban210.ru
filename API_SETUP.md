@@ -23,14 +23,24 @@ GET /api/memberships
 
 ## Настройка
 
-### 1. API ключ
-API ключ уже настроен в `app/api/memberships/route.ts`:
+### 1. API ключ и авторизация
+Учетные данные уже настроены в `app/api/memberships/route.ts`:
 
 ```typescript
 const API_KEY = "e3f63a57-4286-465a-b0dc-42a1123002e4"
+const USERNAME = "Adminbot"
+const PASSWORD = "RekBOT*012G"
+const AUTH_HEADER = "Basic " + Buffer.from(`${USERNAME}:${PASSWORD}`).toString('base64')
 ```
 
-Для изменения ключа отредактируйте файл `app/api/memberships/route.ts`.
+**Заголовки запроса:**
+```http
+Content-Type: application/json
+apikey: e3f63a57-4286-465a-b0dc-42a1123002e4
+Authorization: Basic QWRtaW5ib3Q6UmVrQk9UKjAxMkc=
+```
+
+Для изменения учетных данных отредактируйте файл `app/api/memberships/route.ts`.
 
 ### 2. Fallback данные
 Если внешний API недоступен, система автоматически использует fallback данные из `app/api/memberships/route.ts`. Эти данные можно настроить в функции API route.

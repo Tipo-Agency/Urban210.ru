@@ -2,10 +2,16 @@ const EXTERNAL_API_URL = "http://212.19.27.201/urban210/hs/api/v3"
 const CLUB_ID = "b5f85d29-6727-11e9-80cb-00155d066506"
 const API_KEY = "e3f63a57-4286-465a-b0dc-42a1123002e4"
 
+// Базовая авторизация
+const USERNAME = "Adminbot"
+const PASSWORD = "RekBOT*012G"
+const AUTH_HEADER = "Basic " + Buffer.from(`${USERNAME}:${PASSWORD}`).toString('base64')
+
 async function testExternalAPI() {
   console.log('🔍 Тестируем внешний API с сервера...')
   console.log('📍 URL:', `${EXTERNAL_API_URL}/price_list?type=membership&club_id=${CLUB_ID}`)
   console.log('🔑 API Key:', API_KEY)
+  console.log('🔐 Auth Header:', AUTH_HEADER)
   console.log('⏰ Timestamp:', new Date().toISOString())
   
   try {
@@ -19,6 +25,7 @@ async function testExternalAPI() {
         headers: {
           'Content-Type': 'application/json',
           'apikey': API_KEY,
+          'Authorization': AUTH_HEADER,
         },
         signal: AbortSignal.timeout(30000), // 30 секунд
       }
