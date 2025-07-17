@@ -5,10 +5,6 @@ const CLUB_ID = "b5f85d29-6727-11e9-80cb-00155d066506"
 const API_KEY = "e3f63a57-4286-465a-b0dc-42a1123002e4"
 
 export async function GET() {
-  console.log('🔍 API Route: Начинаем запрос к внешнему API...')
-  console.log('📍 URL:', `${EXTERNAL_API_URL}/price_list?type=membership&club_id=${CLUB_ID}`)
-  console.log('🔑 API Key:', API_KEY)
-  
   try {
     const response = await fetch(
       `${EXTERNAL_API_URL}/price_list?type=membership&club_id=${CLUB_ID}`,
@@ -22,28 +18,21 @@ export async function GET() {
         signal: AbortSignal.timeout(10000), // 10 секунд
       }
     )
-
-    console.log('📡 Response status:', response.status)
     console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()))
 
     if (!response.ok) {
-      console.log('❌ Response not OK:', response.status, response.statusText)
       throw new Error(`External API request failed: ${response.status}`)
     }
 
     const data = await response.json()
-    console.log('📦 Response data:', JSON.stringify(data, null, 2))
     
     if (!data.result) {
-      console.log('❌ API returned false result')
       throw new Error('External API returned false result')
     }
 
-    console.log('✅ API request successful, returning data')
     return NextResponse.json(data)
   } catch (error) {
-    console.error('❌ Error fetching memberships from external API:', error)
-    console.log('🔄 Returning fallback data...')
+    console.error('External API недоступен, используем fallback данные:', error instanceof Error ? error.message : error)
     
     // Возвращаем fallback данные при ошибке
     const fallbackData = {

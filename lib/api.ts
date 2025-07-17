@@ -25,9 +25,6 @@ export interface ApiResponse<T> {
 
 // Функция для получения списка подписок
 export async function getMemberships(): Promise<Membership[]> {
-  console.log('🔍 Client: Начинаем запрос к API...')
-  console.log('📍 URL:', API_BASE_URL)
-  
   try {
     const response = await fetch(API_BASE_URL, {
       method: 'GET',
@@ -36,26 +33,19 @@ export async function getMemberships(): Promise<Membership[]> {
       },
     })
 
-    console.log('📡 Client: Response status:', response.status)
-
     if (!response.ok) {
-      console.log('❌ Client: Response not OK:', response.status, response.statusText)
       throw new Error(`API request failed: ${response.status}`)
     }
 
     const result: ApiResponse<Membership[]> = await response.json()
-    console.log('📦 Client: Response data:', result)
     
     if (!result.result) {
-      console.log('❌ Client: API returned false result')
       throw new Error('API returned false result')
     }
 
-    console.log('✅ Client: API request successful, returning data')
     return result.data
   } catch (error) {
-    console.error('❌ Client: Error fetching memberships:', error)
-    console.log('🔄 Client: Using fallback data...')
+    console.error('Ошибка получения данных, используем fallback:', error)
     // Возвращаем fallback данные если API недоступен
     return getFallbackMemberships()
   }
