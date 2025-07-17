@@ -36,6 +36,7 @@ import { submitLead } from "./actions"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import TelegramChat from "@/components/telegram-chat"
+import { getMemberships, type Membership } from "@/lib/api"
 
 const AnimatedSection = ({
   children,
@@ -112,6 +113,8 @@ export default function Urban210Page() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const { toast } = useToast()
   const [isClient, setIsClient] = useState(false)
+  const [memberships, setMemberships] = useState<Membership[]>([])
+  const [loading, setLoading] = useState(true)
 
   const [state, formAction] = useActionState(submitLead, {
     message: "",
@@ -136,6 +139,22 @@ export default function Urban210Page() {
       })
     }
   }, [state, toast])
+
+  // Загрузка клубных карт
+  useEffect(() => {
+    async function loadMemberships() {
+      try {
+        const data = await getMemberships()
+        setMemberships(data)
+      } catch (error) {
+        console.error('Error loading memberships:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadMemberships()
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => setHeaderBg(window.scrollY > 50)
@@ -290,25 +309,37 @@ export default function Urban210Page() {
               <p className="mt-4 text-lg text-gray-400">Выберите свой идеальный тариф</p>
             </motion.div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
-              <PricingCard
-                title="Дневная карта"
-                price="1300"
-                features={["Посещение с 7:00 до 17:00", "Тренажерный зал", "Кардио-зона"]}
-                delay={0}
-              />
-              <PricingCard
-                title="Все включено"
-                price="2400"
-                features={["Безлимитное посещение", "Все групповые программы", "Спа-зона", "Скалодром"]}
-                isPopular
-                delay={0.2}
-              />
-              <PricingCard
-                title="Полный день"
-                price="1700"
-                features={["Безлимитное посещение", "Тренажерный зал", "Кардио-зона"]}
-                delay={0.4}
-              />
+              {loading ? (
+                // Skeleton loading
+                Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="p-8 bg-zinc-900/50 backdrop-blur-sm rounded-2xl border border-zinc-800/50 shadow-lg animate-pulse"
+                  >
+                    <div className="h-8 bg-zinc-800 rounded mb-4"></div>
+                    <div className="h-12 bg-zinc-800 rounded mb-6"></div>
+                    <div className="space-y-3">
+                      {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="h-4 bg-zinc-800 rounded"></div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                memberships.map((membership, index) => (
+                  <PricingCard
+                    key={membership.id}
+                    title={membership.title}
+                    price={membership.price.replace(' ₽', '')}
+                    features={[
+                      membership.available_time,
+                      ...(membership.services?.map(service => service.title) || [])
+                    ]}
+                    isPopular={index === 1} // Вторая карта как популярная
+                    delay={index * 0.2}
+                  />
+                ))
+              )}
             </div>
           </div>
         </AnimatedSection>

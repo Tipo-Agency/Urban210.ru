@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import TelegramChat from "@/components/telegram-chat"
+import { getMemberships, type Membership } from "@/lib/api"
 
 const AnimatedSection = ({
   children,
@@ -198,65 +199,30 @@ const ServiceCard = ({ icon: Icon, title, description, delay = 0 }: any) => {
 
 export default function TariffsPage() {
   const [isMounted, setIsMounted] = useState(false)
+  const [memberships, setMemberships] = useState<Membership[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  const tariffs = [
-    {
-      name: "Дневная карта",
-      price: "1300",
-      period: "/месяц",
-      description: "Идеально для тех, кто тренируется днем",
-      timeAccess: "6:30 - 16:00",
-      features: [
-        "Тренажерный зал",
-        "Кардио-зона",
-        "Раздевалки с индивидуальными шкафчиками",
-        "Бесплатная пробная тренировка",
-        "Фитнес-тестирование",
-        "Гостевые визиты",
-      ],
-      popular: false,
-      icon: Clock,
-    },
-    {
-      name: "Все включено",
-      price: "2400",
-      period: "/месяц",
-      description: "Максимальный пакет для истинных ценителей",
-      timeAccess: "6:30 - 23:30",
-      features: [
-        "Все услуги полного дня",
-        "Групповые программы",
-        "Спа-зона (сауна)",
-        "Скалодром",
-        "Гостевые визиты",
-        "Приоритетное обслуживание",
-        "Бесплатная пробная тренировка",
-        "Фитнес-тестирование",
-      ],
-      popular: true,
-      icon: Award,
-    },
-    {
-      name: "Полный день",
-      price: "1700",
-      period: "/месяц",
-      description: "Безлимитный доступ в любое время",
-      timeAccess: "6:30 - 23:30",
-      features: [
-        "Все услуги дневной карты",
-        "Доступ в любое время работы клуба",
-        "Гостевые визиты",
-        "Бесплатная пробная тренировка",
-        "Фитнес-тестирование",
-      ],
-      popular: false,
-      icon: Zap,
-    },
-  ]
+  // Загрузка клубных карт
+  useEffect(() => {
+    async function loadMemberships() {
+      try {
+        const data = await getMemberships()
+        setMemberships(data)
+      } catch (error) {
+        console.error('Error loading memberships:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadMemberships()
+  }, [])
+
+
 
   const additionalServices = [
     {
@@ -356,20 +322,44 @@ export default function TariffsPage() {
       <AnimatedSection className="py-20 relative z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {tariffs.map((tariff, index) => (
-              <PricingCard
-                key={index}
-                title={tariff.name}
-                price={tariff.price}
-                period={tariff.period}
-                description={tariff.description}
-                timeAccess={tariff.timeAccess}
-                features={tariff.features}
-                isPopular={tariff.popular}
-                icon={tariff.icon}
-                delay={index * 0.1}
-              />
-            ))}
+            {loading ? (
+              // Skeleton loading
+              Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="p-8 bg-zinc-900/50 backdrop-blur-sm rounded-2xl border border-zinc-800/50 shadow-lg animate-pulse"
+                >
+                  <div className="h-8 bg-zinc-800 rounded mb-4"></div>
+                  <div className="h-12 bg-zinc-800 rounded mb-6"></div>
+                  <div className="space-y-3">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div key={i} className="h-4 bg-zinc-800 rounded"></div>
+                    ))}
+                  </div>
+                </div>
+              ))
+            ) : (
+              memberships.map((membership, index) => {
+                // Выбираем иконку на основе индекса
+                const icons = [Clock, Award, Zap]
+                const Icon = icons[index % icons.length]
+                
+                return (
+                  <PricingCard
+                    key={membership.id}
+                    title={membership.title}
+                    price={membership.price.replace(' ₽', '')}
+                    period="/месяц"
+                    description={membership.available_time}
+                    timeAccess={membership.available_time}
+                    features={membership.services?.map(service => service.title) || []}
+                    isPopular={index === 1} // Вторая карта как популярная
+                    icon={Icon}
+                    delay={index * 0.1}
+                  />
+                )
+              })
+            )}
           </div>
         </div>
       </AnimatedSection>
