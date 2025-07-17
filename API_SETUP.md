@@ -6,33 +6,34 @@
 
 ## Структура API
 
-### Базовый URL
+### Внешний API (HTTP)
 ```
 http://212.19.27.201/urban210/hs/api/v3
 ```
 
+### Внутренний API (HTTPS через прокси)
+```
+/api/memberships
+```
+
 ### Endpoint для получения подписок
 ```
-GET /price_list?type=membership&club_id=b5f85d29-6727-11e9-80cb-00155d066506
+GET /api/memberships
 ```
 
 ## Настройка
 
-### 1. API ключ (опционально)
-Если API требует аутентификации, добавьте API ключ в переменные окружения:
+### 1. API ключ
+API ключ уже настроен в `app/api/memberships/route.ts`:
 
-```bash
-# .env.local
-API_KEY=your_api_key_here
-```
-
-Затем раскомментируйте строку в `lib/api.ts`:
 ```typescript
-'apikey': process.env.API_KEY || '',
+const API_KEY = "e3f63a57-4286-465a-b0dc-42a1123002e4"
 ```
+
+Для изменения ключа отредактируйте файл `app/api/memberships/route.ts`.
 
 ### 2. Fallback данные
-Если API недоступен, система автоматически использует fallback данные из `lib/api.ts`. Эти данные можно настроить в функции `getFallbackMemberships()`.
+Если внешний API недоступен, система автоматически использует fallback данные из `app/api/memberships/route.ts`. Эти данные можно настроить в функции API route.
 
 ## Структура данных
 
@@ -105,8 +106,14 @@ interface Membership {
 Для тестирования API можно использовать curl:
 
 ```bash
-curl -X GET "http://212.19.27.201/urban210/hs/api/v3/price_list?type=membership&club_id=b5f85d29-6727-11e9-80cb-00155d066506" \
+# Тест внутреннего API (рекомендуется)
+curl -X GET "http://localhost:3000/api/memberships" \
   -H "Content-Type: application/json"
+
+# Тест внешнего API (только для отладки)
+curl -X GET "http://212.19.27.201/urban210/hs/api/v3/price_list?type=membership&club_id=b5f85d29-6727-11e9-80cb-00155d066506" \
+  -H "Content-Type: application/json" \
+  -H "apikey: e3f63a57-4286-465a-b0dc-42a1123002e4"
 ```
 
 ## Обновление данных

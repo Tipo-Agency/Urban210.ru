@@ -1,5 +1,4 @@
-const API_BASE_URL = "http://212.19.27.201/urban210/hs/api/v3"
-const CLUB_ID = "b5f85d29-6727-11e9-80cb-00155d066506"
+const API_BASE_URL = "/api/memberships"
 
 // Типы для API
 export interface Membership {
@@ -27,17 +26,12 @@ export interface ApiResponse<T> {
 // Функция для получения списка подписок
 export async function getMemberships(): Promise<Membership[]> {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/price_list?type=membership&club_id=${CLUB_ID}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          // Здесь нужно будет добавить apikey когда он будет доступен
-          'apikey': process.env.API_KEY || 'e3f63a57-4286-465a-b0dc-42a1123002e4',
-        },
-      }
-    )
+    const response = await fetch(API_BASE_URL, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
 
     if (!response.ok) {
       throw new Error(`API request failed: ${response.status}`)
