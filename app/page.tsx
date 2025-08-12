@@ -987,7 +987,7 @@ const PricingCard = ({ title, price, period = "/мес", features, isPopular = f
         <ul className="space-y-4 mb-8">
           {features.map((feature: string, i: number) => (
             <motion.li
-              key={feature}
+              key={`${feature}-${i}`}
               className="flex items-center gap-3"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
