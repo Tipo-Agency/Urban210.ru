@@ -975,11 +975,11 @@ const PricingCard = ({ title, price, period = "/мес", features, isPopular = f
         viewport={{ once: true }}
         transition={{ duration: 0.4, delay: delay + 0.5 }}
       >
-        <ShineButton className="w-full mt-auto">
-          <a href="https://t.me/fcurbanbot" target="_blank" rel="noopener noreferrer" className="w-full block">
-            Выбрать
-          </a>
-        </ShineButton>
+        <a href="https://t.me/fcurbanbot" target="_blank" rel="noopener noreferrer" className="w-full block">
+          <ShineButton className="w-full mt-auto">
+              Выбрать 
+          </ShineButton>
+        </a>
       </motion.div>
     </motion.div>
   )
