@@ -513,7 +513,7 @@ export default function Urban210Page() {
           </div>
         </AnimatedSection>
 
-        <AnimatedSection id="promotions" className="py-8 sm:py-10 bg-black relative overflow-hidden">
+        {/* <AnimatedSection id="promotions" className="py-8 sm:py-10 bg-black relative overflow-hidden">
           <motion.div
             className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent"
             animate={{ x: ["-100%", "100%"] }}
@@ -588,7 +588,7 @@ export default function Urban210Page() {
               ))}
             </div>
           </div>
-        </AnimatedSection>
+        </AnimatedSection> */}
 
         <AnimatedSection id="tour" className="py-8 sm:py-10 bg-black">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">

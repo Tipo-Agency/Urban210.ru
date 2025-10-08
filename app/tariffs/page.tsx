@@ -406,7 +406,7 @@ export default function TariffsPage() {
       </AnimatedSection>
 
       {/* Promotions Section */}
-      <AnimatedSection className="py-20 relative z-10">
+      {/* <AnimatedSection className="py-20 relative z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center mb-12"
@@ -559,7 +559,7 @@ export default function TariffsPage() {
             </motion.div>
           </div>
         </div>
-      </AnimatedSection>
+      </AnimatedSection> */}
 
       {/* CTA Section */}
       <AnimatedSection className="py-20 relative z-10">
