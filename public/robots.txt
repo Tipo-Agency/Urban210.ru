@@ -1,0 +1,13 @@
+# robots.txt for urban210.ru
+
+User-agent: *
+Allow: /
+
+# Disallow admin and private pages
+Disallow: /cabinet/
+Disallow: /auth/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://urban210.ru/sitemap.xml
+

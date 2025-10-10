@@ -20,7 +20,6 @@ import {
   Sparkles,
   FileText,
   MapPin,
-  Mountain,
   Timer,
   GraduationCap,
   RefreshCw,
@@ -299,7 +298,7 @@ export default function Urban210Page() {
               <PricingCard
                 title="Все включено"
                 price="2400"
-                features={["Безлимитное посещение", "Все групповые программы", "Спа-зона", "Скалодром"]}
+                features={["Безлимитное посещение", "Все групповые программы", "Спа-зона"]}
                 isPopular
                 delay={0.2}
               />
@@ -388,13 +387,12 @@ export default function Urban210Page() {
                 Мы создали пространство, где каждый может стать лучшей версией себя.
               </p>
             </motion.div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
                 { icon: Dumbbell, title: "Современное оборудование", desc: "Тренажеры от ведущих мировых брендов." },
                 { icon: Zap, title: "Фитнес-бар", desc: "Здоровое питание и спортивные напитки." },
                 { icon: HeartPulse, title: "Спа-зона", desc: "Сауна и хаммам для полного расслабления." },
                 { icon: Users, title: "Опытные тренеры", desc: "Команда профессионалов для ваших целей." },
-                { icon: Mountain, title: "Скалодром", desc: "Уникальная стена для скалолазания в городе." },
               ].map((item, i) => (
                 <motion.div
                   key={item.title}
@@ -642,7 +640,7 @@ export default function Urban210Page() {
                 transition={{ duration: 0.6 }}
                 className="mb-8"
               >
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 max-w-5xl mx-auto bg-transparent backdrop-blur-sm  gap-2 p-2 rounded-lg">
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto bg-transparent backdrop-blur-sm  gap-2 p-2 rounded-lg">
                   <TabsTrigger value="crossfit" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-sm sm:text-base px-2 sm:px-4 py-2 rounded-md transition-all duration-200 bg-zinc-800/50 hover:bg-zinc-700/50">
                     Кроссфит
                   </TabsTrigger>
@@ -652,10 +650,7 @@ export default function Urban210Page() {
                   <TabsTrigger value="power" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-sm sm:text-base px-2 sm:px-4 py-2 rounded-md transition-all duration-200 bg-zinc-800/50 hover:bg-zinc-700/50">
                     Силовые
                   </TabsTrigger>
-                  <TabsTrigger value="climbing" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-sm sm:text-base px-2 sm:px-4 py-2 rounded-md transition-all duration-200 bg-zinc-800/50 hover:bg-zinc-700/50">
-                    Скалодром
-                  </TabsTrigger>
-                  <TabsTrigger value="spa" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-sm sm:text-base px-2 sm:px-4 py-2 rounded-md transition-all duration-200 bg-zinc-800/50 hover:bg-zinc-700/50 col-span-2 sm:col-span-1">
+                  <TabsTrigger value="spa" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-sm sm:text-base px-2 sm:px-4 py-2 rounded-md transition-all duration-200 bg-zinc-800/50 hover:bg-zinc-700/50">
                     СПА
                   </TabsTrigger>
                 </TabsList>
@@ -695,20 +690,6 @@ export default function Urban210Page() {
                       "Современные тренажеры",
                       "Техника безопасности",
                       "Отслеживание прогресса",
-                    ]}
-                  />
-                </TabsContent>
-
-                <TabsContent value="climbing" className="mt-32 lg:mt-8">
-                  <ProgramCard
-                    title="Скалодром"
-                    description="Уникальная возможность заниматься скалолазанием в городских условиях! Развивайте координацию, силу и выносливость на нашей профессиональной скалодромной стене высотой 12 метров."
-                    image="/images/rest-recovery.jpg"
-                    features={[
-                      "Стена высотой 12м",
-                      "Разные уровни сложности",
-                      "Безопасное снаряжение",
-                      "Инструктаж для новичков",
                     ]}
                   />
                 </TabsContent>

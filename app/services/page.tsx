@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button"
 import {
   Dumbbell,
   Users,
-  Mountain,
   HeartPulse,
   Zap,
   Coffee,
@@ -212,19 +211,6 @@ export default function ServicesPage() {
                   "Степ-аэробика и кардио-программы",
                 ]}
                 delay={0.1}
-              />
-
-              <ServiceCard
-                icon={Mountain}
-                title="Скалодром"
-                description="Уникальная стена для скалолазания высотой 12 метров"
-                features={[
-                  "Различные уровни сложности маршрутов",
-                  "Профессиональное страховочное оборудование",
-                  "Инструктаж для начинающих",
-                  "Развитие координации и силы",
-                ]}
-                delay={0.2}
               />
 
               <ServiceCard

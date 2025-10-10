@@ -183,13 +183,24 @@ export default function Footer() {
         </div>
 
         <motion.div
-          className="mt-10 pt-8 border-t border-zinc-800 text-center text-sm text-gray-500"
+          className="mt-10 pt-8 border-t border-zinc-800 text-sm text-gray-500"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <p>&copy; {new Date().getFullYear()} Urban210. Все права защищены.</p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-center sm:text-left">&copy; {new Date().getFullYear()} Urban210. Все права защищены.</p>
+            <a
+              href="https://tipa.uz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 group"
+            >
+              <span className="text-white/80 group-hover:text-white text-lg sm:text-lg">ⓒ</span>
+              <img src="/icons/tipa_agency.svg" alt="Типа агенство" className="h-5 w-auto opacity-90 group-hover:opacity-100 transition-opacity" />
+            </a>
+          </div>
         </motion.div>
       </div>
     </footer>
