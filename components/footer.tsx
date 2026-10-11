@@ -192,13 +192,13 @@ export default function Footer() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-center sm:text-left">&copy; {new Date().getFullYear()} Urban210. Все права защищены.</p>
             <a
-              href="https://tipa.uz"
+              href="https://tipa.uz/ru/services/web"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener"
               className="flex items-center space-x-2 group"
             >
-              <span className="text-white/80 group-hover:text-white text-lg sm:text-lg">ⓒ</span>
-              <img src="/icons/tipa_agency.svg" alt="Типа агенство" className="h-5 w-auto opacity-90 group-hover:opacity-100 transition-opacity" />
+              <span className="text-white/80 group-hover:text-white text-sm">Разработка сайта — TIPA</span>
+              <img src="/icons/tipa_agency.svg" alt="" className="h-5 w-auto opacity-90 group-hover:opacity-100 transition-opacity" />
             </a>
           </div>
         </motion.div>
