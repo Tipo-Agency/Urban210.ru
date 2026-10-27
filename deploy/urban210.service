@@ -1,0 +1,16 @@
+[Unit]
+Description=urban210.ru (Next.js standalone)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/urban210/current
+EnvironmentFile=/opt/urban210/.env
+Environment=NODE_ENV=production PORT=3210 HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
