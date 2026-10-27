@@ -6,7 +6,7 @@ import { Logo } from "./logo";
 export function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="border-t border-line pb-28 pt-16 md:pb-12" data-block="footer">
+    <footer className="overflow-hidden pb-28 pt-20 md:pb-10" data-block="footer">
       <div className="wrap grid gap-12 md:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
         <div>
           <Logo />
@@ -86,7 +86,11 @@ export function Footer() {
         </address>
       </div>
 
-      <div className="wrap mt-14 flex flex-col gap-3 border-t border-line pt-6 text-sm text-muted md:flex-row md:items-center md:justify-between">
+      <p aria-hidden="true" className="mega mt-16 select-none whitespace-nowrap text-center text-[23.6vw] leading-[0.76] text-[#1a1817]">
+        <span className="deco" data-text="URBAN" />
+        <span className="deco text-accent/90" data-text="210" />
+      </p>
+      <div className="wrap mt-8 flex flex-col gap-3 border-t border-line pt-6 text-sm text-muted md:flex-row md:items-center md:justify-between">
         <p>
           © {year} {site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn}
         </p>

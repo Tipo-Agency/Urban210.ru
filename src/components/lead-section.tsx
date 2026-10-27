@@ -16,25 +16,26 @@ export function LeadSection({
   block?: string;
 }) {
   return (
-    <section id="zayavka" className="section relative overflow-hidden border-t border-line" aria-labelledby="zayavka-title" data-block={block}>
-      <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-accent/10 blur-3xl" />
-      <div className="wrap relative grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-20">
+    <section id="zayavka" className="relative isolate overflow-hidden bg-accent text-[#120804]" aria-labelledby="zayavka-title" data-block={block}>
+      <p aria-hidden="true" className="mega pointer-events-none absolute -bottom-[0.1em] left-1/2 -z-10 -translate-x-1/2 select-none whitespace-nowrap text-[26vw] text-[#120804]/[0.08] deco" data-text="6:30" />
+      <div className="wrap section grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
         <div>
-          <h2 id="zayavka-title" className="text-[length:var(--text-h2)]">
+          <p className="kicker">Первый шаг</p>
+          <h2 id="zayavka-title" data-reveal className="mt-5 text-[clamp(3rem,1.8rem+4.2vw,6.5rem)] leading-[0.88]">
             {title}
           </h2>
-          <p className="mt-5 max-w-md text-[length:var(--text-lead)] text-muted">{text}</p>
-          <ul className="mt-10 grid gap-5">
+          <p className="mt-6 max-w-md text-[length:var(--text-lead)] text-[#3a1a0c]">{text}</p>
+          <ul className="mt-10 grid gap-4 text-[1.0625rem]">
             <li className="flex gap-4">
-              <IconPin className="mt-1 shrink-0 text-accent" />
+              <IconPin className="mt-1 shrink-0" />
               <span>
                 {site.address.short}, {site.district}
                 <br />
-                <span className="text-muted">{site.parking}</span>
+                <span className="text-[#2a1208]">{site.parking}</span>
               </span>
             </li>
             <li className="flex gap-4">
-              <IconClock className="mt-1 shrink-0 text-accent" />
+              <IconClock className="mt-1 shrink-0" />
               <span>
                 {site.hours.map((h) => (
                   <span key={h.days} className="block">
@@ -43,21 +44,19 @@ export function LeadSection({
                 ))}
               </span>
             </li>
-            <li className="flex gap-4">
-              <IconPhone className="mt-1 shrink-0 text-accent" />
-              <a href={site.phone.href} className="font-medium hover:text-accent">
+            <li className="flex flex-wrap gap-x-8 gap-y-3">
+              <a href={site.phone.href} className="flex items-center gap-4 font-semibold underline-offset-4 hover:underline">
+                <IconPhone className="shrink-0" />
                 {site.phone.display}
               </a>
-            </li>
-            <li className="flex gap-4">
-              <IconWhatsApp className="mt-1 shrink-0 text-accent" />
-              <a href={whatsappLink("Здравствуйте! Хочу на пробный день в Urban210")} target="_blank" rel="noopener" className="font-medium hover:text-accent">
-                Написать в WhatsApp
+              <a href={whatsappLink("Здравствуйте! Хочу на пробный день в Urban210")} target="_blank" rel="noopener" className="flex items-center gap-4 font-semibold underline-offset-4 hover:underline">
+                <IconWhatsApp className="shrink-0" />
+                WhatsApp
               </a>
             </li>
           </ul>
         </div>
-        <div className="self-start rounded-[var(--radius-card)] border border-line bg-card p-6 md:p-8">
+        <div className="self-start rounded-[2rem] bg-[#0b0b0a] p-6 text-ink shadow-[0_40px_80px_-30px_rgba(18,8,4,0.7)] md:p-9">
           <LeadForm goal={goal} block={block} formId="final" />
         </div>
       </div>

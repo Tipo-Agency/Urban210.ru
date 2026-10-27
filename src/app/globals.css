@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
-/* Токены из DESIGN.md. Тёплый графит вместо чистого чёрного, один акцент из логотипа. */
+/* Токены из DESIGN.md. Чёрно-белое фото клуба плюс один горячий акцент из логотипа. */
 @theme {
-  --color-bg: #0f0e0d;
-  --color-card: #1a1816;
-  --color-raise: #24211e;
-  --color-line: #322e2a;
-  --color-ink: #f4efea;
-  --color-muted: #a8a097;
-  --color-accent: #eb5a2c;
-  --color-accent-hover: #ff6d3d;
+  --color-bg: #0b0b0a;
+  --color-card: #161514;
+  --color-raise: #211f1d;
+  --color-line: #2d2a27;
+  --color-ink: #f5f1ec;
+  --color-muted: #a39b92;
+  --color-accent: #ff5a1f;
+  --color-accent-hover: #ff7442;
   --color-paper: #f3eee8;
   --color-paper-ink: #191715;
   --color-paper-muted: #5f5852;
@@ -22,7 +22,8 @@
   --radius-btn: 0.875rem;
 
   --text-hero: clamp(2.75rem, 1.6rem + 5.6vw, 6.5rem);
-  --text-h2: clamp(2rem, 1.4rem + 2.6vw, 3.75rem);
+  --text-mega: clamp(4.25rem, 19vw, 19rem);
+  --text-h2: clamp(2.5rem, 1.5rem + 4vw, 5.5rem);
   --text-h3: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);
   --text-lead: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
 
@@ -46,9 +47,9 @@
   }
   h1, h2, h3 {
     font-family: var(--font-display);
-    font-weight: 600;
-    line-height: 1.02;
-    letter-spacing: -0.01em;
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.015em;
     text-transform: uppercase;
     text-wrap: balance;
   }
@@ -73,14 +74,17 @@
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-    min-height: 3.25rem; padding: 0.875rem 1.5rem; border-radius: var(--radius-btn);
+    min-height: 3.5rem; padding: 0.875rem 1.75rem; border-radius: 999px;
     font-weight: 600; font-size: 1rem; line-height: 1.2; white-space: nowrap;
     transition: background-color 180ms var(--ease-out-quart), color 180ms var(--ease-out-quart), transform 180ms var(--ease-out-quart), border-color 180ms var(--ease-out-quart);
     cursor: pointer;
   }
   .btn:active { transform: scale(0.98); }
-  .btn-accent { background: var(--color-accent); color: #140d09; }
-  .btn-accent:hover { background: var(--color-accent-hover); }
+  .btn-accent { background: var(--color-accent); color: #120804; box-shadow: 0 0 0 0 rgb(255 90 31 / 0.5); }
+  .btn-accent:hover { background: var(--color-accent-hover); box-shadow: 0 10px 40px -8px rgb(255 90 31 / 0.65); transform: translateY(-2px); }
+  .btn-accent:active { transform: translateY(0) scale(0.98); }
+  .btn-ink { background: var(--color-bg); color: var(--color-ink); }
+  .btn-ink:hover { background: #000; transform: translateY(-2px); }
   .btn-ghost { border: 1px solid var(--color-line); color: var(--color-ink); background: transparent; }
   .btn-ghost:hover { border-color: var(--color-ink); }
   .on-paper .btn-ghost { border-color: var(--color-paper-line); color: var(--color-paper-ink); }
@@ -93,9 +97,9 @@
 
   /* Светлые секции переопределяют токены, поэтому утилиты text-muted и border-line работают и тут */
   .on-paper {
-    --color-ink: #191715;
-    --color-muted: #5f5852;
-    --color-line: #ddd5cc;
+    --color-ink: #121110;
+    --color-muted: #5a534d;
+    --color-line: #d9d1c7;
     background: var(--color-paper);
     color: var(--color-paper-ink);
   }
@@ -109,6 +113,14 @@
   .field:hover { border-color: #4a443e; }
   .field:focus { outline: none; border-color: var(--color-accent); }
   .field[aria-invalid="true"] { border-color: #ff6b6b; }
+
+  /* Гигантская типографика */
+  .mega { font-family: var(--font-display); font-weight: 700; font-size: var(--text-mega); line-height: 0.8; letter-spacing: -0.035em; text-transform: uppercase; }
+  .outline { color: transparent; -webkit-text-stroke: 2px var(--stroke, #120804); }
+  .outline-ink { color: transparent; -webkit-text-stroke: 2px var(--color-ink); }
+  @media (min-width: 768px) { .outline, .outline-ink { -webkit-text-stroke-width: 3px; } }
+  .num { font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; line-height: 0.85; }
+  .kicker { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }
 
   .prose-u { max-width: 68ch; }
   .prose-u h2 { font-size: var(--text-h3); margin-top: 2.5rem; margin-bottom: 0.75rem; }
@@ -127,14 +139,56 @@
 }
 
 /* Появление первого экрана: только opacity и transform, без задержки LCP-картинки */
-@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-.rise { animation: rise 600ms var(--ease-out-quart) both; }
-.rise-2 { animation-delay: 90ms; }
-.rise-3 { animation-delay: 180ms; }
+@keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 900ms var(--ease-out-quart) both; }
+.rise-2 { animation-delay: 120ms; }
+.rise-3 { animation-delay: 240ms; }
+.rise-4 { animation-delay: 360ms; }
 
-dialog::backdrop { background: rgb(8 7 6 / 0.72); }
+/* Зерно поверх всего сайта: фото и плоские фоны перестают выглядеть пластиково */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: 0.05;
+  background: url("/images/grain.webp") repeat;
+}
+
+/* Бегущая строка */
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee { display: flex; width: max-content; will-change: transform; animation: marquee var(--marquee-speed, 32s) linear infinite; }
+.marquee-rev { animation-direction: reverse; }
+.marquee-wrap:hover .marquee { animation-play-state: paused; }
+
+/* Появление на скролле. Без JavaScript всё видно сразу. */
+.js [data-reveal] { opacity: 0; transform: translateY(40px); transition: opacity 900ms var(--ease-out-quart), transform 900ms var(--ease-out-quart); transition-delay: var(--d, 0ms); }
+.js [data-reveal="left"] { transform: translateX(-60px); }
+.js [data-reveal="scale"] { transform: scale(0.92); }
+.js [data-reveal].in { opacity: 1; transform: none; }
+.js [data-clip] { clip-path: inset(100% 0 0 0); transition: clip-path 1100ms var(--ease-out-quart); transition-delay: var(--d, 0ms); }
+.js [data-clip].in { clip-path: inset(0 0 0 0); }
+.js [data-words] .w { opacity: 0.18; transition: opacity 500ms var(--ease-out-quart); }
+.js [data-words] .w.on { opacity: 1; }
+
+/* Декоративный текст рисуем псевдоэлементом: его не читают скринридеры и не проверяют на контраст */
+.deco::before { content: attr(data-text); }
+
+/* Нижняя панель на телефоне появляется после первого экрана, чтобы не закрывать его */
+.js:not(.scrolled) [data-mobile-bar] { transform: translateY(130%); }
+
+/* Липкие карточки зон складываются стопкой */
+.stack-card { position: sticky; top: calc(5.5rem + var(--i) * 1.25rem); }
+
+/* Фото: чёрно-белое по умолчанию, цвет на ховере */
+.duo { filter: grayscale(1) contrast(1.08); transition: filter 600ms var(--ease-out-quart), transform 900ms var(--ease-out-quart); }
+.group:hover .duo { filter: grayscale(0) contrast(1); }
+
+dialog::backdrop { background: rgb(8 7 6 / 0.8); backdrop-filter: blur(6px); }
 dialog[open] { animation: rise 260ms var(--ease-out-quart); }
 
 details > summary { list-style: none; cursor: pointer; }
 details > summary::-webkit-details-marker { display: none; }
 details[open] .faq-icon { transform: rotate(45deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee { animation: none; }
+  .js [data-reveal], .js [data-clip] { opacity: 1; transform: none; clip-path: none; }
+  .js [data-words] .w { opacity: 1; }
+}

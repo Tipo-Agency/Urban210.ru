@@ -6,6 +6,7 @@ import { Header } from "@/components/header";
 import { JsonLd } from "@/components/json-ld";
 import { LeadDialog } from "@/components/lead-dialog";
 import { MobileBar } from "@/components/mobile-bar";
+import { Motion } from "@/components/motion";
 import { SITE_URL } from "@/data/site";
 import { gymSchema } from "@/lib/seo";
 import "./globals.css";
@@ -27,11 +28,15 @@ export const metadata: Metadata = {
   verification: { yandex: "767e7e36f712fc4c" },
 };
 
-export const viewport: Viewport = { themeColor: "#0f0e0d", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#0b0b0a", colorScheme: "dark" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={`${oswald.variable} ${golos.variable}`}>
+    <html lang="ru" className={`${oswald.variable} ${golos.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Класс js включает анимации появления. Без скриптов контент виден сразу. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+      </head>
       <body>
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-bg">
           К содержанию
@@ -41,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <MobileBar />
         <LeadDialog />
+        <Motion />
         <JsonLd data={gymSchema()} />
         {YM_ID && (
           <>

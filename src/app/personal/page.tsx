@@ -3,7 +3,7 @@ import { Faq } from "@/components/faq";
 import { LeadSection } from "@/components/lead-section";
 import { PageHero } from "@/components/page-hero";
 import { SectionHead } from "@/components/sections";
-import { Trainers } from "@/components/trainers";
+import { TrainerWall } from "@/components/blocks";
 import { personalText } from "@/data/content";
 import { personal, rub } from "@/data/pricing";
 import { pageMeta } from "@/lib/seo";
@@ -69,7 +69,7 @@ export default function Page() {
       <section className="section border-t border-line" aria-labelledby="team" data-block="trainers">
         <div className="wrap">
           <SectionHead id="team" title="Тренеры" />
-          <Trainers />
+          <TrainerWall />
         </div>
       </section>
 

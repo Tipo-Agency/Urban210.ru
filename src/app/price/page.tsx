@@ -4,7 +4,8 @@ import { JsonLd } from "@/components/json-ld";
 import { LeadSection } from "@/components/lead-section";
 import { PageHero } from "@/components/page-hero";
 import { Pricing } from "@/components/pricing";
-import { Comparison, Promos, SectionHead } from "@/components/sections";
+import { VersusNetwork } from "@/components/blocks";
+import { Promos, SectionHead } from "@/components/sections";
 import { faqGeneral, personalText } from "@/data/content";
 import { plans, rub, trial } from "@/data/pricing";
 import { SITE_URL } from "@/data/site";
@@ -60,7 +61,7 @@ export default function Page() {
         </div>
       </section>
 
-      <Comparison />
+      <VersusNetwork />
 
       <section className="section border-t border-line" aria-labelledby="promo-title" data-block="promo">
         <div className="wrap">

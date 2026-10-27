@@ -30,7 +30,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const date = new Date(p.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
   return (
     <>
-      <article className="wrap pb-16 pt-10 md:pt-14">
+      <article className="wrap pb-16 pt-28 md:pt-36">
         <Breadcrumbs items={[{ href: "/blog/", label: "Блог" }, { href: `/blog/${p.slug}/`, label: p.title }]} />
         <h1 className="mt-6 max-w-4xl text-[length:var(--text-h2)]">{p.title}</h1>
         <p className="mt-4 text-sm text-muted">

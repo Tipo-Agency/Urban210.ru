@@ -33,8 +33,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         </Cta>
       </PageHero>
       <section className="wrap grid gap-8 pb-20 md:grid-cols-2 md:items-center" data-block="promo_terms">
-        <div className="relative aspect-[15/8] overflow-hidden rounded-[var(--radius-card)] bg-card">
-          <Image src={`/images/promo/${p.slug}.jpg`} alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+        <div className="relative aspect-square overflow-hidden rounded-[2rem] bg-card md:max-w-xl">
+          <Image src={`/images/promo/${p.slug}.jpg`} alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover object-right" />
         </div>
         <div>
           <h2 className="text-[length:var(--text-h3)]">Условия</h2>

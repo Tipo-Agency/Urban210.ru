@@ -1,7 +1,7 @@
 import { Cta } from "@/components/cta";
 import { LeadSection } from "@/components/lead-section";
 import { PageHero } from "@/components/page-hero";
-import { Trainers } from "@/components/trainers";
+import { TrainerWall } from "@/components/blocks";
 import { personalText } from "@/data/content";
 import { pageMeta } from "@/lib/seo";
 
@@ -20,7 +20,7 @@ export default function Page() {
         </Cta>
       </PageHero>
       <section className="wrap pb-20" aria-label="Команда тренеров" data-block="trainers">
-        <Trainers />
+        <TrainerWall />
       </section>
       <LeadSection title="Запишитесь на первую тренировку с тренером" text="Оставьте номер: тренер или администратор перезвонит и подберёт время. При покупке подписки первая персональная тренировка бесплатно." goal="Персональные тренировки" block="final_trainers" />
     </>
