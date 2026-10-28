@@ -1,17 +1,53 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
+
+// Превью первых экранов: src/assets/concepts/NN.jpg (снимки 1440×900 из docs/concepts)
+const shots = import.meta.glob<{ default: ImageMetadata }>('../../assets/concepts/*.jpg', { eager: true });
+const shot = (n: string) => shots[`../../assets/concepts/${n}.jpg`].default;
+
 const list = [
-  ['a', 'Табло', 'Светлый спортивный плакат: бумага, чёрный Dela Gothic, табло с часами и статусом «открыто сейчас», зоны строками с фото у курсора, ценники.'],
-  ['b', 'Кино', 'Тёмная и полноэкранная: ч/б видео, зал главами на весь экран, фото раскрывается из щели при прокрутке, Manrope, оранжевый только в кнопках.'],
-  ['c', 'Импульс', 'Оранжевый бренд во весь экран: тренер в вырезке, шевроны как графика, Russo One, фото в рамке-шевроне, полоса шевронов едет при прокрутке.'],
+  ['01', 'Монохром', 'Чёрно-белый премиум как у Equinox: тонкий шрифт, много воздуха, фото на всю ширину раскрывается шторкой.'],
+  ['02', 'Красный свет', 'Клубная ночь как у Barry\'s: зал в красном свете, узкий капс, пульсирующий свет и бегущие ленты.'],
+  ['03', 'Ночь', 'Тёмная роскошь как у Third Space: неоновые шевроны под потолком, тонкая антиква, холодный свет.'],
+  ['04', 'Спринт', 'Спорт как у F45: огромный узкий шрифт, синий и оранжевый, живой таймер до закрытия клуба.'],
+  ['05', 'Дружелюбный', 'Как DDX, только аккуратнее: яркие скруглённые карточки, стикеры, фото гостей веером.'],
+  ['06', 'Кампания', 'Реклама в духе Nike: огромные слова, тренер в вырезке, плакаты зон наезжают друг на друга.'],
+  ['07', 'Сетка', 'Швейцарский журнал: видимая сетка колонок, моноширинные подписи, цифры как счётчик.'],
+  ['08', 'Бенто', 'Плитки как у Apple: видео, «открыто сейчас» с часами Хабаровска, рейтинг, карта, переключатели.'],
+  ['09', 'Забота', 'Мягкий велнес для девушек: песочные тона, фото в арках, акцент на растяжке, SPA и утре.'],
+  ['10', 'Район', 'Уличный журнал про свой район: коллаж, скотч, стикеры, «Наш район. Наш зал.»'],
 ];
 ---
-<Layout title="Концепции дизайна" description="Три направления дизайна сайта Urban210." noindex>
-  <section class="page-hero"><div class="wrap">
-    <h1>Три концепции</h1>
-    <p class="lead">Живые страницы с настоящими фото, видео и данными клуба. Выберите направление, дальше доведём его на всём сайте.</p>
-    <ul class="grid-3" style="list-style:none;margin-top:48px">
-      {list.map(([k, t, d]) => <li class="tile"><span class="k">Концепция {k.toUpperCase()}</span><h2 style="font-size:2rem">{t}</h2><p>{d}</p><a class="btn" href={`/concepts/${k}/`}>Открыть</a></li>)}
-    </ul>
-  </div></section>
+<Layout title="Десять концепций" description="Десять концепций главной страницы Urban210." noindex>
+  <section class="page-hero">
+    <div class="wrap">
+      <h1>Десять концепций</h1>
+      <p class="lead">Живые главные страницы на фото, видео и ценах Urban210. Откройте каждую на телефоне и компьютере и назовите номер, который ближе. Можно смешать: шрифт из одной, цвет из другой.</p>
+      <ul class="cl">
+        {list.map(([n, t, d]) => (
+          <li>
+            <a href={`/concepts/${n}/`}>
+              <div class="cl-ph"><Image src={shot(n)} alt={`Первый экран концепции ${n}`} widths={[480, 720]} sizes="(min-width: 900px) 45vw, 100vw" format="webp" quality={60} loading={Number(n) < 3 ? 'eager' : 'lazy'} /></div>
+              <h2><span>{n}</span> {t}</h2>
+              <p>{d}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="muted" style="margin-top:48px">Ранние варианты: <a href="/concepts/a/">A</a>, <a href="/concepts/b/">B</a>, <a href="/concepts/c/">C</a>. Текущий сайт: <a href="/">главная</a>.</p>
+    </div>
+  </section>
 </Layout>
+
+<style>
+  .cl { list-style: none; margin-top: 48px; display: grid; gap: 40px 24px; }
+  @media (min-width: 900px) { .cl { grid-template-columns: repeat(2, 1fr); } }
+  .cl a { text-decoration: none; display: grid; gap: 12px; }
+  .cl-ph { aspect-ratio: 16 / 10; overflow: hidden; background: var(--card); border-radius: 6px; }
+  .cl-ph :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 0.8s var(--ease); }
+  .cl a:hover .cl-ph :global(img) { transform: scale(1.03); }
+  .cl h2 { font-size: 1.6rem; margin-top: 6px; }
+  .cl h2 span { color: var(--accent); }
+  .cl p { color: var(--muted); max-width: 56ch; }
+</style>

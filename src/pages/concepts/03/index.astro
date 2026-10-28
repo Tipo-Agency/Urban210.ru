@@ -1,0 +1,573 @@
+---
+// Концепция 03 «Ночь»: тёмный премиальный клуб. Почти чёрный синий графит, холодные световые трубки
+// (двойной шеврон » из логотипа, как светильники на потолке зала), Cormorant светлым начертанием и Manrope.
+// Движение: трубки загораются с мерцанием, как лампы при включении; линии-разделители прочерчиваются светом.
+import '@fontsource-variable/cormorant/wght.css';
+import '@fontsource-variable/cormorant/wght-italic.css';
+import '@fontsource-variable/manrope/wght.css';
+import { Image } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import LeadForm from '../../../components/LeadForm.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site, whatsappLink, telegramLink } from '../../../data/site';
+import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { reviews, trainers, zones, programs } from '../../../data/content';
+import heroImg from '../../../assets/images/hero.jpg';
+
+const weekday = site.hours[0];
+const weekend = site.hours[1];
+const rating = site.rating.value.toString().replace('.', ',');
+const stats = [
+  { n: '1300', u: 'м²', l: 'площадь клуба' },
+  { n: '60+', u: '', l: `тренажёров ${site.facts.brands}` },
+  { n: '150', u: 'м²', l: 'зал групповых программ' },
+  { n: '60', u: 'кг', l: 'свободные веса, до' },
+];
+const zoneList = zones.map((z) => ({ ...z, img: z.image ? img(z.image) : null }));
+const classes = programs.flatMap((p) => p.items);
+const quotes = reviews.slice(0, 3).map((r) => ({ ...r, short: r.text.split('. ').slice(0, 2).join('. ').replace(/\.?$/, '.') }));
+const trainerPhotos = trainers.map((t) => ({ ...t, img: img(t.photo) }));
+
+// Потолок из световых трубок: ряды шевронов, дальние ряды меньше и тусклее
+const ceiling = [
+  { y: 0, s: 1, n: 5 },
+  { y: 30, s: 0.7, n: 6 },
+  { y: 52, s: 0.5, n: 7 },
+  { y: 68, s: 0.36, n: 8 },
+];
+---
+<Layout title="Концепция 03 «Ночь»" description="Концепция дизайна сайта Urban210: тёмный премиальный клуб со световыми линиями." noindex bare>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="n3-tube" viewBox="-12 -12 124 88">
+        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="#6eb9ff" stroke-width="16" opacity="0.08" d="M6 4 38 32 6 60M44 4 76 32 44 60" />
+          <path stroke="#6eb9ff" stroke-width="6" opacity="0.34" d="M6 4 38 32 6 60M44 4 76 32 44 60" />
+          <path stroke="#f2fbff" stroke-width="2.4" d="M6 4 38 32 6 60M44 4 76 32 44 60" />
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="n3">
+    <header class="n3-top">
+      <a class="n3-logo" href="/concepts/03/" aria-label="Urban210, на главную">URBAN<b>210</b><Icon name="chev" /></a>
+      <nav class="n3-nav" aria-label="Меню">
+        <a href="#zones">Пространство</a>
+        <a href="#price">Членство</a>
+        <a href="#team">Тренеры</a>
+        <a href="#reviews">Отзывы</a>
+        <a href="#visit">Контакты</a>
+      </nav>
+      <a class="n3-tel" href={site.phone.href}>{site.phone.display}</a>
+      <a class="n3-btn n3-btn-sm" href="#visit" data-lead={trial.title} data-block="n3_header">Пробный день за 1 ₽</a>
+    </header>
+
+    <!-- Первый экран -->
+    <section class="n3-hero" aria-labelledby="n3-h">
+      <div class="n3-media">
+        <Image src={heroImg} alt="" widths={[640, 1024, 1600, 2200]} sizes="100vw" loading="eager" fetchpriority="high" format="webp" quality={50} />
+        <video data-hero-video data-src="/video/hero-bw.mp4" muted loop playsinline preload="none" aria-hidden="true"></video>
+        <span class="n3-tint" aria-hidden="true"></span>
+      </div>
+
+      <div class="n3-ceiling" aria-hidden="true">
+        {ceiling.map((row, r) => (
+          <div class="n3-row" style={`--y:${row.y}%;--s:${row.s};--n:${row.n}`}>
+            {Array.from({ length: row.n }).map((_, i) => (
+              <svg class="n3-t" style={`--d:${(r * 0.18 + ((i * 7 + r * 3) % 5) * 0.16).toFixed(2)}s`} viewBox="-12 -12 124 88"><use href="#n3-tube" /></svg>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <div class="n3-hero-in">
+        <p class="n3-kick">Фитнес-клуб в Хабаровске</p>
+        <h1 id="n3-h">Свет в зале<br />горит <em>до&nbsp;23:30</em></h1>
+        <div class="n3-hero-row">
+          <p class="n3-hero-p">По будням с 06:30, в выходные до 22:30. Тренажёрный зал {site.facts.area}, групповые программы и SPA с хаммамом. Вступительного взноса нет.</p>
+          <div class="n3-hero-cta">
+            <a class="n3-btn" href="#visit" data-lead={trial.title} data-block="n3_hero">Пробный день за 1 ₽<Icon name="chev" /></a>
+            <a class="n3-ghost" href="#price">Членство от {rub(plans[0].month)}</a>
+          </div>
+        </div>
+      </div>
+
+      <ul class="n3-facts" aria-label="Коротко о клубе">
+        <li><b>{rating}</b><span>Яндекс Карты · {site.rating.text}</span></li>
+        <li><b>{weekday.time}</b><span>{weekday.days}</span></li>
+        <li><b>{weekend.time}</b><span>{weekend.days}</span></li>
+        <li><b>50</b><span>мест на бесплатной парковке</span></li>
+      </ul>
+    </section>
+
+    <!-- Манифест и цифры -->
+    <section class="n3-sec n3-intro" aria-labelledby="n3-i">
+      <div class="n3-wrap">
+        <h2 id="n3-i" class="n3-statement" data-rise>Один клуб у дома вместо сети. Большой зал без очередей к&nbsp;тренажёрам, парковка у входа и <em>вечер, который остаётся вашим.</em></h2>
+        <hr class="n3-rule" data-rise />
+        <ul class="n3-stats">
+          {stats.map((s) => <li><b>{s.n}<small>{s.u}</small></b><span>{s.l}</span></li>)}
+        </ul>
+      </div>
+    </section>
+
+    <!-- Зоны -->
+    <section class="n3-sec n3-zones-sec" id="zones" aria-labelledby="n3-z">
+      <div class="n3-wrap">
+        <div class="n3-head">
+          <h2 id="n3-z">Пространство</h2>
+          <p>Четыре зоны в одном клубе. Каждая со своим светом и темпом.</p>
+        </div>
+        <ul class="n3-zones">
+          {zoneList.map((z) => (
+            <li class:list={['n3-zone', `z-${z.id}`]}>
+              <a href={z.href}>
+                {z.img ? (
+                  <span class="n3-ph"><Image src={z.img} alt="" widths={[480, 800, 1200]} sizes="(min-width: 980px) 50vw, 100vw" format="avif" quality={45} /></span>
+                ) : (
+                  <span class="n3-spa" aria-hidden="true">
+                    <svg viewBox="0 0 200 200"><circle class="c1" cx="100" cy="100" r="78" /><circle class="c2" cx="100" cy="100" r="54" /><circle class="c3" cx="100" cy="100" r="30" /></svg>
+                  </span>
+                )}
+                <span class="n3-zone-txt">
+                  <span class="n3-zone-t">{z.title}</span>
+                  <span class="n3-zone-d">{z.text}</span>
+                </span>
+                <Icon name="chev" class="n3-zone-i" />
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div class="n3-classes">
+          <p>Групповые программы</p>
+          <ul>{classes.map((c) => <li>{c}</li>)}</ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Членство -->
+    <section class="n3-sec n3-price" id="price" aria-labelledby="n3-p">
+      <div class="n3-wrap">
+        <div class="n3-head">
+          <h2 id="n3-p">Членство</h2>
+          <p>Безлимит в выбранное время. Платите только за тариф: вход в клуб и браслет входят в стоимость.</p>
+        </div>
+        <div class="n3-plans">
+          {plans.map((p) => (
+            <article class:list={['n3-plan', p.id === 'full' && 'is-lit']}>
+              <header>
+                <h3>{p.name}</h3>
+                {p.tag && <span class="n3-tag">{p.tag}</span>}
+              </header>
+              <p class="n3-hours">{p.hours}</p>
+              <p class="n3-amount"><b>{p.month.toLocaleString('ru-RU').replace(/\s/g, '\u00a0')}</b><span>₽ в месяц</span></p>
+              <p class="n3-alt">{rub(p.year)} за год · {perDay(p.month, 30)} ₽ в день</p>
+              <ul class="n3-inc">
+                {p.features.map((f) => <li>{f}</li>)}
+                {p.excluded?.map((f) => <li class="off">{f}</li>)}
+              </ul>
+              <a class:list={['n3-btn', p.id !== 'full' && 'is-line']} href="#visit" data-lead={p.name} data-block={`n3_${p.id}`}>Выбрать<Icon name="chev" /></a>
+            </article>
+          ))}
+        </div>
+
+        <div class="n3-trial" data-rise>
+          <p class="n3-neon" aria-hidden="true">1<span>₽</span></p>
+          <div>
+            <h3>{trial.title}</h3>
+            <p>{trial.text}</p>
+            <a class="n3-btn" href="#visit" data-lead={trial.title} data-block="n3_trial">Записаться<Icon name="chev" /></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Тренеры -->
+    <section class="n3-sec" id="team" aria-labelledby="n3-t">
+      <div class="n3-wrap">
+        <div class="n3-head">
+          <h2 id="n3-t">Тренеры</h2>
+          <p>Поставят технику и соберут программу под вашу цель. {personal.pack} персональных тренировок за {rub(personal.price)}, первая бесплатно при покупке подписки.</p>
+        </div>
+        <ul class="n3-team">
+          {trainerPhotos.map((t) => (
+            <li>
+              <span class="n3-ph n3-ph-sq"><Image src={t.img} alt={t.name} widths={[400, 700]} sizes="(min-width: 980px) 30vw, 90vw" format="avif" quality={50} /></span>
+              <h3>{t.name}</h3>
+              <p>{t.role}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- Отзывы -->
+    <section class="n3-sec n3-reviews" id="reviews" aria-labelledby="n3-r">
+      <div class="n3-wrap">
+        <div class="n3-score">
+          <p class="n3-score-n" aria-hidden="true">{rating}</p>
+          <div>
+            <h2 id="n3-r">Рейтинг {rating} из 5</h2>
+            <p>{site.rating.text} на Яндекс Картах и в 2ГИС. <a href={site.maps.yandexReviews} target="_blank" rel="noopener">Читать все</a></p>
+          </div>
+        </div>
+        <div class="n3-quotes">
+          {quotes.map((q) => (
+            <figure>
+              <blockquote>«{q.short}»</blockquote>
+              <figcaption>{q.name} · {q.source}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Заявка -->
+    <section class="n3-sec n3-visit" id="visit" aria-labelledby="n3-v">
+      <div class="n3-wrap n3-visit-in">
+        <div class="n3-visit-txt">
+          <h2 id="n3-v">Первый вечер <em>за&nbsp;1&nbsp;₽</em></h2>
+          <p class="n3-visit-p">Оставьте телефон, администратор перезвонит и подберёт время. Покажем зал, раздевалки и SPA, тренер поможет с первой программой.</p>
+          <dl class="n3-info">
+            <div><dt>Адрес</dt><dd>{site.address.short}<br />{site.district}</dd></div>
+            <div><dt>Часы</dt><dd>{weekday.days} {weekday.time}<br />{weekend.days} {weekend.time}</dd></div>
+            <div><dt>Парковка</dt><dd>{site.parking}</dd></div>
+            <div><dt>Связь</dt><dd><a href={site.phone.href}>{site.phone.display}</a><br /><a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a> · <a href={telegramLink('n3_visit')} target="_blank" rel="noopener">Telegram</a></dd></div>
+          </dl>
+        </div>
+        <div class="n3-form">
+          <LeadForm id="n3" block="n3_final" />
+        </div>
+      </div>
+    </section>
+
+    <footer class="n3-foot">
+      <div class="n3-wrap">
+        <p class="n3-big" aria-hidden="true">URBAN<b>210</b><Icon name="chev" /></p>
+        <div class="n3-foot-row">
+          <p>{site.address.locality}, {site.address.street}</p>
+          <nav aria-label="Разделы">
+            <a href="/price/">Тарифы</a><a href="/zal/">Зал</a><a href="/group/">Групповые</a><a href="/spa/">SPA</a><a href="/trainers/">Тренеры</a><a href="/contacts/">Контакты</a>
+          </nav>
+          <p><a href={site.instagram} target="_blank" rel="noopener">Instagram</a> · <a href={`mailto:${site.email}`}>{site.email}</a></p>
+        </div>
+        <p class="n3-legal">© {new Date().getFullYear()} {site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn} · <a href="/policy/">Политика конфиденциальности</a> · <a href="/oferta/">Договор-оферта</a></p>
+      </div>
+    </footer>
+  </div>
+</Layout>
+
+<style is:global>
+  body:has(.n3) {
+    --bg: #05070c; --card: #0c111c; --raise: #121a29; --ink: #e9eef7; --muted: #8f9bb0;
+    --line: rgb(175 205 255 / 0.14); --accent: #d9f0ff; --accent-ink: #06101c;
+    background: #05070c; color: #e9eef7;
+    font-family: 'Manrope Variable', system-ui, sans-serif;
+  }
+  body:has(.n3) ::selection { background: #bfe6ff; color: #06101c; }
+  body:has(.n3) :focus-visible { outline-color: #9fd6ff; }
+  body:has(.n3) .mbar { background: rgb(5 7 12 / 0.9); }
+  body:has(.n3) .mbar .btn, body:has(.n3) dialog.lead .btn { background: #e3f3ff; color: #06101c; border-radius: 999px; box-shadow: 0 0 24px rgb(110 185 255 / 0.35); }
+  body:has(.n3) .mbar a.ic { border-radius: 999px; }
+  body:has(.n3) dialog.lead .form { background: #0a0f1a; border-radius: 20px; }
+  /* метрики запасного шрифта подогнаны под Cormorant, чтобы заголовок не прыгал при загрузке */
+  @font-face { font-family: 'Cormorant Fallback'; src: local('Times New Roman'), local('Times'); size-adjust: 89%; ascent-override: 103%; descent-override: 32%; line-gap-override: 0%; }
+  body:has(.n3) dialog.lead h3 { font-family: 'Cormorant Variable', serif; font-weight: 400; font-size: 2rem; letter-spacing: -0.01em; }
+  body:has(.n3) dialog.lead .field input { border-radius: 12px; }
+  body:has(.n3) .form-done .ok { background: #d9f0ff; box-shadow: 0 0 30px rgb(110 185 255 / 0.5); }
+</style>
+
+<style>
+  .n3 {
+    --neon: #c9ebff;
+    --glow: 110 185 255;
+    --bg2: #080c15;
+    --panel: #0b101b;
+    --ink: #e9eef7;
+    --mut: #8f9bb0;
+    --line: rgb(175 205 255 / 0.13);
+    --serif: 'Cormorant Variable', 'Cormorant Fallback', serif;
+    --sans: 'Manrope Variable', system-ui, sans-serif;
+    --w: 1320px;
+    --g: clamp(16px, 4vw, 56px);
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink);
+    overflow-x: clip;
+  }
+  .n3 :global(h1), .n3 :global(h2), .n3 :global(h3) { font-family: var(--serif); font-weight: 300; letter-spacing: -0.015em; line-height: 1; }
+  .n3 :global(em) { font-style: italic; font-weight: 300; color: var(--neon); }
+  .n3-wrap { max-width: var(--w); margin-inline: auto; padding-inline: var(--g); }
+  .n3-sec { padding-block: clamp(88px, 11vw, 168px); position: relative; }
+
+  /* ---------- Кнопки ---------- */
+  .n3-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+    min-height: 52px; padding: 0 24px 0 28px; border-radius: 999px;
+    background: #e3f3ff; color: #06101c; text-decoration: none;
+    font: 650 0.95rem/1 var(--sans); letter-spacing: 0.01em; white-space: nowrap;
+    box-shadow: 0 0 0 1px rgb(201 235 255 / 0.6), 0 0 28px rgb(var(--glow) / 0.32), 0 0 80px rgb(var(--glow) / 0.12);
+    transition: box-shadow 0.3s var(--ease), transform 0.2s var(--ease), background-color 0.3s var(--ease);
+  }
+  .n3-btn :global(svg) { width: 17px; height: 12px; transition: transform 0.3s var(--ease); }
+  .n3-btn:hover { background: #fff; box-shadow: 0 0 0 1px #fff, 0 0 36px rgb(var(--glow) / 0.55), 0 0 110px rgb(var(--glow) / 0.22); }
+  .n3-btn:hover :global(svg) { transform: translateX(4px); }
+  .n3-btn:active { transform: scale(0.96); }
+  .n3-btn.is-line { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px rgb(201 235 255 / 0.35); }
+  .n3-btn.is-line:hover { box-shadow: inset 0 0 0 1px var(--neon), 0 0 24px rgb(var(--glow) / 0.3); }
+  .n3-btn-sm { min-height: 42px; padding: 0 18px; font-size: 0.85rem; }
+  .n3-ghost { color: var(--ink); font-weight: 600; font-size: 0.95rem; text-decoration: none; padding-block: 12px; border-bottom: 1px solid rgb(201 235 255 / 0.35); transition: border-color 0.3s; }
+  .n3-ghost:hover { border-color: var(--neon); }
+
+  /* ---------- Шапка ---------- */
+  .n3-top {
+    position: fixed; z-index: 30; inset: 0 0 auto; display: flex; align-items: center; gap: 28px;
+    height: 72px; padding-inline: var(--g);
+    background: linear-gradient(rgb(5 7 12 / 0.7), rgb(5 7 12 / 0));
+    transition: background-color 0.3s;
+  }
+  @supports (animation-timeline: scroll()) {
+    .n3-top { animation: n3-head linear both; animation-timeline: scroll(); animation-range: 0 240px; }
+    @keyframes n3-head { to { background-color: rgb(5 7 12 / 0.92); box-shadow: 0 1px 0 var(--line); } }
+  }
+  .n3-logo { display: inline-flex; align-items: center; gap: 2px; font: 300 1.05rem/1 var(--sans); letter-spacing: 0.32em; text-decoration: none; color: var(--ink); }
+  .n3-logo b { font-weight: 700; letter-spacing: 0.12em; }
+  .n3-logo :global(svg) { width: 15px; height: 13px; margin-left: 8px; color: var(--neon); filter: drop-shadow(0 0 6px rgb(var(--glow) / 0.9)); }
+  .n3-nav { display: none; gap: 30px; margin-left: auto; }
+  .n3-nav a, .n3-tel { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; color: rgb(233 238 247 / 0.78); transition: color 0.2s; }
+  .n3-nav a:hover, .n3-tel:hover { color: #fff; }
+  .n3-tel { display: none; letter-spacing: 0.06em; }
+  .n3-top .n3-btn { margin-left: auto; }
+  @media (min-width: 1100px) {
+    .n3-nav { display: flex; }
+    .n3-tel { display: inline; }
+    .n3-top .n3-btn { margin-left: 0; }
+  }
+  @media (max-width: 420px) {
+    .n3-logo { letter-spacing: 0.22em; font-size: 0.95rem; }
+    .n3-btn-sm { padding: 0 14px; font-size: 0.8rem; }
+  }
+
+  /* ---------- Первый экран ---------- */
+  .n3-hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: 1fr auto; overflow: hidden; isolation: isolate; }
+  .n3-media { position: absolute; inset: 0; z-index: -2; }
+  .n3-media :global(img), .n3-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(0.62) contrast(1.15); }
+  .n3-media video { opacity: 0; transition: opacity 1.6s var(--ease); }
+  .n3-media :global(video.is-on) { opacity: 1; }
+  .n3-tint { position: absolute; inset: 0; background: #0c2a55; mix-blend-mode: color; opacity: 0.7; }
+  .n3-media::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(70% 45% at 50% 12%, rgb(var(--glow) / 0.14), transparent 70%),
+      radial-gradient(120% 70% at 50% 0%, rgb(5 7 12 / 0) 0%, rgb(5 7 12 / 0.35) 60%, rgb(5 7 12 / 0.9) 100%),
+      linear-gradient(180deg, rgb(5 7 12 / 0.55) 0%, rgb(5 7 12 / 0) 30%, rgb(5 7 12 / 0.2) 55%, #05070c 100%);
+  }
+
+  .n3-ceiling { position: absolute; inset: 104px 0 auto; height: calc(40% - 104px); z-index: -1; pointer-events: none; }
+  .n3-row { position: absolute; left: 50%; top: var(--y); display: flex; gap: calc(var(--s) * clamp(40px, 7vw, 120px)); transform: translateX(-50%); opacity: calc(0.35 + var(--s) * 0.65); }
+  .n3-t { width: calc(var(--s) * clamp(70px, 9vw, 150px)); height: auto; flex: none; overflow: visible; }
+  :global(.js) .n3-t { opacity: 0; animation: n3-on 1.6s steps(1, end) var(--d) forwards, n3-hum 6s ease-in-out calc(var(--d) + 2s) infinite; }
+  @keyframes n3-on {
+    0% { opacity: 0; } 10% { opacity: 0.85; } 16% { opacity: 0.08; } 26% { opacity: 0.7; } 30% { opacity: 0.15; } 44% { opacity: 1; } 100% { opacity: 1; }
+  }
+  @keyframes n3-hum { 0%, 100% { opacity: 1; } 50% { opacity: 0.82; } }
+  @media (max-width: 700px) {
+    .n3-ceiling { top: 92px; height: 210px; }
+    .n3-row { gap: calc(var(--s) * 30px); }
+    .n3-t { width: calc(var(--s) * 76px); }
+    .n3-row .n3-t:nth-child(n+4) { display: none; }
+    .n3-row:nth-child(2) .n3-t:nth-child(4), .n3-row:nth-child(3) .n3-t:nth-child(-n+5), .n3-row:nth-child(4) .n3-t:nth-child(-n+6) { display: block; }
+    .n3-media :global(img) { filter: grayscale(1) brightness(0.85) contrast(1.15); }
+  }
+
+  .n3-hero-in { align-self: end; width: 100%; max-width: var(--w); margin-inline: auto; padding: 140px var(--g) clamp(32px, 5vw, 56px); }
+  .n3-kick { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: rgb(233 238 247 / 0.7); margin-bottom: clamp(18px, 2vw, 28px); }
+  .n3-hero h1 { font-size: clamp(3.5rem, 0.5rem + 13vw, 10rem); line-height: 0.88; letter-spacing: -0.035em; max-width: 12ch; text-wrap: balance; }
+  .n3-hero h1 em { text-shadow: 0 0 18px rgb(var(--glow) / 0.55), 0 0 60px rgb(var(--glow) / 0.3); }
+  .n3-hero-row { display: grid; gap: 28px; margin-top: clamp(24px, 3vw, 40px); }
+  .n3-hero-p { max-width: 46ch; color: rgb(233 238 247 / 0.82); font-size: clamp(1rem, 0.95rem + 0.25vw, 1.12rem); }
+  .n3-hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
+  @media (min-width: 980px) {
+    .n3-hero-row { grid-template-columns: 1fr auto; align-items: end; }
+  }
+  @media (max-width: 700px) { .n3-hero-in { padding-top: 330px; } }
+
+  .n3-facts { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); max-width: calc(var(--w) - 2 * var(--g)); width: calc(100% - 2 * var(--g)); margin-inline: auto; }
+  .n3-facts li { display: grid; gap: 4px; padding: 18px 12px 22px 0; }
+  .n3-facts b { font: 400 clamp(1.5rem, 1.2rem + 1vw, 2.1rem)/1 var(--serif); font-variant-numeric: lining-nums tabular-nums; letter-spacing: 0; }
+  .n3-facts span { font-size: 0.78rem; color: var(--mut); line-height: 1.35; }
+  @media (min-width: 760px) {
+    .n3-facts { grid-template-columns: repeat(4, 1fr); }
+    .n3-facts li + li { padding-left: 24px; border-left: 1px solid var(--line); }
+  }
+  @media (max-width: 759px) { .n3-facts li:nth-child(even) { padding-left: 16px; border-left: 1px solid var(--line); } .n3-facts li:nth-child(n+3) { border-top: 1px solid var(--line); } }
+
+  /* ---------- Манифест ---------- */
+  .n3-statement { font-size: clamp(2rem, 1.2rem + 3.4vw, 4.6rem); line-height: 1.06; letter-spacing: -0.02em; max-width: 22ch; text-wrap: balance; }
+  .n3-rule { height: 1px; border: 0; margin: clamp(48px, 7vw, 96px) 0 0; background: linear-gradient(90deg, var(--neon), rgb(var(--glow) / 0.4) 40%, transparent); box-shadow: 0 0 12px rgb(var(--glow) / 0.8); transform-origin: left; }
+  :global(.js) .n3-rule[data-rise] { opacity: 1; transform: scaleX(0); transition: transform 1.8s var(--ease); }
+  :global(.js) .n3-rule[data-rise].in { transform: scaleX(1); }
+  .n3-stats { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 36px 20px; margin-top: 40px; }
+  .n3-stats li { display: grid; gap: 8px; align-content: start; }
+  .n3-stats b { font: 300 clamp(3rem, 2rem + 4vw, 6rem)/0.9 var(--serif); letter-spacing: -0.03em; font-variant-numeric: lining-nums; }
+  .n3-stats small { font-size: 0.4em; margin-left: 6px; color: var(--mut); letter-spacing: 0; }
+  .n3-stats span { font-size: 0.88rem; color: var(--mut); max-width: 22ch; }
+  @media (min-width: 900px) { .n3-stats { grid-template-columns: repeat(4, 1fr); } }
+
+  /* ---------- Заголовки секций ---------- */
+  .n3-head { display: grid; gap: 18px; margin-bottom: clamp(40px, 5vw, 72px); }
+  .n3-head h2 { font-size: clamp(3rem, 1.8rem + 5vw, 7rem); letter-spacing: -0.03em; line-height: 0.92; }
+  .n3-head p { max-width: 48ch; color: var(--mut); }
+  @media (min-width: 980px) { .n3-head { grid-template-columns: 1fr minmax(0, 420px); align-items: end; } }
+
+  /* ---------- Зоны ---------- */
+  .n3-zones-sec { background: linear-gradient(180deg, transparent, var(--bg2) 20%, var(--bg2) 80%, transparent); }
+  .n3-zones { list-style: none; display: grid; gap: 14px; }
+  .n3-zone a { position: relative; display: block; height: 100%; min-height: 300px; overflow: hidden; border-radius: 20px; text-decoration: none; color: var(--ink); background: var(--panel); isolation: isolate; }
+  .n3-zone a::before { content: ''; position: absolute; z-index: 3; left: 28px; right: 28px; top: 0; height: 1px; background: var(--neon); box-shadow: 0 0 10px rgb(var(--glow)), 0 0 30px rgb(var(--glow) / 0.6); opacity: 0.25; transition: opacity 0.4s var(--ease); }
+  .n3-zone a:hover::before { opacity: 1; }
+  .n3-zone a::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06); pointer-events: none; z-index: 3; }
+  .n3-ph { position: absolute; inset: 0; z-index: -1; isolation: isolate; }
+  .n3-ph :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(0.7) contrast(1.15); transition: transform 1.2s var(--ease), filter 0.6s var(--ease); }
+  .n3-ph::before { content: ''; position: absolute; inset: 0; z-index: 1; background: #0d2c5a; mix-blend-mode: color; opacity: 0.75; }
+  .n3-zone .n3-ph::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgb(5 7 12 / 0) 30%, rgb(5 7 12 / 0.88) 100%); }
+  .n3-zone a:hover .n3-ph :global(img) { transform: scale(1.04); filter: grayscale(1) brightness(0.85) contrast(1.15); }
+  .n3-zone-txt { position: absolute; inset: auto 0 0; padding: 28px; display: grid; gap: 10px; padding-right: 72px; }
+  .n3-zone-t { font: 300 clamp(2rem, 1.5rem + 1.6vw, 3rem)/1 var(--serif); letter-spacing: -0.02em; }
+  .n3-zone-d { font-size: 0.9rem; color: rgb(233 238 247 / 0.75); max-width: 44ch; line-height: 1.5; }
+  .n3 :global(.n3-zone-i) { position: absolute; right: 28px; bottom: 32px; width: 20px; height: 16px; color: var(--neon); filter: drop-shadow(0 0 6px rgb(var(--glow))); transition: transform 0.3s var(--ease); }
+  .n3-zone a:hover :global(.n3-zone-i) { transform: translateX(4px); }
+  .n3-spa { position: absolute; inset: 0; z-index: -1; display: grid; place-items: center; background: radial-gradient(70% 60% at 50% 38%, rgb(var(--glow) / 0.14), transparent 70%), var(--panel); }
+  .n3-spa svg { width: min(62%, 260px); margin-top: -70px; overflow: visible; }
+  .n3-spa circle { fill: none; stroke: #eaf7ff; filter: drop-shadow(0 0 4px rgb(var(--glow))) drop-shadow(0 0 14px rgb(var(--glow) / 0.7)); }
+  .n3-spa .c1 { stroke-width: 1.2; opacity: 0.45; }
+  .n3-spa .c2 { stroke-width: 1.6; opacity: 0.7; }
+  .n3-spa .c3 { stroke-width: 2; }
+  @media (prefers-reduced-motion: no-preference) {
+    .n3-spa circle { transform-origin: center; transform-box: fill-box; animation: n3-breath 7s ease-in-out infinite; }
+    .n3-spa .c2 { animation-delay: -2.3s; }
+    .n3-spa .c1 { animation-delay: -4.6s; }
+    @keyframes n3-breath { 0%, 100% { transform: scale(0.94); opacity: 0.4; } 50% { transform: scale(1.04); opacity: 1; } }
+  }
+  @media (min-width: 760px) {
+    .n3-zones { grid-template-columns: 1.25fr 1fr; grid-template-rows: 340px 340px; }
+    .z-zal { grid-row: span 2; }
+    .z-zal a { min-height: 100%; }
+  }
+  @media (min-width: 1100px) {
+    .n3-zones { grid-template-columns: 1.3fr 1fr 1fr; grid-template-rows: 360px 360px; }
+    .z-zal { grid-row: span 2; }
+    .z-cardio { grid-column: span 2; }
+  }
+
+  .n3-classes { margin-top: clamp(56px, 7vw, 96px); display: grid; gap: 20px; }
+  .n3-classes p { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mut); }
+  .n3-classes ul { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 0; font: italic 300 clamp(1.9rem, 1.2rem + 2.6vw, 3.6rem)/1.15 var(--serif); }
+  .n3-classes li { display: inline-flex; align-items: center; }
+  .n3-classes li:not(:last-child)::after { content: ''; width: 6px; height: 6px; margin-inline: 0.5em; border-radius: 50%; background: var(--neon); box-shadow: 0 0 8px rgb(var(--glow)), 0 0 20px rgb(var(--glow) / 0.6); }
+
+  /* ---------- Членство ---------- */
+  .n3-plans { display: grid; gap: 14px; }
+  .n3-plan { position: relative; display: flex; flex-direction: column; padding: clamp(28px, 3vw, 40px); border-radius: 24px; background: linear-gradient(180deg, #0d1320, #090d16); box-shadow: inset 0 0 0 1px var(--line); }
+  .n3-plan.is-lit { box-shadow: inset 0 0 0 1px rgb(201 235 255 / 0.55), 0 0 40px rgb(var(--glow) / 0.16), 0 0 120px rgb(var(--glow) / 0.08); background: radial-gradient(90% 50% at 50% 0%, rgb(var(--glow) / 0.14), transparent 70%), linear-gradient(180deg, #0f1726, #0a0f19); }
+  .n3-plan.is-lit::before { content: ''; position: absolute; left: 32px; right: 32px; top: -1px; height: 2px; border-radius: 2px; background: #f2fbff; box-shadow: 0 0 10px rgb(var(--glow)), 0 0 30px rgb(var(--glow) / 0.8); }
+  .n3-plan header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .n3-plan h3 { font-size: clamp(1.9rem, 1.6rem + 0.8vw, 2.4rem); }
+  .n3-tag { position: absolute; top: 0; left: clamp(28px, 3vw, 40px); transform: translateY(-50%); background: #0b111c; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgb(201 235 255 / 0.4); color: var(--neon); white-space: nowrap; }
+  .n3-hours { margin-top: 6px; font-size: 0.88rem; color: var(--mut); }
+  .n3-amount { display: flex; align-items: baseline; gap: 12px; margin-top: 36px; }
+  .n3-amount b { font: 300 clamp(4rem, 3rem + 3vw, 5.6rem)/0.85 var(--serif); letter-spacing: -0.04em; font-variant-numeric: lining-nums; }
+  .n3-amount span { font-size: 0.88rem; color: var(--mut); }
+  .n3-alt { margin-top: 14px; font-size: 0.88rem; color: rgb(233 238 247 / 0.75); padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+  .n3-inc { list-style: none; display: grid; gap: 10px; margin: 24px 0 32px; font-size: 0.93rem; }
+  .n3-inc li { position: relative; padding-left: 26px; line-height: 1.45; }
+  .n3-inc li::before { content: ''; position: absolute; left: 0; top: 0.62em; width: 12px; height: 1px; background: var(--neon); box-shadow: 0 0 6px rgb(var(--glow)); }
+  .n3-inc li.off { color: rgb(143 155 176 / 0.6); text-decoration: line-through; text-decoration-color: rgb(143 155 176 / 0.4); }
+  .n3-inc li.off::before { background: rgb(143 155 176 / 0.35); box-shadow: none; }
+  .n3-plan .n3-btn { margin-top: auto; }
+  @media (min-width: 980px) { .n3-plans { grid-template-columns: repeat(3, 1fr); } }
+
+  .n3-trial { margin-top: 14px; display: grid; gap: 24px; align-items: center; padding: clamp(28px, 4vw, 56px); border-radius: 24px; background: radial-gradient(60% 120% at 15% 50%, rgb(var(--glow) / 0.16), transparent 70%), #070b13; box-shadow: inset 0 0 0 1px var(--line); overflow: hidden; }
+  .n3-trial h3 { font-size: clamp(2.2rem, 1.6rem + 2vw, 3.4rem); }
+  .n3-trial p:not(.n3-neon) { margin: 14px 0 28px; color: var(--mut); max-width: 44ch; }
+  .n3-neon { font: 300 clamp(9rem, 6rem + 12vw, 17rem)/0.8 var(--serif); letter-spacing: -0.06em; color: #f4fbff; text-shadow: 0 0 6px rgb(var(--glow)), 0 0 24px rgb(var(--glow) / 0.9), 0 0 80px rgb(var(--glow) / 0.6), 0 0 160px rgb(var(--glow) / 0.35); padding-left: 0.04em; }
+  .n3-neon span { font-size: 0.42em; margin-left: 0.08em; letter-spacing: 0; vertical-align: 0.9em; }
+  :global(.js) .n3-trial[data-rise] { opacity: 1; transform: none; }
+  :global(.js) .n3-trial[data-rise] .n3-neon { opacity: 0; }
+  :global(.js) .n3-trial[data-rise].in .n3-neon { animation: n3-on 1.4s steps(1, end) 0.2s forwards; }
+  @media (min-width: 860px) { .n3-trial { grid-template-columns: auto minmax(0, 560px); justify-content: start; gap: clamp(56px, 9vw, 140px); padding-inline: clamp(48px, 7vw, 110px); } }
+
+  /* ---------- Тренеры ---------- */
+  .n3-team { list-style: none; display: grid; gap: 40px 14px; }
+  .n3-ph-sq { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 20px; }
+  .n3-ph-sq :global(img) { position: absolute; inset: 0; filter: grayscale(1) brightness(1) contrast(1.08); }
+  .n3-ph-sq::before { opacity: 0.38; }
+  .n3-ph-sq::after { content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08); background: linear-gradient(180deg, transparent 60%, rgb(5 7 12 / 0.6)); }
+  .n3-team h3 { margin-top: 22px; font-size: clamp(1.7rem, 1.4rem + 0.8vw, 2.2rem); }
+  .n3-team p { margin-top: 6px; color: var(--mut); font-size: 0.9rem; max-width: 30ch; }
+  @media (min-width: 760px) { .n3-team { grid-template-columns: repeat(3, 1fr); } .n3-team li:nth-child(2) { margin-top: 64px; } }
+
+  /* ---------- Отзывы ---------- */
+  .n3-reviews { background: linear-gradient(180deg, transparent, var(--bg2) 25%, var(--bg2) 75%, transparent); }
+  .n3-score { display: grid; gap: 12px 48px; align-items: center; margin-bottom: clamp(48px, 6vw, 88px); }
+  .n3-score-n { font: 300 clamp(7rem, 4rem + 12vw, 15rem)/0.8 var(--serif); letter-spacing: -0.05em; color: #f4fbff; text-shadow: 0 0 20px rgb(var(--glow) / 0.6), 0 0 90px rgb(var(--glow) / 0.35); }
+  .n3-score h2 { font-size: clamp(2.2rem, 1.6rem + 2vw, 3.6rem); }
+  .n3-score p:not(.n3-score-n) { margin-top: 12px; color: var(--mut); }
+  .n3-score a { color: var(--neon); text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  @media (min-width: 860px) { .n3-score { grid-template-columns: auto 1fr; } }
+  .n3-quotes { display: grid; gap: 40px; }
+  .n3-quotes figure { margin: 0; padding-top: 28px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 24px; }
+  .n3-quotes blockquote { margin: 0; font: italic 300 clamp(1.45rem, 1.25rem + 0.6vw, 1.8rem)/1.28 var(--serif); letter-spacing: -0.005em; text-wrap: pretty; }
+  .n3-quotes figcaption { margin-top: auto; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mut); }
+  @media (min-width: 900px) { .n3-quotes { grid-template-columns: repeat(3, 1fr); gap: 48px; } }
+
+  /* ---------- Заявка ---------- */
+  .n3-visit::before { content: ''; position: absolute; left: 50%; top: 0; width: min(900px, 80%); height: 1px; transform: translateX(-50%); background: linear-gradient(90deg, transparent, var(--neon), transparent); box-shadow: 0 0 18px rgb(var(--glow)); }
+  .n3-visit::after { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(50% 40% at 50% 0%, rgb(var(--glow) / 0.12), transparent 70%); }
+  .n3-visit-in { display: grid; gap: 56px; }
+  .n3-visit h2 { font-size: clamp(3rem, 1.8rem + 5vw, 6.6rem); line-height: 0.92; letter-spacing: -0.03em; }
+  .n3-visit h2 em { text-shadow: 0 0 18px rgb(var(--glow) / 0.5), 0 0 60px rgb(var(--glow) / 0.3); }
+  .n3-visit-p { margin-top: 24px; max-width: 46ch; color: var(--mut); }
+  .n3-info { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 24px; margin: 44px 0 0; }
+  .n3-info dt { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mut); margin-bottom: 8px; }
+  .n3-info dd { margin: 0; font-size: 0.95rem; line-height: 1.55; }
+  .n3-info a { color: var(--ink); text-decoration-color: rgb(201 235 255 / 0.4); text-underline-offset: 4px; }
+  .n3-info a:hover { color: var(--neon); }
+  @media (max-width: 480px) { .n3-info { grid-template-columns: 1fr; } }
+  @media (min-width: 980px) { .n3-visit-in { grid-template-columns: 1fr minmax(0, 480px); gap: 80px; align-items: start; } }
+
+  .n3-form :global(.form) { background: linear-gradient(180deg, #0e1524, #0a0f1a); border-radius: 24px; padding: clamp(26px, 3vw, 40px); gap: 16px; box-shadow: inset 0 0 0 1px rgb(201 235 255 / 0.22), 0 0 60px rgb(var(--glow) / 0.1); --muted: #8f9bb0; --line: rgb(175 205 255 / 0.16); --card: #070b13; }
+  .n3-form :global(.form h3) { font-size: clamp(1.9rem, 1.6rem + 0.8vw, 2.4rem); }
+  .n3-form :global(.field) { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+  .n3-form :global(.field input) { border-radius: 14px; font-size: 1rem; letter-spacing: 0; text-transform: none; font-weight: 500; }
+  .n3-form :global(.field input:focus) { border-color: #9fd6ff; box-shadow: 0 0 0 3px rgb(var(--glow) / 0.18), 0 0 24px rgb(var(--glow) / 0.2); }
+  .n3-form :global(.field .err) { text-transform: none; letter-spacing: 0; font-weight: 500; }
+  .n3-form :global(.consent input) { accent-color: #9fd6ff; }
+  .n3-form :global(.consent a) { color: var(--ink); }
+  .n3-form :global(.btn) { border-radius: 999px; background: #e3f3ff; color: #06101c; box-shadow: 0 0 0 1px rgb(201 235 255 / 0.6), 0 0 28px rgb(var(--glow) / 0.35); transition: box-shadow 0.3s var(--ease), background-color 0.3s; }
+  .n3-form :global(.btn:hover) { background: #fff; box-shadow: 0 0 0 1px #fff, 0 0 40px rgb(var(--glow) / 0.55); }
+  .n3-form :global(.form-note a) { color: var(--ink); }
+
+  /* ---------- Подвал ---------- */
+  .n3-foot { padding: clamp(64px, 8vw, 120px) 0 calc(40px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: #04060a; }
+  .n3-big { display: flex; align-items: center; font: 200 clamp(3rem, 13.4vw, 15.5rem)/0.9 var(--sans); letter-spacing: 0.01em; color: #182234; white-space: nowrap; margin-left: -0.05em; }
+  .n3-big b { font-weight: 600; color: #f2fbff; text-shadow: 0 0 10px rgb(var(--glow) / 0.9), 0 0 40px rgb(var(--glow) / 0.5), 0 0 100px rgb(var(--glow) / 0.3); }
+  .n3-big :global(svg) { width: 0.34em; height: 0.3em; margin-left: 0.2em; color: var(--neon); filter: drop-shadow(0 0 10px rgb(var(--glow))); flex: none; }
+  .n3-foot-row { display: grid; gap: 24px; margin-top: clamp(40px, 5vw, 64px); padding-top: 32px; border-top: 1px solid var(--line); font-size: 0.92rem; color: var(--mut); }
+  .n3-foot-row nav { display: flex; flex-wrap: wrap; gap: 10px 24px; }
+  .n3-foot a { color: rgb(233 238 247 / 0.85); text-decoration: none; }
+  .n3-foot a:hover { color: var(--neon); }
+  .n3-legal { margin-top: 32px; font-size: 0.78rem; color: rgb(143 155 176 / 0.75); line-height: 1.6; }
+  @media (min-width: 980px) { .n3-foot-row { grid-template-columns: 1fr auto 1fr; align-items: center; } .n3-foot-row > p:last-child { text-align: right; } }
+  @media (max-width: 1099px) { .n3-foot { padding-bottom: calc(110px + env(safe-area-inset-bottom)); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .n3-t, .n3-neon { animation: none !important; opacity: 1 !important; }
+    :global(.js) .n3-trial[data-rise] .n3-neon { opacity: 1; }
+    .n3-rule { transform: none !important; }
+  }
+</style>

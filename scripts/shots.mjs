@@ -22,6 +22,8 @@ for (const pair of pairs) {
       if (full) {
         await page.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 400) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 150)); } scrollTo(0, 0); });
         await new Promise((r) => setTimeout(r, 1500));
+        // длинная страница в 2x упирается в предел Chrome 16384px и повторяет верх, поэтому целиком снимаем в 1x
+        if (vp.deviceScaleFactor > 1) await page.setViewport({ ...vp, deviceScaleFactor: 1 });
         await page.screenshot({ path: `${out}/${name}-${tag}-full.jpg`, type: 'jpeg', quality: 60, fullPage: true });
       }
       console.log('ok', name, tag);

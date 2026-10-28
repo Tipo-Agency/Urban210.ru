@@ -1,0 +1,667 @@
+---
+// Концепция 05 «Дружелюбный»: светлая страница, крупные скруглённые карточки, оранжевый и кобальт.
+// Geologica жирным, стикеры и кнопки-таблетки, люди клуба на фото. Движение: веер фото в первом экране
+// раскрывается при загрузке и наведении, стикеры подкручиваются при прокрутке, бегущая строка.
+import '@fontsource-variable/geologica/wght.css';
+import { Image } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import LeadForm from '../../../components/LeadForm.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site, whatsappLink, telegramLink, nav } from '../../../data/site';
+import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { reviews, trainers, zones, programs, promos } from '../../../data/content';
+
+const zal = zones.find((z) => z.id === 'zal')!;
+const cardio = zones.find((z) => z.id === 'cardio')!;
+const group = zones.find((z) => z.id === 'group')!;
+const spa = zones.find((z) => z.id === 'spa')!;
+
+const fan = [
+  { src: '/images/community/6.jpg', alt: 'Пара после тренировки в Urban210' },
+  { src: '/images/community/3.jpg', alt: 'Девушка тренируется в зале Urban210' },
+  { src: '/images/community/12.jpg', alt: 'Гостья клуба у шкафчиков раздевалки' },
+];
+
+// лента «наши люди»: фото и отзывы вперемешку
+const people = ['/images/community/2.jpg', '/images/community/13.jpg', '/images/community/9.jpg', '/images/community/15.jpg', '/images/community/11.jpg'];
+const feed: ({ kind: 'photo'; src: string } | { kind: 'review'; r: (typeof reviews)[number]; tone: string })[] = [];
+const tones = ['org', 'cob', 'wht', 'pch'];
+people.forEach((p, i) => {
+  feed.push({ kind: 'photo', src: p });
+  if (reviews[i]) feed.push({ kind: 'review', r: reviews[i], tone: tones[i % tones.length] });
+});
+
+const marquee = ['Пробный день за 1 ₽', 'Вступительного взноса нет', 'Парковка на 50 мест бесплатно', 'Без очередей к тренажёрам', 'С 6:30 по будням'];
+const tradeIn = promos.find((p) => p.slug === 'trade-in')!;
+const onePlus = promos.find((p) => p.slug === '1-plus-1')!;
+const year = new Date().getFullYear();
+---
+<Layout title="Концепция 05 «Дружелюбный»" description="Концепция дизайна сайта Urban210: светлая и дружелюбная, крупные карточки, оранжевый и кобальт." noindex bare>
+  <div class="f5">
+    <header class="f5-top">
+      <div class="f5-bar">
+        <a class="f5-logo" href="/concepts/05/" aria-label="Urban210, на главную">URBAN<b>210</b><span class="f5-logo-chev"><Icon name="chev" /></span></a>
+        <nav class="f5-nav" aria-label="Меню">
+          <a href="#zones">Клуб</a><a href="#price">Тарифы</a><a href="#people">Отзывы</a><a href="#team">Тренеры</a><a href="#lead">Контакты</a>
+        </nav>
+        <a class="f5-tel" href={site.phone.href}>{site.phone.display}</a>
+        <a class="f5-pill f5-pill-org f5-top-cta" href="#lead" data-lead={trial.title} data-block="05_header">1 ₽ первый день</a>
+      </div>
+    </header>
+
+    <!-- Первый экран -->
+    <section class="f5-hero" aria-labelledby="f5-h">
+      <div class="f5-hero-card">
+        <div class="f5-hero-text">
+          <p class="f5-status" data-status><i></i><span>Хабаровск, {site.district}</span></p>
+          <h1 id="f5-h">Приходите знакомиться. Первый день <span class="f5-price-chip">за&nbsp;1&nbsp;₽</span></h1>
+          <p class="f5-hero-lead">{site.facts.machines} {site.facts.brands}, групповые программы, сауна и хаммам. Вступительного взноса нет.</p>
+          <div class="f5-cta">
+            <a class="f5-go" href="#lead" data-lead={trial.title} data-block="05_hero"><span>Записаться за 1 ₽</span><i><Icon name="chev" /></i></a>
+            <a class="f5-pill f5-pill-ghost" href="#price">Смотреть тарифы</a>
+          </div>
+        </div>
+        <div class="f5-fan" aria-label="Гости клуба">
+          {fan.map((f, i) => (
+            <figure class={`f5-fan-card n${i}`}>
+              <Image src={img(f.src)} alt={f.alt} widths={[280, 420]} sizes="(min-width: 980px) 260px, 42vw" loading={i === 1 ? 'eager' : 'lazy'} fetchpriority={i === 1 ? 'high' : undefined} format="webp" quality={50} />
+            </figure>
+          ))}
+          <span class="f5-stk f5-stk-cob" data-spin><b>0 ₽</b>вступи&shy;тельный взнос</span>
+          <a class="f5-stk-rate" href={site.maps.yandexReviews} target="_blank" rel="noopener"><Icon name="star" /><b>4,7</b><span>{site.rating.text}</span></a>
+        </div>
+        <div class="f5-marquee" aria-hidden="true">
+          <div class="f5-marquee-track">
+            {[0, 1].map(() => marquee.map((m) => <span>{m}<Icon name="chev" /></span>))}
+          </div>
+        </div>
+      </div>
+      <ul class="f5-facts">
+        <li><Icon name="clock" /><div><b>{site.hours[0].days} {site.hours[0].time}</b><span>{site.hours[1].days} {site.hours[1].time}</span></div></li>
+        <li><Icon name="pin" /><div><b>{site.address.short}</b><span>{site.district}</span></div></li>
+        <li><span class="f5-p">P</span><div><b>Парковка на 50 мест</b><span>бесплатно, под видеонаблюдением</span></div></li>
+      </ul>
+    </section>
+
+    <!-- Зоны клуба -->
+    <section class="f5-sec" id="zones" aria-labelledby="f5-z">
+      <div class="f5-head">
+        <h2 id="f5-z">Что внутри клуба</h2>
+        <p>{site.facts.area} на двух этажах. Места хватает даже вечером.</p>
+      </div>
+      <div class="f5-bento">
+        <a class="f5-zone f5-zone-big" href={zal.href} data-rise>
+          <Image src={img(zal.image!)} alt="Тренажёрный зал Urban210 с панорамными окнами" widths={[480, 800, 1100]} sizes="(min-width: 980px) 56vw, 92vw" format="avif" quality={50} />
+          <div class="f5-zone-txt">
+            <span class="f5-tag">Главный зал</span>
+            <h3>{zal.title}</h3>
+            <p>{zal.text}</p>
+          </div>
+          <span class="f5-arrow"><Icon name="chev" /></span>
+        </a>
+        <a class="f5-zone f5-zone-photo" href={cardio.href} data-rise>
+          <Image src={img(cardio.image!)} alt="Беговые дорожки Technogym в кардиозоне" widths={[400, 700]} sizes="(min-width: 980px) 40vw, 92vw" format="avif" quality={50} />
+          <div class="f5-zone-txt">
+            <h3>{cardio.title}</h3>
+            <p>{cardio.text}</p>
+          </div>
+          <span class="f5-arrow"><Icon name="chev" /></span>
+        </a>
+        <a class="f5-zone f5-zone-spa" href={spa.href} data-rise>
+          <span class="f5-stk f5-stk-org f5-spa-stk" data-spin><b>40–50 °C</b>хаммам</span>
+          <h3>{spa.title}</h3>
+          <p>{spa.text}</p>
+          <span class="f5-mini">В тарифе «Всё включено»</span>
+          <span class="f5-arrow"><Icon name="chev" /></span>
+        </a>
+        <div class="f5-zone f5-zone-group" data-rise>
+          <div class="f5-group-txt">
+            <h3>{group.title}</h3>
+            <p>{group.text}</p>
+            <ul class="f5-chips">
+              {programs.flatMap((p) => p.items).map((it) => <li>{it}</li>)}
+            </ul>
+            <a class="f5-pill f5-pill-wht" href={group.href}>Расписание и направления</a>
+          </div>
+          <div class="f5-group-ph">
+            <Image src={img('/images/group.jpg')} alt="Групповая тренировка в зале 150 м²" widths={[400, 700]} sizes="(min-width: 980px) 34vw, 92vw" format="avif" quality={50} />
+            <Image src={img('/images/group-strength.jpg')} alt="Силовая групповая тренировка с гантелями" widths={[300, 500]} sizes="(min-width: 980px) 18vw, 44vw" format="avif" quality={45} />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Тарифы -->
+    <section class="f5-sec" id="price" aria-labelledby="f5-p">
+      <div class="f5-prices">
+        <div class="f5-head f5-head-row">
+          <div>
+            <h2 id="f5-p">Тарифы без вступительного взноса</h2>
+            <p>Платите только за тренировки. Регистрация и браслет уже в цене.</p>
+          </div>
+          <fieldset class="f5-period">
+            <legend class="sr">Период оплаты</legend>
+            <input type="radio" name="f5-period" id="f5-m" checked /><label for="f5-m">Месяц</label>
+            <input type="radio" name="f5-period" id="f5-y" /><label for="f5-y">Год <em>выгоднее</em></label>
+          </fieldset>
+        </div>
+        <div class="f5-plans">
+          {plans.map((p) => (
+            <article class={`f5-plan ${p.id === 'full' ? 'is-hot' : ''}`} data-rise>
+              <div class="f5-plan-top">
+                <h3>{p.name}</h3>
+                {p.tag && <span class="f5-plan-tag">{p.tag}</span>}
+              </div>
+              <p class="f5-plan-hours">{p.hours}</p>
+              <p class="f5-plan-price">
+                <span class="pm"><b>{rub(p.month)}</b><small>в месяц</small></span>
+                <span class="py"><b>{rub(p.year)}</b><small>за 12 месяцев, {rub(Math.round(p.year / 12))} в месяц</small></span>
+              </p>
+              <p class="f5-plan-day"><span class="pm">≈ {perDay(p.month, 30)} ₽ в день</span><span class="py">≈ {perDay(p.year, 365)} ₽ в день</span></p>
+              <ul class="f5-plan-list">
+                {p.features.map((f) => <li><Icon name="check" />{f}</li>)}
+                {p.excluded?.map((f) => <li class="no"><Icon name="minus" />{f}</li>)}
+              </ul>
+              <a class={`f5-pill ${p.id === 'full' ? 'f5-pill-wht' : 'f5-pill-ink'} f5-plan-btn`} href="#lead" data-lead={`Тариф «${p.name}»`} data-block="05_price">Выбрать тариф</a>
+            </article>
+          ))}
+        </div>
+        <div class="f5-trial" data-rise>
+          <div class="f5-trial-num" aria-hidden="true">1<span>₽</span></div>
+          <div class="f5-trial-txt">
+            <h3>{trial.title}</h3>
+            <p>{trial.text} Нужен только паспорт.</p>
+          </div>
+          <a class="f5-go f5-go-wht" href="#lead" data-lead={trial.title} data-block="05_trial"><span>Хочу попробовать</span><i><Icon name="chev" /></i></a>
+        </div>
+        <ul class="f5-promos">
+          <li><b>{tradeIn.title}</b><span>{tradeIn.short}. {tradeIn.terms[0]}.</span></li>
+          <li><b>{onePlus.title}</b><span>{onePlus.short}.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Люди и отзывы -->
+    <section class="f5-sec" id="people" aria-labelledby="f5-r">
+      <div class="f5-head f5-head-row">
+        <div>
+          <h2 id="f5-r">Здесь тренируются ваши соседи</h2>
+          <p>Отзывы гостей с Яндекс Карт и 2ГИС и фото из нашего Instagram.</p>
+        </div>
+        <a class="f5-rate-big" href={site.maps.yandexReviews} target="_blank" rel="noopener">
+          <b>4,7</b>
+          <span><span class="f5-stars">{[0, 1, 2, 3, 4].map(() => <Icon name="star" />)}</span>{site.rating.text} на Яндекс Картах</span>
+        </a>
+      </div>
+      <div class="f5-feed" tabindex="0" aria-label="Фото гостей и отзывы, листается вбок">
+        {feed.map((f) =>
+          f.kind === 'photo' ? (
+            <figure class="f5-feed-ph"><Image src={img(f.src)} alt="Гость клуба Urban210 на тренировке" widths={[300, 450]} sizes="(min-width: 980px) 300px, 64vw" format="avif" quality={45} /></figure>
+          ) : (
+            <blockquote class={`f5-feed-rv t-${f.tone}`}>
+              <span class="f5-stars">{[0, 1, 2, 3, 4].map(() => <Icon name="star" />)}</span>
+              <p>{f.r.text}</p>
+              <footer><b>{f.r.name}</b><span>{f.r.source}</span></footer>
+            </blockquote>
+          )
+        )}
+      </div>
+    </section>
+
+    <!-- Тренеры -->
+    <section class="f5-sec" id="team" aria-labelledby="f5-t">
+      <div class="f5-head">
+        <h2 id="f5-t">Тренеры помогут начать</h2>
+        <p>Покажут тренажёры, поставят технику и составят первую программу.</p>
+      </div>
+      <div class="f5-team">
+        {trainers.map((t, i) => (
+          <article class={`f5-coach c${i}`} data-rise>
+            <Image src={img(t.photo)} alt={t.name} widths={[300, 500]} sizes="(min-width: 980px) 25vw, 80vw" format="avif" quality={50} />
+            <div><h3>{t.name}</h3><p>{t.role}</p></div>
+          </article>
+        ))}
+        <article class="f5-personal" data-rise>
+          <span class="f5-stk f5-stk-wht" data-spin><b>0 ₽</b>первая</span>
+          <div class="f5-personal-body">
+          <h3>Персональные тренировки</h3>
+          <p>{personal.firstFree}.</p>
+          <p class="f5-personal-price"><b>{rub(personal.price)}</b> за {personal.pack} тренировок</p>
+          <a class="f5-pill f5-pill-ink" href="#lead" data-lead="Персональные тренировки" data-block="05_personal">Подобрать тренера</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Заявка -->
+    <section class="f5-sec" id="lead" aria-labelledby="f5-l">
+      <div class="f5-lead">
+        <div class="f5-lead-txt">
+          <h2 id="f5-l">Первый день за&nbsp;1&nbsp;₽. Остальное решите сами</h2>
+          <ol class="f5-steps">
+            <li><b>Оставьте заявку</b><span>Имя и телефон, больше ничего</span></li>
+            <li><b>Администратор перезвонит</b><span>В часы работы клуба, подберёт время</span></li>
+            <li><b>Приходите с паспортом</b><span>Полный доступ в зал на целый день</span></li>
+          </ol>
+          <div class="f5-lead-alt">
+            <a class="f5-pill f5-pill-wht" href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a>
+            <a class="f5-pill f5-pill-wht" href={telegramLink('concept05')} target="_blank" rel="noopener"><Icon name="tg" />Telegram</a>
+          </div>
+        </div>
+        <div class="f5-form">
+          <LeadForm block="05_final" id="f5" />
+        </div>
+      </div>
+    </section>
+
+    <footer class="f5-foot">
+      <div class="f5-foot-card">
+        <div class="f5-foot-grid">
+          <div>
+            <a class="f5-logo f5-logo-lg" href="/concepts/05/">URBAN<b>210</b><span class="f5-logo-chev"><Icon name="chev" /></span></a>
+            <p class="f5-foot-addr">{site.address.locality}, {site.address.street}<br />{site.district}</p>
+            <a class="f5-foot-tel" href={site.phone.href}>{site.phone.display}</a>
+          </div>
+          <div>
+            <h2>Часы работы</h2>
+            <ul>{site.hours.map((h) => <li><b>{h.days}</b> {h.time}</li>)}</ul>
+            <p class="f5-foot-note">{site.parking}</p>
+          </div>
+          <div>
+            <h2>Клуб</h2>
+            <ul>{nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}</ul>
+          </div>
+          <div>
+            <h2>На связи</h2>
+            <ul>
+              <li><a href={whatsappLink('Здравствуйте! Вопрос по клубу Urban210')} target="_blank" rel="noopener">WhatsApp</a></li>
+              <li><a href={telegramLink('site_footer')} target="_blank" rel="noopener">Telegram-бот</a></li>
+              <li><a href={site.instagram} target="_blank" rel="noopener">Instagram</a></li>
+              <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+              <li><a href={site.maps.twoGis} target="_blank" rel="noopener">2ГИС</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="f5-foot-bottom">
+          <span>© {year} {site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn}</span>
+          <span><a href="/policy/">Политика конфиденциальности</a> · <a href="/oferta/">Договор-оферта</a> · <a href="/rules/">Правила клуба</a></span>
+        </div>
+      </div>
+    </footer>
+  </div>
+</Layout>
+
+<script>
+  // Статус «открыто сейчас» по времени Хабаровска
+  const st = document.querySelector<HTMLElement>('.f5 [data-status]');
+  if (st) {
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Vladivostok' }));
+    const d = now.getDay();
+    const m = now.getHours() * 60 + now.getMinutes();
+    const [o, c] = d === 0 || d === 6 ? [450, 1350] : [390, 1410];
+    const open = m >= o && m < c;
+    const pad = (x: number) => `${Math.floor(x / 60)}:${String(x % 60).padStart(2, '0')}`;
+    st.classList.toggle('open', open);
+    st.querySelector('span')!.textContent = open ? `Открыто сейчас, до ${pad(c)}` : `Сейчас закрыто, откроемся в ${pad(o)}`;
+  }
+  // Веер фото раскрывается после загрузки
+  requestAnimationFrame(() => document.querySelector('.f5-fan')?.classList.add('is-open'));
+</script>
+
+<style is:global>
+  body:has(.f5) { background: #efeeeb; color: #17142a; color-scheme: light; }
+  body:has(.f5) .skip { color: #fff; }
+  body:has(.f5) .mbar { background: rgb(255 255 255 / 0.9); border-top: 0; box-shadow: 0 -10px 30px rgb(23 20 42 / 0.08); }
+  body:has(.f5) .mbar a.ic { border: 0; background: #efeeeb; border-radius: 999px; color: #17142a; }
+  body:has(.f5) .mbar .btn, body:has(.f5) dialog.lead .btn { border-radius: 999px; color: #fff; font-family: 'Geologica Variable', sans-serif; font-weight: 700; }
+  body:has(.f5) dialog.lead .form { background: #fff; color: #17142a; --ink: #17142a; --muted: #5d5a6e; --line: rgb(23 20 42 / 0.12); --card: #f4f3f0; border-radius: 28px; border: 0; }
+  body:has(.f5) dialog.lead .form h3 { font-family: 'Geologica Variable', sans-serif; font-weight: 800; letter-spacing: -0.03em; }
+  body:has(.f5) dialog.lead .field input { border-radius: 16px; }
+  body:has(.f5) dialog.lead::backdrop { background: rgb(23 20 42 / 0.55); }
+</style>
+
+<style>
+  .f5 {
+    --org: #ff5722; --org-2: #ff7a4d; --cob: #2b3be0; --cob-d: #1c278f; --pch: #ffe0d2; --lil: #e3e5ff;
+    --ink: #17142a; --mut: #5d5a6e; --bg: #efeeeb; --card: #fff;
+    --r-xl: 40px; --r-l: 32px; --r-m: 24px;
+    --lift: cubic-bezier(0.34, 1.45, 0.64, 1);
+    --sh: 0 1px 2px rgb(23 20 42 / 0.04), 0 12px 32px -12px rgb(23 20 42 / 0.14);
+    --sh-up: 0 2px 4px rgb(23 20 42 / 0.05), 0 28px 48px -16px rgb(23 20 42 / 0.24);
+    --gut: clamp(12px, 2.4vw, 32px);
+    font-family: 'Geologica Variable', system-ui, sans-serif;
+    font-size: 17px; line-height: 1.55; color: var(--ink);
+    max-width: 1440px; margin-inline: auto; padding-inline: var(--gut);
+  }
+  .f5 :global(h1), .f5 :global(h2), .f5 :global(h3) { font-family: 'Geologica Variable', sans-serif; font-weight: 800; letter-spacing: -0.035em; line-height: 1; hyphens: manual; -webkit-hyphens: manual; }
+  .f5 :global(svg) { flex: none; }
+  .f5 a { text-decoration: none; }
+
+  /* ---------- Кнопки ---------- */
+  .f5-pill { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 24px; border-radius: 999px; font-weight: 700; font-size: 0.98rem; line-height: 1.1; white-space: nowrap; transition: transform 0.35s var(--lift), background-color 0.25s ease, box-shadow 0.25s ease; }
+  .f5-pill:hover { transform: translateY(-2px); }
+  .f5-pill:active { transform: scale(0.96); }
+  .f5-pill :global(svg) { width: 20px; height: 20px; }
+  .f5-pill-org { background: var(--org); color: #fff; }
+  .f5-pill-org:hover { background: #ff6a3a; }
+  .f5-pill-ink { background: var(--ink); color: #fff; }
+  .f5-pill-ink:hover { background: var(--cob); }
+  .f5-pill-wht { background: #fff; color: var(--ink); }
+  .f5-pill-ghost { background: rgb(255 255 255 / 0.18); color: #fff; box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.55); }
+  .f5-pill-ghost:hover { background: rgb(255 255 255 / 0.3); }
+
+  .f5-go { display: inline-flex; align-items: center; gap: 18px; min-height: 64px; padding: 6px 6px 6px 28px; border-radius: 999px; background: var(--ink); color: #fff; font-weight: 700; font-size: 1.05rem; transition: transform 0.35s var(--lift), background-color 0.25s ease; }
+  .f5-go i { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: #fff; color: var(--org); transition: transform 0.45s var(--lift); }
+  .f5-go :global(svg) { width: 20px; height: 18px; }
+  .f5-go:hover { transform: translateY(-2px); background: var(--cob); }
+  .f5-go:hover i { transform: rotate(-12deg) scale(1.06); }
+  .f5-go:active { transform: scale(0.96); }
+  .f5-go-wht { background: #fff; color: var(--ink); }
+  .f5-go-wht i { background: var(--org); color: #fff; }
+  .f5-go-wht:hover { background: #fff; }
+
+  /* ---------- Шапка ---------- */
+  .f5-top { position: sticky; top: 10px; z-index: 30; padding-top: 10px; }
+  .f5-bar { display: flex; align-items: center; gap: 18px; min-height: 68px; padding: 8px 8px 8px 24px; background: rgb(255 255 255 / 0.92); backdrop-filter: blur(16px); border-radius: 999px; box-shadow: var(--sh); }
+  .f5-logo { display: inline-flex; align-items: center; gap: 2px; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.04em; color: var(--ink); }
+  .f5-logo b { color: var(--org); font-weight: 800; }
+  .f5-logo-chev { display: grid; place-items: center; width: 26px; height: 26px; margin-left: 6px; border-radius: 50%; background: var(--org); color: #fff; }
+  .f5-logo-chev :global(svg) { width: 12px; height: 11px; }
+  .f5-nav { display: none; gap: 4px; margin-inline: auto; }
+  .f5-nav a { padding: 10px 14px; border-radius: 999px; font-weight: 600; font-size: 0.95rem; color: var(--ink); transition: background-color 0.2s ease; }
+  .f5-nav a:hover { background: var(--bg); }
+  .f5-tel { display: none; font-weight: 700; font-size: 0.95rem; color: var(--ink); }
+  .f5-top-cta { margin-left: auto; min-height: 48px; padding: 0 18px; font-size: 0.92rem; }
+  @media (min-width: 1000px) { .f5-nav { display: flex; } .f5-top-cta { margin-left: 0; } }
+  @media (min-width: 1180px) { .f5-tel { display: inline; } }
+
+  /* ---------- Первый экран ---------- */
+  .f5-hero { padding-top: 22px; }
+  .f5-hero-card { position: relative; overflow: hidden; display: grid; gap: 28px; padding: 32px 22px 0; border-radius: var(--r-xl); color: #fff;
+    background: radial-gradient(120% 90% at 85% 10%, #ff8a5c 0%, transparent 55%), linear-gradient(160deg, #ff6630 0%, var(--org) 45%, #f2461a 100%); }
+  .f5-status { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px 8px 12px; border-radius: 999px; background: rgb(255 255 255 / 0.2); font-size: 0.9rem; font-weight: 600; width: fit-content; }
+  .f5-status i { width: 10px; height: 10px; border-radius: 50%; background: #fff; }
+  .f5-status.open i { background: #b6ffc8; box-shadow: 0 0 0 4px rgb(182 255 200 / 0.3); }
+  .f5-hero h1 { margin-top: 22px; font-size: clamp(2.6rem, 1.4rem + 5vw, 5.6rem); line-height: 0.95; letter-spacing: -0.05em; max-width: 11ch; }
+  .f5-price-chip { display: inline-block; padding: 0.02em 0.22em 0.08em; margin-top: 0.06em; border-radius: 0.3em; background: #fff; color: var(--org); transform: rotate(-3deg); }
+  .f5-hero-lead { margin-top: 22px; font-size: clamp(1.05rem, 0.98rem + 0.35vw, 1.25rem); line-height: 1.5; max-width: 40ch; color: rgb(255 255 255 / 0.94); }
+  .f5-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 30px; }
+  .f5-cta .f5-pill-ghost { min-height: 64px; }
+
+  .f5-fan { position: relative; height: 380px; margin-inline: -22px; }
+  .f5-fan-card { position: absolute; left: 50%; bottom: -36px; width: min(46vw, 230px); aspect-ratio: 3 / 4.6; margin: 0; border-radius: var(--r-m); overflow: hidden; box-shadow: 0 30px 50px -20px rgb(80 20 0 / 0.55); border: 5px solid #fff; transform-origin: 50% 110%;
+    transform: translateX(-50%) rotate(0deg); transition: transform 0.9s var(--lift); }
+  .f5-fan-card :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .f5-fan-card.n1 { z-index: 2; }
+  .f5-fan.is-open .n0 { transform: translateX(-108%) rotate(-11deg); }
+  .f5-fan.is-open .n1 { transform: translateX(-50%) translateY(-18px) rotate(1deg); }
+  .f5-fan.is-open .n2 { transform: translateX(8%) rotate(11deg); }
+  .f5-fan.is-open:hover .n0 { transform: translateX(-118%) rotate(-15deg); }
+  .f5-fan.is-open:hover .n1 { transform: translateX(-50%) translateY(-34px) rotate(-1deg); }
+  .f5-fan.is-open:hover .n2 { transform: translateX(18%) rotate(15deg); }
+  .f5-fan-card.n0 { transition-delay: 0.15s; }
+  .f5-fan-card.n2 { transition-delay: 0.25s; }
+  .f5-fan.is-open:hover .f5-fan-card { transition-delay: 0s; }
+
+  .f5-stk { position: absolute; z-index: 4; display: grid; place-content: center; text-align: center; width: 116px; height: 116px; border-radius: 50%; font-size: 0.72rem; font-weight: 600; line-height: 1.15; padding: 12px; }
+  .f5-stk b { display: block; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin-bottom: 4px; }
+  .f5-stk-cob { background: var(--cob); color: #fff; top: 0; right: 6%; rotate: 12deg; box-shadow: 0 14px 30px -10px rgb(28 39 143 / 0.6); }
+  .f5-stk-org { background: var(--org); color: #fff; }
+  .f5-stk-wht { background: #fff; color: var(--ink); }
+  .f5-stk-rate { position: absolute; z-index: 4; left: 4%; top: 44px; display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 6px; padding: 12px 16px; border-radius: 20px; background: #fff; color: var(--ink); rotate: -7deg; box-shadow: var(--sh); transition: rotate 0.4s var(--lift); }
+  .f5-stk-rate:hover { rotate: -2deg; }
+  .f5-stk-rate :global(svg) { width: 20px; height: 20px; color: #ffb400; }
+  .f5-stk-rate b { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.03em; }
+  .f5-stk-rate span { grid-column: 1 / -1; font-size: 0.75rem; font-weight: 600; color: var(--mut); }
+
+  .f5-marquee { position: relative; z-index: 5; margin-inline: -22px; background: var(--ink); color: #fff; overflow: hidden; padding: 16px 0; }
+  .f5-marquee-track { display: flex; width: max-content; animation: f5-run 36s linear infinite; }
+  .f5-marquee span { display: inline-flex; align-items: center; gap: 22px; padding-right: 22px; font-weight: 700; font-size: 1rem; white-space: nowrap; }
+  .f5-marquee :global(svg) { width: 16px; height: 14px; color: var(--org); }
+  @keyframes f5-run { to { transform: translateX(-50%); } }
+
+  .f5-facts { list-style: none; display: grid; gap: 10px; margin-top: 10px; }
+  .f5-facts li { display: flex; align-items: center; gap: 16px; padding: 18px 22px; background: var(--card); border-radius: var(--r-m); }
+  .f5-facts li > :global(svg), .f5-p { width: 44px; height: 44px; padding: 10px; border-radius: 50%; background: var(--lil); color: var(--cob); }
+  .f5-p { display: grid; place-items: center; padding: 0; font-weight: 800; font-size: 1.2rem; }
+  .f5-facts b { display: block; font-weight: 700; }
+  .f5-facts span:not(.f5-p) { font-size: 0.92rem; color: var(--mut); }
+
+  @media (min-width: 980px) {
+    .f5-hero-card { grid-template-columns: 1.05fr 0.95fr; padding: 64px 0 0 64px; min-height: 640px; }
+    .f5-hero-text { padding-bottom: 56px; align-self: center; }
+    .f5-fan { height: auto; margin: 0; }
+    .f5-fan-card { width: 250px; bottom: -40px; }
+    .f5-stk { width: 132px; height: 132px; font-size: 0.8rem; }
+    .f5-stk b { font-size: 1.85rem; }
+    .f5-stk-cob { top: 40px; right: 8%; }
+    .f5-stk-rate { left: 2%; top: 120px; }
+    .f5-marquee { grid-column: 1 / -1; margin: 0 0 0 -64px; }
+    .f5-facts { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 1300px) { .f5-fan-card { width: 280px; } }
+
+  /* ---------- Секции ---------- */
+  .f5-sec { padding-top: clamp(72px, 9vw, 128px); scroll-margin-top: 90px; }
+  .f5-head { display: grid; gap: 14px; margin-bottom: clamp(28px, 4vw, 48px); padding-inline: 6px; }
+  .f5-head h2 { font-size: clamp(2.1rem, 1.3rem + 3.4vw, 4.2rem); line-height: 0.98; letter-spacing: -0.045em; max-width: 16ch; }
+  .f5-head p { font-size: 1.08rem; color: var(--mut); max-width: 46ch; }
+  .f5-head-row { align-items: end; }
+  .f5-head-row > div { display: grid; gap: 14px; }
+  @media (min-width: 980px) { .f5-head-row { grid-template-columns: 1fr auto; } }
+
+  /* ---------- Зоны ---------- */
+  .f5-bento { display: grid; gap: 12px; }
+  .f5-zone { position: relative; display: block; overflow: hidden; border-radius: var(--r-l); background: var(--card); color: var(--ink); box-shadow: var(--sh); transition: transform 0.5s var(--lift), box-shadow 0.4s ease; }
+  a.f5-zone:hover { transform: translateY(-6px) rotate(-0.4deg); box-shadow: var(--sh-up); }
+  .f5-zone :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+  a.f5-zone:hover :global(img) { transform: scale(1.04); }
+  .f5-zone-big, .f5-zone-photo { min-height: 420px; color: #fff; }
+  .f5-zone-big :global(img), .f5-zone-photo :global(img) { position: absolute; inset: 0; }
+  .f5-zone-big::after, .f5-zone-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(23 20 42 / 0) 35%, rgb(23 20 42 / 0.78) 100%); }
+  .f5-zone-txt { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; padding: 26px; display: grid; gap: 10px; }
+  .f5-zone h3 { font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem); letter-spacing: -0.04em; }
+  .f5-zone-txt p { max-width: 40ch; color: rgb(255 255 255 / 0.9); font-size: 0.98rem; }
+  .f5-tag { width: fit-content; padding: 6px 14px; border-radius: 999px; background: var(--org); color: #fff; font-size: 0.82rem; font-weight: 700; }
+  .f5-arrow { position: absolute; z-index: 3; top: 18px; right: 18px; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: #fff; color: var(--ink); transition: transform 0.45s var(--lift), background-color 0.25s ease, color 0.25s ease; }
+  .f5-arrow :global(svg) { width: 18px; height: 16px; }
+  a.f5-zone:hover .f5-arrow { transform: rotate(-30deg); background: var(--org); color: #fff; }
+
+  .f5-zone-spa { background: var(--pch); padding: 28px; min-height: 340px; display: grid; align-content: end; gap: 12px; }
+  .f5-zone-spa p { color: #6b4234; max-width: 34ch; }
+  .f5-zone-spa .f5-arrow { background: var(--ink); color: #fff; }
+  .f5-spa-stk { top: 22px; left: 22px; rotate: -10deg; width: 112px; height: 112px; }
+  @media (min-width: 980px) { .f5-spa-stk { left: auto; right: 90px; top: 18px; } }
+  .f5-spa-stk b { font-size: 1.25rem; }
+  .f5-mini { width: fit-content; padding: 6px 14px; border-radius: 999px; background: #fff; font-size: 0.85rem; font-weight: 700; }
+
+  .f5-zone-group { display: grid; gap: 22px; padding: 28px; background: var(--cob); color: #fff; }
+  .f5-group-txt { display: grid; gap: 14px; align-content: start; }
+  .f5-group-txt p { color: rgb(255 255 255 / 0.85); max-width: 40ch; }
+  .f5-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 10px; }
+  .f5-chips li { padding: 9px 16px; border-radius: 999px; background: rgb(255 255 255 / 0.13); font-weight: 600; font-size: 0.95rem; transition: background-color 0.2s ease, color 0.2s ease, transform 0.35s var(--lift); }
+  .f5-chips li:nth-child(3n + 1) { background: #fff; color: var(--cob); }
+  .f5-chips li:hover { transform: translateY(-3px) rotate(-3deg); background: var(--org); color: #fff; }
+  .f5-group-txt .f5-pill { width: fit-content; }
+  .f5-group-ph { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; }
+  .f5-group-ph :global(img) { border-radius: var(--r-m); aspect-ratio: 4 / 5; }
+  .f5-group-ph :global(img:last-child) { margin-top: 36px; }
+
+  @media (min-width: 980px) {
+    .f5-bento { grid-template-columns: repeat(12, 1fr); grid-auto-rows: minmax(260px, auto); gap: 14px; }
+    .f5-zone-big { grid-column: span 7; grid-row: span 2; min-height: 600px; }
+    .f5-zone-photo { grid-column: span 5; min-height: 0; }
+    .f5-zone-spa { grid-column: span 5; min-height: 0; }
+    .f5-zone-group { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; padding: 48px; gap: 48px; align-items: center; }
+    .f5-zone-group h3 { font-size: 3rem; }
+    .f5-zone-txt { padding: 36px; }
+  }
+
+  /* ---------- Тарифы ---------- */
+  .f5-prices { padding: clamp(28px, 4vw, 56px) clamp(16px, 3.4vw, 48px); background: var(--card); border-radius: var(--r-xl); }
+  .f5-prices .f5-head { padding-inline: 0; }
+  .f5-period { display: inline-flex; padding: 5px; margin: 0; border: 0; border-radius: 999px; background: var(--bg); width: fit-content; }
+  .f5-period input { position: absolute; opacity: 0; pointer-events: none; }
+  .f5-period label { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 22px; border-radius: 999px; font-weight: 700; cursor: pointer; transition: background-color 0.25s ease, color 0.25s ease; }
+  .f5-period em { font-style: normal; font-size: 0.75rem; padding: 3px 8px; border-radius: 999px; background: var(--org); color: #fff; }
+  .f5-period input:checked + label { background: var(--ink); color: #fff; }
+  .f5-period input:focus-visible + label { outline: 3px solid var(--cob); outline-offset: 2px; }
+
+  .f5-plans { display: grid; gap: 12px; }
+  .f5-plan { display: flex; flex-direction: column; gap: 14px; padding: 28px; border-radius: var(--r-l); background: var(--bg); transition: transform 0.5s var(--lift), box-shadow 0.4s ease; }
+  .f5-plan:hover { transform: translateY(-6px); box-shadow: var(--sh-up); }
+  .f5-plan.is-hot { background: var(--org); color: #fff; }
+  .f5-plan-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .f5-plan h3 { font-size: 1.6rem; letter-spacing: -0.035em; }
+  .f5-plan-tag { padding: 6px 12px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 0.8rem; font-weight: 700; white-space: nowrap; }
+  .f5-plan.is-hot .f5-plan-tag { background: #fff; color: var(--org); rotate: 4deg; }
+  .f5-plan-hours { font-size: 0.95rem; color: var(--mut); margin-top: -6px; }
+  .f5-plan.is-hot .f5-plan-hours, .f5-plan.is-hot .f5-plan-day { color: rgb(255 255 255 / 0.85); }
+  .f5-plan-price b { display: block; font-size: clamp(2.6rem, 2rem + 2vw, 3.4rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .f5-plan-price small { display: block; margin-top: 6px; font-size: 0.92rem; font-weight: 600; }
+  .f5-plan-day { font-size: 0.92rem; font-weight: 600; color: var(--cob); }
+  .f5-plan-list { list-style: none; display: grid; gap: 10px; padding-top: 16px; margin-bottom: 8px; border-top: 1px solid rgb(23 20 42 / 0.1); font-size: 0.97rem; }
+  .f5-plan.is-hot .f5-plan-list { border-color: rgb(255 255 255 / 0.3); }
+  .f5-plan-list li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; }
+  .f5-plan-list :global(svg) { width: 22px; height: 22px; padding: 3px; border-radius: 50%; background: var(--ink); color: #fff; margin-top: 1px; }
+  .f5-plan.is-hot .f5-plan-list :global(svg) { background: #fff; color: var(--org); }
+  .f5-plan-list li.no { color: var(--mut); }
+  .f5-plan-list li.no :global(svg) { background: rgb(23 20 42 / 0.1); color: var(--mut); }
+  .f5-plan.is-hot .f5-plan-list li.no { color: rgb(255 255 255 / 0.88); }
+  .f5-plan.is-hot .f5-plan-list li.no :global(svg) { background: rgb(255 255 255 / 0.2); color: #fff; }
+  .f5-plan-btn { margin-top: auto; width: 100%; }
+  .f5-prices .py { display: none; }
+  .f5-prices:has(#f5-y:checked) .py { display: block; }
+  .f5-prices:has(#f5-y:checked) .pm { display: none; }
+
+  .f5-trial { position: relative; overflow: hidden; display: grid; gap: 18px; margin-top: 12px; padding: 28px; border-radius: var(--r-l); background: var(--cob); color: #fff; }
+  .f5-trial-num { font-size: 7.5rem; font-weight: 800; letter-spacing: -0.07em; line-height: 0.8; color: var(--org); }
+  .f5-trial-num span { font-size: 0.5em; margin-left: 0.06em; color: #fff; }
+  .f5-trial h3 { font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.5rem); }
+  .f5-trial p { margin-top: 10px; color: rgb(255 255 255 / 0.85); max-width: 46ch; }
+  .f5-trial .f5-go { width: fit-content; }
+  .f5-promos { list-style: none; display: grid; gap: 12px; margin-top: 12px; }
+  .f5-promos li { display: grid; gap: 4px; padding: 20px 24px; border-radius: var(--r-m); box-shadow: inset 0 0 0 2px var(--bg); }
+  .f5-promos b { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; }
+  .f5-promos span { color: var(--mut); font-size: 0.95rem; }
+  @media (min-width: 980px) {
+    .f5-plans { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .f5-plan { padding: 36px; }
+    .f5-plan.is-hot { transform: translateY(-12px); }
+    .f5-plan.is-hot:hover { transform: translateY(-18px); }
+    .f5-trial { grid-template-columns: auto 1fr auto; align-items: center; gap: 40px; padding: 36px 48px; }
+    .f5-trial-num { font-size: 9rem; }
+    .f5-promos { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ---------- Люди ---------- */
+  .f5-rate-big { display: flex; align-items: center; gap: 16px; padding: 14px 24px 14px 18px; border-radius: 999px; background: var(--card); color: var(--ink); box-shadow: var(--sh); width: fit-content; transition: transform 0.35s var(--lift); }
+  .f5-rate-big:hover { transform: translateY(-3px); }
+  .f5-rate-big > b { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
+  .f5-rate-big > span { display: grid; gap: 2px; font-size: 0.88rem; font-weight: 600; color: var(--mut); line-height: 1.3; }
+  .f5-stars { display: flex; gap: 2px; color: #ffb400; }
+  .f5-stars :global(svg) { width: 16px; height: 16px; }
+
+  .f5-feed { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(var(--gut) * -1); padding: 10px var(--gut) 24px; scroll-padding-inline: var(--gut); }
+  .f5-feed::-webkit-scrollbar { display: none; }
+  .f5-feed > * { flex: none; scroll-snap-align: start; width: min(68vw, 300px); height: 440px; margin: 0; border-radius: var(--r-l); overflow: hidden; transition: transform 0.5s var(--lift); }
+  .f5-feed > *:hover { transform: translateY(-6px) rotate(-1deg); }
+  .f5-feed > *:nth-child(even):hover { transform: translateY(-6px) rotate(1deg); }
+  .f5-feed-ph :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .f5-feed-rv { display: flex; flex-direction: column; gap: 16px; padding: 26px; width: min(80vw, 360px) !important; }
+  .f5-feed-rv p { font-size: 1rem; line-height: 1.5; flex: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 10; -webkit-box-orient: vertical; }
+  .f5-feed-rv footer { display: grid; gap: 2px; }
+  .f5-feed-rv footer b { font-weight: 800; font-size: 1.05rem; }
+  .f5-feed-rv footer span { font-size: 0.85rem; opacity: 0.75; font-weight: 600; }
+  .t-org { background: var(--org); color: #fff; }
+  .t-org .f5-stars, .t-cob .f5-stars { color: #fff; }
+  .t-cob { background: var(--cob); color: #fff; }
+  .t-wht { background: var(--card); }
+  .t-pch { background: var(--pch); color: #4a2a1f; }
+  .f5-feed:focus-visible { outline: 3px solid var(--cob); outline-offset: -3px; }
+
+  /* ---------- Тренеры ---------- */
+  .f5-team { display: grid; gap: 12px; }
+  .f5-coach { position: relative; overflow: hidden; border-radius: var(--r-l); background: #2a2830; color: #fff; transition: transform 0.5s var(--lift), box-shadow 0.4s ease; }
+  .f5-coach:hover { transform: translateY(-6px) rotate(-0.6deg); box-shadow: var(--sh-up); }
+  .f5-coach :global(img) { width: 100%; height: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0%; }
+  .f5-coach > div { position: absolute; left: 12px; right: 12px; bottom: 12px; padding: 16px 20px; border-radius: var(--r-m); background: #fff; color: var(--ink); }
+  .f5-coach.c1 > div { background: var(--org); color: #fff; }
+  .f5-coach.c2 > div { background: var(--lil); }
+  .f5-coach h3 { font-size: 1.3rem; letter-spacing: -0.03em; }
+  .f5-coach p { margin-top: 4px; font-size: 0.9rem; opacity: 0.8; line-height: 1.35; }
+  .f5-personal { position: relative; display: grid; align-content: space-between; gap: 20px; padding: 28px; border-radius: var(--r-l); background: var(--pch); color: #3b2219; }
+  .f5-personal-body { display: grid; gap: 12px; }
+  .f5-personal h3 { font-size: 1.8rem; letter-spacing: -0.04em; max-width: 10ch; }
+  .f5-personal-price b { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; }
+  .f5-personal .f5-pill { width: fit-content; margin-top: 6px; }
+  .f5-personal .f5-stk { position: relative; rotate: 10deg; width: 104px; height: 104px; box-shadow: var(--sh); }
+  .f5-personal .f5-stk b { font-size: 1.5rem; }
+  @media (max-width: 699px) {
+    .f5-team { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(var(--gut) * -1); padding: 10px var(--gut) 20px; scroll-padding-inline: var(--gut); }
+    .f5-team::-webkit-scrollbar { display: none; }
+    .f5-team > * { flex: none; width: 76vw; scroll-snap-align: start; }
+  }
+  @media (min-width: 700px) { .f5-team { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1100px) { .f5-team { grid-template-columns: repeat(4, 1fr); gap: 14px; } }
+
+  /* ---------- Заявка ---------- */
+  .f5-lead { position: relative; overflow: hidden; display: grid; gap: 28px; padding: 32px 16px 16px; border-radius: var(--r-xl); color: #fff;
+    background: radial-gradient(90% 80% at 0% 100%, #ff8a5c 0%, transparent 60%), var(--org); }
+  .f5-lead-txt { padding-inline: 8px; display: grid; gap: 28px; align-content: start; }
+  .f5-lead h2 { font-size: clamp(2.2rem, 1.3rem + 3.6vw, 4.4rem); line-height: 0.96; letter-spacing: -0.05em; max-width: 13ch; }
+  .f5-steps { list-style: none; counter-reset: s; display: grid; gap: 10px; }
+  .f5-steps li { counter-increment: s; display: grid; grid-template-columns: 48px 1fr; column-gap: 14px; align-items: center; padding: 12px 16px 12px 12px; border-radius: var(--r-m); background: rgb(255 255 255 / 0.16); }
+  .f5-steps li::before { content: counter(s); grid-row: span 2; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #fff; color: var(--org); font-weight: 800; font-size: 1.3rem; }
+  .f5-steps b { font-weight: 800; font-size: 1.05rem; }
+  .f5-steps span { font-size: 0.92rem; color: rgb(255 255 255 / 0.88); }
+  .f5-lead-alt { display: flex; flex-wrap: wrap; gap: 10px; }
+  .f5-lead-alt .f5-pill { padding: 0 18px; }
+  .f5-lead-alt :global(svg) { color: var(--org); }
+  .f5-form :global(.form) { background: #fff; color: var(--ink); --ink: #17142a; --muted: #5d5a6e; --line: rgb(23 20 42 / 0.12); --card: #f4f3f0; --accent: #ff5722; border-radius: 28px; padding: clamp(24px, 3vw, 40px); gap: 16px; }
+  .f5-form :global(.form h3) { font-family: 'Geologica Variable', sans-serif; font-weight: 800; font-size: 1.7rem; letter-spacing: -0.04em; }
+  .f5-form :global(.field input) { border-radius: 16px; border: 2px solid transparent; min-height: 58px; }
+  .f5-form :global(.field input:focus) { border-color: var(--cob); background: #fff; }
+  .f5-form :global(.btn) { border-radius: 999px; min-height: 62px; color: #fff; font-weight: 700; font-family: 'Geologica Variable', sans-serif; font-size: 1.05rem; background: var(--org); }
+  .f5-form :global(.btn:hover) { background: var(--cob); }
+  .f5-form :global(.form-done .ok) { color: #fff; }
+  @media (min-width: 980px) {
+    .f5-lead { grid-template-columns: 1fr minmax(380px, 460px); padding: 64px; gap: 64px; align-items: center; }
+    .f5-lead-txt { padding: 0; }
+  }
+
+  /* ---------- Подвал ---------- */
+  .f5-foot { padding: clamp(72px, 9vw, 128px) 0 calc(var(--gut) + 84px); }
+  .f5-foot-card { padding: clamp(28px, 4vw, 56px); border-radius: var(--r-xl); background: var(--ink); color: #fff; }
+  .f5-foot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px 20px; }
+  .f5-foot-grid > :nth-child(-n + 2) { grid-column: 1 / -1; }
+  .f5-foot .f5-logo { color: #fff; }
+  .f5-logo-lg { font-size: 2rem; }
+  .f5-foot-addr { margin-top: 16px; color: rgb(255 255 255 / 0.75); }
+  .f5-foot-tel { display: inline-block; margin-top: 14px; font-weight: 800; font-size: 1.3rem; color: #fff; }
+  .f5-foot h2 { font-size: 0.9rem; font-weight: 700; letter-spacing: 0; color: rgb(255 255 255 / 0.55); margin-bottom: 14px; }
+  .f5-foot ul { list-style: none; display: grid; gap: 8px; }
+  .f5-foot ul a { color: #fff; transition: color 0.2s ease; }
+  .f5-foot ul a:hover { color: var(--org-2); }
+  .f5-foot ul b { font-weight: 700; display: inline-block; min-width: 64px; }
+  .f5-foot-note { margin-top: 12px; font-size: 0.9rem; color: rgb(255 255 255 / 0.6); max-width: 28ch; }
+  .f5-foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; margin-top: 44px; padding-top: 22px; border-top: 1px solid rgb(255 255 255 / 0.12); font-size: 0.82rem; color: rgb(255 255 255 / 0.55); }
+  .f5-foot-bottom a { color: inherit; }
+  .f5-foot-bottom a:hover { color: #fff; }
+  @media (min-width: 900px) { .f5-foot-grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; } .f5-foot-grid > :nth-child(-n + 2) { grid-column: auto; } .f5-foot { padding-bottom: var(--gut); } }
+
+  /* ---------- Движение по прокрутке: стикеры подкручиваются ---------- */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      [data-spin] { animation: f5-spin linear both; animation-timeline: view(); animation-range: cover; }
+      @keyframes f5-spin { from { transform: rotate(-24deg); } to { transform: rotate(24deg); } }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .f5-marquee-track { animation: none; }
+    .f5-fan-card { transition: none; }
+    .f5 *, .f5 *::before { transition-duration: 0.01ms !important; }
+  }
+</style>
