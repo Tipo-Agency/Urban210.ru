@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Dumbbell } from "./cta";
 import { useEffect, useId, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
 import { readAttribution } from "@/lib/attribution";
@@ -9,7 +10,7 @@ import { GOALS } from "@/lib/lead";
 import { site, telegramLink, whatsappLink } from "@/data/site";
 import { IconTelegram, IconWhatsApp } from "./icons";
 
-type Props = { goal?: string; block: string; formId: string; compact?: boolean; onDone?: () => void };
+type Props = { goal?: string; block: string; formId: string; compact?: boolean; simple?: boolean; submitLabel?: string; onDone?: () => void };
 type State = "idle" | "loading" | "ok" | "error";
 
 function maskPhone(raw: string) {
@@ -25,7 +26,7 @@ function maskPhone(raw: string) {
   return out;
 }
 
-export function LeadForm({ goal = GOALS[0], block, formId, compact }: Props) {
+export function LeadForm({ goal = GOALS[0], block, formId, compact, simple, submitLabel = "Жду звонка" }: Props) {
   const id = useId();
   const [state, setState] = useState<State>("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -116,7 +117,7 @@ export function LeadForm({ goal = GOALS[0], block, formId, compact }: Props) {
 
   return (
     <form ref={formRef} onSubmit={onSubmit} onFocus={onStart} noValidate className="grid gap-4">
-      <div className={compact ? "grid gap-4" : "grid gap-4 sm:grid-cols-2"}>
+      <div className={compact || simple ? "grid gap-4" : "grid gap-4 sm:grid-cols-2"}>
         <div>
           <label htmlFor={`${id}-name`} className="mb-1.5 block text-sm font-medium">
             Имя
@@ -153,7 +154,7 @@ export function LeadForm({ goal = GOALS[0], block, formId, compact }: Props) {
         </div>
       </div>
 
-      <div>
+      <div className={simple ? "hidden" : ""}>
         <label htmlFor={`${id}-goal`} className="mb-1.5 block text-sm font-medium">
           Что вас интересует
         </label>
@@ -185,8 +186,11 @@ export function LeadForm({ goal = GOALS[0], block, formId, compact }: Props) {
       </label>
       {errors.consent && <p className="-mt-2 text-sm text-[#ff8a80]">{errors.consent}</p>}
 
-      <button type="submit" className="btn btn-accent w-full text-base" disabled={state === "loading"} aria-busy={state === "loading"}>
-        {state === "loading" ? "Отправляем…" : "Жду звонка"}
+      <button type="submit" className="btn-brand wide" disabled={state === "loading"} aria-busy={state === "loading"}>
+        <span className="ico">
+          <Dumbbell />
+        </span>
+        <span>{state === "loading" ? "Отправляем…" : submitLabel}</span>
       </button>
       <p className="text-sm text-muted">Перезвоним за 15 минут в часы работы клуба, чтобы подобрать время визита. Без спама.</p>
       {state === "error" && message && (

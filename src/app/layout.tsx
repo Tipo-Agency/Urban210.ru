@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Golos_Text, Oswald } from "next/font/google";
+import { Fira_Code, Golos_Text, Oswald } from "next/font/google";
 import Script from "next/script";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -12,7 +12,9 @@ import { gymSchema } from "@/lib/seo";
 import "./globals.css";
 
 const oswald = Oswald({ subsets: ["latin", "cyrillic"], weight: ["500", "600", "700"], variable: "--font-oswald", display: "swap" });
-const golos = Golos_Text({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "600"], variable: "--font-golos", display: "swap" });
+const fira = Fira_Code({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "600"], variable: "--font-fira", display: "swap" });
+// Golos только для длинных текстов: блог и документы. Моноширинный Fira Code там тяжело читать.
+const golos = Golos_Text({ subsets: ["latin", "cyrillic"], weight: ["400", "600"], variable: "--font-golos", display: "swap", preload: false });
 
 const YM_ID = process.env.NEXT_PUBLIC_YM_ID;
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
@@ -28,11 +30,11 @@ export const metadata: Metadata = {
   verification: { yandex: "767e7e36f712fc4c" },
 };
 
-export const viewport: Viewport = { themeColor: "#0b0b0a", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#101010", colorScheme: "dark" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={`${oswald.variable} ${golos.variable}`} suppressHydrationWarning>
+    <html lang="ru" className={`${oswald.variable} ${fira.variable} ${golos.variable}`} suppressHydrationWarning>
       <head>
         {/* Класс js включает анимации появления. Без скриптов контент виден сразу. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
