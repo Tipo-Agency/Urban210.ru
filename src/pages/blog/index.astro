@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import PostCard from '../../components/PostCard.astro';
+import Final from '../../components/Final.astro';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const cats = [...new Set(posts.map((p) => p.data.category))];
+const slug = (c: string) => 'c-' + cats.indexOf(c);
+---
+<Layout title="Блог о фитнесе и тренировках" description="Статьи фитнес-клуба Urban210 в Хабаровске: как начать ходить в зал, похудение, набор массы, групповые программы, сауна и восстановление, питание без крайностей.">
+  <PageHero title="Блог о тренировках" lead={`${posts.length} статей от фитнес-клуба Urban210: с чего начать, как худеть и набирать без вреда, что выбрать в Хабаровске.`} crumbs={[{ href: '/blog/', label: 'Блог' }]} />
+  <section class="sec" style="padding-top:0">
+    <div class="wrap">
+      <nav class="cats" aria-label="Разделы блога">{cats.map((c) => <a href={`#${slug(c)}`}>{c}</a>)}</nav>
+      {cats.map((c) => (
+        <section id={slug(c)} style="margin-top:56px" aria-labelledby={`${slug(c)}-t`}>
+          <h2 id={`${slug(c)}-t`} style="font-size:clamp(1.6rem,1.2rem+1.4vw,2.4rem);margin-bottom:24px">{c}</h2>
+          <ul class="posts">{posts.filter((p) => p.data.category === c).map((p) => <li><PostCard post={p} /></li>)}</ul>
+        </section>
+      ))}
+    </div>
+  </section>
+  <Final />
+</Layout>

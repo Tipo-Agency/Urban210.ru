@@ -1,0 +1,85 @@
+---
+import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Faq from '../../components/Faq.astro';
+import Final from '../../components/Final.astro';
+import Cta from '../../components/Cta.astro';
+import { img } from '../../data/images';
+import { SITE_URL } from '../../data/site';
+import { plans, rub } from '../../data/pricing';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post, posts } }));
+}
+const { post, posts } = Astro.props;
+const { Content } = await render(post);
+const words = (post.body || '').split(/\s+/).length;
+const minutes = Math.max(3, Math.round(words / 180));
+const date = post.data.date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+const related = posts.filter((p) => p.id !== post.id && p.data.category === post.data.category).slice(0, 3);
+const more = related.length < 3 ? posts.filter((p) => p.id !== post.id && !related.includes(p)).slice(0, 3 - related.length) : [];
+const url = `${SITE_URL}/blog/${post.id}/`;
+const ld: Record<string, unknown>[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.data.title,
+    description: post.data.description,
+    datePublished: post.data.date.toISOString().slice(0, 10),
+    image: SITE_URL + '/og.jpg',
+    mainEntityOfPage: url,
+    inLanguage: 'ru',
+    author: { '@type': 'Organization', name: 'Фитнес-клуб Urban210' },
+    publisher: { '@id': SITE_URL + '/#club' },
+    keywords: post.data.keywords.join(', '),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: SITE_URL + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Блог', item: SITE_URL + '/blog/' },
+      { '@type': 'ListItem', position: 3, name: post.data.title, item: url },
+    ],
+  },
+];
+if (post.data.faq.length) ld.push({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: post.data.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) });
+const goal = post.data.cta;
+---
+<Layout title={post.data.title} description={post.data.description} type="article" jsonld={ld}>
+  <article>
+    <header class="page-hero" style="padding-bottom:40px">
+      <div class="wrap">
+        <nav aria-label="Хлебные крошки"><ol class="crumbs"><li><a href="/">Главная</a></li><li><a href="/blog/">Блог</a></li><li><span aria-current="page">{post.data.category}</span></li></ol></nav>
+        <h1 style="font-size:clamp(2rem,1.2rem+3.4vw,4.4rem);max-width:20ch">{post.data.title}</h1>
+        <p class="post-meta" style="margin-top:20px"><span class="cat">{post.data.category}</span><span>{date}</span><span>{minutes} мин чтения</span></p>
+        <div class="page-hero-media" style="aspect-ratio:21/8">
+          <Image src={img(post.data.image)} alt="" widths={[480, 828, 1280, 1600]} sizes="(min-width: 1360px) 1312px, 100vw" loading="eager" fetchpriority="high" format="webp" quality={55} />
+        </div>
+      </div>
+    </header>
+    <div class="wrap article-grid" style="padding-bottom:var(--sec)">
+      <div class="prose"><Content /></div>
+      <aside>
+        <div class="aside-sticky aside-card on-accent">
+          <p class="num">1 ₽</p>
+          <h2 style="font-size:1.4rem">Пробный день в Urban210</h2>
+          <p>Зал, тренажёры и экскурсия по клубу. Абонемент потом от {rub(plans[0].month)} в месяц, без вступительного взноса.</p>
+          <Cta variant="dark" goal={goal} block="blog_aside" wide>{goal === 'Пробный день за 1 ₽' ? 'Записаться' : goal}</Cta>
+          <a class="link" href="/price/">Все тарифы</a>
+        </div>
+      </aside>
+    </div>
+  </article>
+  {post.data.faq.length > 0 && <Faq items={post.data.faq} title="Коротко о главном" />}
+  <section class="sec" style="padding-top:0" aria-labelledby="rel-t">
+    <div class="wrap">
+      <div class="head"><h2 id="rel-t" style="font-size:clamp(1.6rem,1.2rem+1.4vw,2.4rem)">Читайте также</h2></div>
+      <ul class="posts" style="list-style:none">{[...related, ...more].map((p) => <li><PostCard post={p} /></li>)}</ul>
+    </div>
+  </section>
+  <Final />
+</Layout>

@@ -1,0 +1,10 @@
+---
+import LeadForm from './LeadForm.astro';
+import Icon from './Icon.astro';
+---
+<dialog class="lead" data-dialog aria-label="Заявка">
+  <div style="position:relative">
+    <LeadForm id="dlg" block="dialog" />
+    <button class="x" type="button" data-close aria-label="Закрыть"><Icon name="close" /></button>
+  </div>
+</dialog>

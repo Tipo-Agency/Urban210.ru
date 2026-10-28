@@ -1,0 +1,11 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Promos from '../../components/Promos.astro';
+import Final from '../../components/Final.astro';
+---
+<Layout title="Акции фитнес-клуба в Хабаровске" description="Акции фитнес-клуба Urban210 в Хабаровске: пробный день за 1 ₽, trade-in карты другого клуба за 999 ₽, месяц в подарок другу при покупке годовой подписки.">
+  <PageHero title="Акции" lead="Попробовать клуб за рубль, перейти из другого клуба или привести друга." crumbs={[{ href: '/promo/', label: 'Акции' }]} />
+  <Promos />
+  <Final />
+</Layout>

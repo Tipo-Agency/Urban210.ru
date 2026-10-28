@@ -1,0 +1,186 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import Cta from '../components/Cta.astro';
+import Plans from '../components/Plans.astro';
+import Faq from '../components/Faq.astro';
+import Final from '../components/Final.astro';
+import Reviews from '../components/Reviews.astro';
+import Trainers from '../components/Trainers.astro';
+import Promos from '../components/Promos.astro';
+import { img } from '../data/images';
+import { site } from '../data/site';
+import { plans, perDay, rub, trial } from '../data/pricing';
+import { faqGeneral, reasons, comparison, programs, zones } from '../data/content';
+import poster from '../assets/images/hero.jpg';
+
+const minDay = perDay(plans[0].month, 30);
+
+// Слоган проявляется по словам. Слова со звёздочкой горят оранжевым.
+const manifest = 'Приходите в *6:30.* Уходите сильнее. Без очередей к тренажёрам, без вступительного *взноса,* без суеты.';
+const words = manifest.split(' ').map((w) => ({ t: w.replace(/\*/g, ''), hot: w.startsWith('*') }));
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqGeneral.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+<Layout
+  title="Фитнес-клуб Urban210 в Хабаровске: тренажёрный зал, групповые, сауна"
+  description={`Фитнес-клуб в Железнодорожном районе Хабаровска: ${site.facts.area}, ${site.facts.machines}, групповые программы, сауна и хаммам. Абонемент от ${rub(plans[0].month)} в месяц без вступительного взноса. Пробный день за 1 ₽.`}
+  jsonld={[faqLd]}
+>
+  <!-- Первый экран: чёрно-белое видео зала, шеврон бренда уезжает при прокрутке -->
+  <section class="hero" data-block="hero" aria-labelledby="hero-t">
+    <div class="hero-media">
+      <Image src={poster} alt="" widths={[640, 960, 1440, 1920]} sizes="100vw" loading="eager" fetchpriority="high" format="avif" quality={45} />
+      <video data-hero-video data-src="/video/hero-bw.mp4" muted loop playsinline preload="none" aria-hidden="true"></video>
+    </div>
+    <Icon name="chev" class="hero-chev" />
+    <div class="wrap hero-inner">
+      <p class="hero-kicker"><span class="dot" aria-hidden="true"></span>Хабаровск, {site.district}</p>
+      <h1 id="hero-t">
+        <span class="line"><span>Тренируйтесь</span></span>
+        <span class="line"><span>без очереди</span></span>
+        <span class="line"><span class="accent">к железу</span></span>
+      </h1>
+      <p class="hero-sub">{site.facts.area[0].toUpperCase() + site.facts.area.slice(1)}, {site.facts.machines} {site.facts.brands}, сауна и хаммам. Безлимит от {minDay} ₽ в день, без вступительного взноса.</p>
+      <div class="hero-cta">
+        <Cta block="hero">{trial.title}</Cta>
+        <a class="link" href="#tarify">Тарифы от {rub(plans[0].month)} в месяц</a>
+      </div>
+      <div class="hero-proof">
+        <div><p class="num">{site.rating.value.toString().replace('.', ',')}</p><p>на Яндекс Картах, {site.rating.text}</p></div>
+        <div><p class="num">6:30</p><p>открываемся по будням, до 23:30</p></div>
+        <div><p class="num">0 ₽</p><p>вступительный взнос</p></div>
+        <div><p class="num">50</p><p>мест бесплатной парковки</p></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      {[0, 1].map(() => (
+        <span>Тренажёрный зал <Icon name="chev" /> Кардиозона <Icon name="chev" /> Групповые <Icon name="chev" /> Сауна и хаммам <Icon name="chev" /> Персональные тренировки <Icon name="chev" /> Пробный день за 1 ₽ <Icon name="chev" /></span>
+      ))}
+    </div>
+  </div>
+
+  <!-- Слоган по словам -->
+  <section class="sec" aria-label="О клубе">
+    <div class="wrap">
+      <p class="manifest" data-words>
+        {words.map((w) => <><span class={w.hot ? 'w hot' : 'w'}>{w.t}</span>{' '}</>)}
+      </p>
+    </div>
+  </section>
+
+  <!-- Зоны клуба -->
+  <section class="sec" style="padding-top:0" data-block="zones" aria-labelledby="zones-t">
+    <div class="wrap">
+      <div class="head head-split">
+        <h2 id="zones-t">Два этажа для тренировок</h2>
+        <p>Внизу силовая зона, свободные веса и октагон. Наверху кардио с видом на проспект. Плюс зал групповых и SPA.</p>
+      </div>
+      <div class="zones">
+        {zones.map((z) => (
+          <a class:list={['zone', !z.image && 'zone-spa']} href={z.href} data-rise>
+            {z.image ? (
+              <Image src={img(z.image)} alt="" widths={[480, 800, 1100]} sizes="(min-width: 900px) 40vw, 78vw" format="avif" quality={50} />
+            ) : (
+              <span class="zone-art" aria-hidden="true">SPA</span>
+            )}
+            <span class="zone-go" aria-hidden="true"><Icon name="chev" /></span>
+            <span class="zone-body">
+              <h3>{z.title}</h3>
+              <p>{z.text}</p>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Тарифы -->
+  <section class="sec on-paper" id="tarify" data-block="price" aria-labelledby="price-t">
+    <div class="wrap">
+      <div class="head head-split">
+        <h2 id="price-t">Три тарифа, безлимит в своё время</h2>
+        <p>Цена в месяц при помесячной оплате. За год выходит дешевле. Вступительного взноса и скрытых платежей нет.</p>
+      </div>
+      <Plans block="home" />
+    </div>
+  </section>
+
+  <!-- Почему мы -->
+  <section class="sec" data-block="reasons" aria-labelledby="why-t">
+    <div class="wrap">
+      <div class="head head-split">
+        <h2 id="why-t">Почему переходят из сетевых клубов</h2>
+        <p>Сравнили с федеральными сетями по открытым ценам. Разница в деньгах и в том, сколько вы ждёте у стойки.</p>
+      </div>
+      <ul class="reasons">
+        {reasons.map((r) => (
+          <li data-rise>
+            <Icon name="chev" class="chev-n" />
+            <h3>{r.title}</h3>
+            <p>{r.text}</p>
+          </li>
+        ))}
+      </ul>
+      <div class="table-scroll" style="margin-top:56px" data-rise>
+        <table class="versus">
+          <caption class="sr">Сравнение Urban210 и сетевого клуба</caption>
+          <thead><tr>{comparison.head.map((h) => <th scope="col">{h}</th>)}</tr></thead>
+          <tbody>
+            {comparison.rows.map((r) => (
+              <tr><th scope="row">{r[0]}</th><td>{r[1]}</td><td>{r[2]}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="margin-top:16px;font-size:0.9rem">{comparison.note}</p>
+    </div>
+  </section>
+
+  <!-- Групповые -->
+  <section class="sec" style="padding-top:0" data-block="group" aria-labelledby="group-t">
+    <div class="wrap split">
+      <div class="ph" data-rise>
+        <Image src={img('/images/group.jpg')} alt="Групповая тренировка в зале Urban210" widths={[400, 640, 960, 1300]} sizes="(min-width: 900px) 50vw, 100vw" format="avif" quality={40} />
+      </div>
+      <div>
+        <h2 id="group-t">Групповые без доплат</h2>
+        <p>{site.facts.groupHall[0].toUpperCase() + site.facts.groupHall.slice(1)}. Все направления входят в тариф «Всё включено», запись в приложении клуба.</p>
+        <div class="grid-2" style="margin-top:28px">
+          {programs.map((p) => (
+            <div>
+              <h3 style="font-size:1.1rem">{p.group}</h3>
+              <div class="chips" style="margin-top:10px">{p.items.map((i) => <span class="chip">{i}</span>)}</div>
+            </div>
+          ))}
+        </div>
+        <p style="margin-top:28px"><a class="link" href="/group/">Все направления</a></p>
+      </div>
+    </div>
+  </section>
+
+  <Promos />
+
+  <section class="sec" data-block="trainers" aria-labelledby="tr-t">
+    <div class="wrap">
+      <div class="head head-split">
+        <h2 id="tr-t">Тренеры</h2>
+        <p>Поставят технику, соберут программу под цель и проследят за прогрессом. Первая персональная тренировка бесплатно при покупке подписки.</p>
+      </div>
+      <Trainers />
+      <p style="margin-top:28px"><a class="link" href="/personal/">Персональные тренировки</a></p>
+    </div>
+  </section>
+
+  <Reviews />
+  <Faq items={faqGeneral} text="Не нашли ответ? Позвоните, администратор ответит в часы работы клуба." />
+  <Final />
+</Layout>

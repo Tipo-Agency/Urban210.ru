@@ -1,0 +1,8 @@
+---
+// Кнопка заявки: открывает форму в окне. Без JS ведёт к форме внизу страницы.
+import Icon from './Icon.astro';
+interface Props { goal?: string; block?: string; variant?: 'dark' | 'light'; wide?: boolean; class?: string }
+const { goal = 'Пробный день за 1 ₽', block = '', variant, wide, class: cls } = Astro.props;
+const classes = ['btn', variant && `btn-${variant}`, wide && 'btn-wide', cls].filter(Boolean).join(' ');
+---
+<a class={classes} href="#zayavka" data-lead={goal} data-block={block}><slot /><Icon name="chev" class="chev" /></a>

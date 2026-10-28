@@ -1,0 +1,15 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '../data/images';
+import { trainers } from '../data/content';
+---
+<ul class="trainers" style="list-style:none">
+  {trainers.map((t) => (
+    <li class="trainer" data-rise>
+      <figure>
+        <div class="ph"><Image src={img(t.photo)} alt={t.name} widths={[360, 560]} sizes="(min-width: 900px) 30vw, 90vw" format="avif" quality={55} /></div>
+        <figcaption><b>{t.name}</b><span>{t.role}</span></figcaption>
+      </figure>
+    </li>
+  ))}
+</ul>

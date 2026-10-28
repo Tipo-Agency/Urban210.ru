@@ -1,0 +1,37 @@
+---
+import Icon from './Icon.astro';
+import Cta from './Cta.astro';
+import { plans, perDay, rub, trial } from '../data/pricing';
+interface Props { block?: string }
+const { block = 'price' } = Astro.props;
+---
+<div class="trial on-accent" data-rise>
+  <p class="num">1 ₽</p>
+  <div>
+    <h3>{trial.title}</h3>
+    <p style="margin-top:8px;max-width:48ch">{trial.text}</p>
+  </div>
+  <Cta variant="dark" block={`${block}_trial`}>Записаться</Cta>
+</div>
+<div class="plans">
+  {plans.map((p) => (
+    <article class:list={['plan', p.id === 'all' && 'is-top']} data-rise>
+      <div class="plan-head">
+        <div>
+          <h3>{p.name}</h3>
+          <p class="plan-hours">{p.hours}</p>
+        </div>
+        {p.tag && <span class="plan-tag">{p.tag}</span>}
+      </div>
+      <div class="plan-price">
+        <p class="num">{rub(p.month)} <small>в месяц</small></p>
+        <p class="plan-year">{rub(p.year)} за год, это {perDay(p.year, 365)} ₽ в день</p>
+      </div>
+      <ul>
+        {p.features.map((f) => <li><Icon name="check" />{f}</li>)}
+        {p.excluded?.map((f) => <li class="no"><Icon name="minus" />{f}</li>)}
+      </ul>
+      <Cta goal={p.name} block={`${block}_${p.id}`} variant={p.id === 'all' ? undefined : 'dark'} wide>Выбрать «{p.name}»</Cta>
+    </article>
+  ))}
+</div>

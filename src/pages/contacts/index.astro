@@ -1,0 +1,29 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Final from '../../components/Final.astro';
+import { site, whatsappLink, telegramLink } from '../../data/site';
+const { lat, lng } = site.address;
+const map = `https://yandex.ru/map-widget/v1/?ll=${lng}%2C${lat}&z=16&pt=${lng}%2C${lat}%2Cpm2rdl&oid=122837663271&ol=biz`;
+---
+<Layout title="Контакты фитнес-клуба: адрес, телефон, режим работы" description={`Фитнес-клуб Urban210: Хабаровск, ${site.address.short}, Железнодорожный район. Телефон ${site.phone.display}. Пн–Пт 06:30–23:30, Сб–Вс 07:30–22:30. Бесплатная парковка.`}>
+  <PageHero title="Контакты" lead={`${site.district}, ${site.address.short}. ${site.parking}.`} crumbs={[{ href: '/contacts/', label: 'Контакты' }]} />
+  <section class="sec" style="padding-top:0" data-block="contacts">
+    <div class="wrap contacts">
+      <dl>
+        <div><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}<br /><a class="link" href={site.maps.yandex} target="_blank" rel="noopener">Яндекс Карты</a> · <a class="link" href={site.maps.twoGis} target="_blank" rel="noopener">2ГИС</a></dd></div>
+        <div><dt>Режим работы</dt><dd>{site.hours.map((h) => <>{h.days}: {h.time}<br /></>)}</dd></div>
+        <div><dt>Отдел продаж</dt><dd><a href={site.phone.href}>{site.phone.display}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+        <div><dt>Написать</dt><dd><a href={whatsappLink('Здравствуйте! Вопрос по клубу Urban210')} target="_blank" rel="noopener">WhatsApp</a> · <a href={telegramLink('site_contacts')} target="_blank" rel="noopener">Telegram-бот</a> · <a href={site.instagram} target="_blank" rel="noopener">Instagram</a></dd></div>
+        <div><dt>Юрлицо</dt><dd style="font-size:1rem;font-weight:400">{site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn}<br />{site.legal.address}</dd></div>
+      </dl>
+      <div class="map">
+        <button class="map-btn" type="button" data-frame={map} data-title="Urban210 на Яндекс Картах">
+          <span class="num accent" style="font-size:2.4rem">Карта</span>
+          <span class="muted">Нажмите, чтобы загрузить Яндекс Карту</span>
+        </button>
+      </div>
+    </div>
+  </section>
+  <Final />
+</Layout>

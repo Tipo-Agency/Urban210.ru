@@ -1,0 +1,46 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Faq from '../../components/Faq.astro';
+import Final from '../../components/Final.astro';
+import Cta from '../../components/Cta.astro';
+import { img } from '../../data/images';
+import { site } from '../../data/site';
+import { plans, rub } from '../../data/pricing';
+import { programs } from '../../data/content';
+
+const faq = [
+  { q: 'Сколько стоят групповые?', a: `Групповые программы входят в тариф «Всё включено»: ${rub(plans[2].month)} в месяц или ${rub(plans[2].year)} за год. Отдельно платить за каждое занятие не нужно.` },
+  { q: 'Как записаться на занятие?', a: 'Через приложение клуба: там расписание и онлайн-запись. Доступ в приложение вы получите после оформления абонемента.' },
+  { q: 'Я никогда не занимался в группе. С чего начать?', a: 'С мягкого фитнеса или силовых программ: тренер подскажет вес и технику. Через пару недель можно переходить на функциональные тренировки.' },
+  { q: 'Что взять на групповое занятие?', a: 'Удобную одежду, кроссовки, полотенце и воду. Коврики, гантели и петли TRX есть в зале.' },
+];
+const hall = site.facts.groupHall[0].toUpperCase() + site.facts.groupHall.slice(1);
+---
+<Layout title="Групповые тренировки в Хабаровске: пилатес, зумба, кроссфит" description={`Групповые программы в фитнес-клубе Urban210: Body, Pump, ABS, кроссфит, TRX, зумба, стрип, пилатес, растяжка. ${hall}. Входят в тариф «Всё включено» за ${rub(plans[2].month)} в месяц.`}>
+  <PageHero title="Групповые тренировки" lead={`От пилатеса до кроссфита. ${hall}, запись в приложении клуба, все занятия входят в тариф «Всё включено».`} crumbs={[{ href: '/group/', label: 'Групповые программы' }]} image="/images/group.jpg" alt="Групповая тренировка в Urban210">
+    <Cta goal="Всё включено" block="group_hero">Попробовать групповые</Cta>
+  </PageHero>
+  <section class="sec" style="padding-top:0" data-block="group_programs" aria-labelledby="dir-t">
+    <div class="wrap">
+      <div class="head head-split"><h2 id="dir-t">Направления</h2><p>Четыре направления под разные цели: сила, выносливость, настроение и гибкость.</p></div>
+      <div class="grid-4">
+        {programs.map((p) => (
+          <article class="tile" data-rise>
+            <h3>{p.group}</h3>
+            <div class="chips">{p.items.map((i) => <span class="chip">{i}</span>)}</div>
+            <p>{p.text}</p>
+          </article>
+        ))}
+      </div>
+      <ul class="gallery" style="margin-top:18px">
+        {[['/images/group-strength.jpg', 'Силовая групповая тренировка с гантелями'], ['/images/stretching.jpg', 'Занятие растяжкой в Urban210'], ['/images/functional.jpg', 'Функциональная тренировка с медболами']].map(([src, alt]) => (
+          <li><Image src={img(src)} alt={alt} widths={[480, 800]} sizes="(min-width: 900px) 33vw, 50vw" format="avif" quality={50} /></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+  <Faq items={faq} title="Вопросы о групповых" />
+  <Final title="Запишитесь на пробное занятие" goal="Всё включено" block="final_group" text="Оставьте номер: администратор подберёт направление и время и расскажет про тариф «Всё включено»." />
+</Layout>

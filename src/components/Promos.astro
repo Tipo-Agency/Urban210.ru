@@ -1,0 +1,22 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '../data/images';
+import { promos } from '../data/content';
+---
+<section class="sec" data-block="promos" aria-labelledby="promo-t">
+  <div class="wrap">
+    <div class="head head-split">
+      <h2 id="promo-t">Акции</h2>
+      <p>Попробовать клуб за рубль, перейти из другого клуба или привести друга.</p>
+    </div>
+    <div class="promos">
+      {promos.map((p) => (
+        <a class="promo" href={`/promo/${p.slug}/`} data-rise>
+          <Image src={img(`/images/promo/${p.slug}.jpg`)} alt="" widths={[480, 900]} sizes="(min-width: 900px) 33vw, 100vw" format="avif" quality={45} />
+          <h3>{p.title}</h3>
+          <p>{p.short}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

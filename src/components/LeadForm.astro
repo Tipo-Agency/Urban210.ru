@@ -1,0 +1,35 @@
+---
+// Одна форма на сайт: имя, телефон, согласие. Отправка в /api/lead/ (Telegram и CRM на сервере).
+// Если сервер не ответил, предлагаем позвонить или написать в WhatsApp.
+import Icon from './Icon.astro';
+import { site, whatsappLink } from '../data/site';
+interface Props { title?: string; goal?: string; block?: string; id?: string; button?: string }
+const { title = 'Записаться на пробный день', goal = 'Пробный день за 1 ₽', block = 'final', id = 'form', button = 'Записаться за 1 ₽' } = Astro.props;
+---
+<form class="form" data-form novalidate action="/api/lead/" method="post">
+  <h3 data-form-title>{title}</h3>
+  <p class="muted" style="font-size:0.95rem">Перезвоним в часы работы клуба и подберём время.</p>
+  <input type="hidden" name="goal" value={goal} />
+  <input type="hidden" name="block" value={block} />
+  <label class="hp" aria-hidden="true">Сайт <input name="website" tabindex="-1" autocomplete="off" /></label>
+  <label class="field" data-field="name">Имя
+    <input id={`${id}-name`} name="name" autocomplete="given-name" required minlength="2" maxlength="80" placeholder="Как к вам обращаться" />
+    <span class="err">Напишите имя</span>
+  </label>
+  <label class="field" data-field="phone">Телефон
+    <input id={`${id}-phone`} name="phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="+7 (___) ___-__-__" />
+    <span class="err">Проверьте номер: нужно 10 цифр после +7</span>
+  </label>
+  <label class="consent" data-field="consent">
+    <input type="checkbox" name="consent" required />
+    <span>Согласен на обработку персональных данных по <a href="/policy/">политике конфиденциальности</a></span>
+  </label>
+  <div class="form-msg" role="alert" data-form-msg></div>
+  <button class="btn btn-wide" type="submit">{button}<Icon name="chev" class="chev" /></button>
+  <p class="form-note">или позвоните <a href={site.phone.href}>{site.phone.display}</a></p>
+  <div class="form-done" role="status">
+    <span class="ok"><Icon name="check" /></span>
+    <h3>Заявка у нас</h3>
+    <p class="muted">Администратор перезвонит в часы работы клуба. Если удобнее, напишите сразу в <a href={whatsappLink('Здравствуйте! Оставил заявку на сайте Urban210')} target="_blank" rel="noopener">WhatsApp</a>.</p>
+  </div>
+</form>

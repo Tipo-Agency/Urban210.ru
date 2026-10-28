@@ -1,16 +1,15 @@
+# /etc/systemd/system/urban210.service: приём заявок /api/lead/ (Node, порт 3210)
 [Unit]
-Description=urban210.ru (Next.js standalone)
+Description=Urban210 lead API
 After=network.target
 
 [Service]
-Type=simple
-User=www-data
 WorkingDirectory=/opt/urban210/current
 EnvironmentFile=/opt/urban210/.env
-Environment=NODE_ENV=production PORT=3210 HOSTNAME=127.0.0.1
-ExecStart=/usr/bin/node server.js
+Environment=HOST=127.0.0.1 PORT=3210
+ExecStart=/usr/bin/node server/entry.mjs
 Restart=always
-RestartSec=3
+User=www-data
 
 [Install]
 WantedBy=multi-user.target

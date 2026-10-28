@@ -1,0 +1,22 @@
+---
+import Icon from './Icon.astro';
+import { reviews } from '../data/content';
+import { site } from '../data/site';
+---
+<section class="sec" style="padding-top:0" data-block="reviews" aria-labelledby="rev-t">
+  <div class="wrap">
+    <div class="head head-split">
+      <h2 id="rev-t"><span class="accent">{site.rating.value.toString().replace('.', ',')}</span> из 5 на Яндекс Картах</h2>
+      <p>{site.rating.text} на Яндекс Картах и в 2ГИС. Ниже несколько из них, без правок по смыслу, вместе с минусами. <a class="link" href={site.maps.yandexReviews} target="_blank" rel="noopener">Читать все</a></p>
+    </div>
+    <div class="reviews">
+      {reviews.map((r) => (
+        <figure class="review" data-rise style="margin:0">
+          <span class="stars" role="img" aria-label="5 звёзд">{[1, 2, 3, 4, 5].map(() => <Icon name="star" />)}</span>
+          <blockquote>{r.text}</blockquote>
+          <footer><b>{r.name}</b><span>{r.source}</span></footer>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>

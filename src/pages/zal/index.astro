@@ -1,0 +1,40 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Faq from '../../components/Faq.astro';
+import Final from '../../components/Final.astro';
+import Cta from '../../components/Cta.astro';
+import { img } from '../../data/images';
+import { site } from '../../data/site';
+
+const blocks = [
+  { id: 'free-weights', title: 'Свободные веса', text: `Гантели до 60 кг, штанги, грифы и блины в достатке. Скамьи для жима, стойки для приседа и помосты для становой: очередь не собирается даже вечером.`, image: '/images/free-weights.jpg', alt: 'Ряды гантелей в тренажёрном зале Urban210' },
+  { id: 'machines', title: `Тренажёры ${site.facts.brands}`, text: 'Блочные и рычажные тренажёры на все группы мышц с правильной биомеханикой. Подходят и новичку, и тому, кто тренируется годами.', image: '/images/machines.jpg', alt: 'Силовой тренажёр в зале Urban210' },
+  { id: 'cardio', title: 'Кардиозона', text: 'Большая зона на втором этаже: беговые дорожки Technogym Skillrun для ходьбы в наклоне, бега и интервалов, эллипсы. Свободная дорожка находится почти всегда.', image: '/images/cardio.jpg', alt: 'Беговые дорожки Technogym в кардиозоне Urban210' },
+  { id: 'functional', title: 'Функциональная зона и октагон', text: 'Медболы, петли TRX и октагон для единоборств. Здесь проходят функциональные тренировки и работа с тренером.', image: '/images/functional.jpg', alt: 'Функциональная тренировка в октагоне Urban210' },
+];
+const faq = [
+  { q: 'Сколько людей в зале вечером?', a: `Зал занимает ${site.facts.area}, поэтому даже в час пик очередей к тренажёрам почти не бывает.` },
+  { q: 'Кто поможет, если я новичок?', a: 'Инструкторы в зале покажут, как настроить тренажёр и выполнить упражнение. На тарифах «Полный день» и «Всё включено» есть пробная тренировка с тренером, а при покупке подписки первая персональная тренировка бесплатно.' },
+  { q: 'Есть ли шкафчики и душ?', a: 'Да. Просторные раздевалки, шкафчики и много душевых, так что ждать не придётся.' },
+  { q: 'Как попасть в зал?', a: 'Вход по браслету или QR-коду в приложении клуба. Оформить абонемент можно на ресепшене или оставить заявку на сайте.' },
+];
+---
+<Layout title="Тренажёрный зал в Хабаровске, Железнодорожный район" description={`Тренажёрный зал Urban210: ${site.facts.area}, ${site.facts.machines} ${site.facts.brands}, свободные веса, кардиозона с Technogym Skillrun, октагон. Без очередей, с 6:30 до 23:30, бесплатная парковка.`} image="/og.jpg">
+  <PageHero title="Тренажёрный зал в Хабаровске" lead={`${site.facts.area[0].toUpperCase() + site.facts.area.slice(1)}, ${site.facts.machines} ${site.facts.brands}, свободные веса и кардиозона. Тренируйтесь без очередей с 6:30 до 23:30.`} crumbs={[{ href: '/zal/', label: 'Тренажёрный зал' }]} image="/images/zal.jpg" alt="Тренажёрный зал Urban210 с панорамными окнами">
+    <Cta block="zal_hero">Пробный день за 1 ₽</Cta>
+  </PageHero>
+  <section class="sec" style="padding-top:0" data-block="zal_zones" aria-label="Что внутри">
+    <div class="wrap stack">
+      {blocks.map((b, i) => (
+        <article id={b.id} class:list={['split', i % 2 && 'rev']} data-rise>
+          <div class="ph"><Image src={img(b.image)} alt={b.alt} widths={[400, 640, 960, 1300]} sizes="(min-width: 900px) 50vw, 100vw" format="avif" quality={40} /></div>
+          <div><h2>{b.title}</h2><p>{b.text}</p></div>
+        </article>
+      ))}
+    </div>
+  </section>
+  <Faq items={faq} title="Вопросы о зале" />
+  <Final title="Посмотрите зал вживую за 1 ₽" block="final_zal" />
+</Layout>

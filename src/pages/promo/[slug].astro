@@ -1,0 +1,33 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Final from '../../components/Final.astro';
+import Cta from '../../components/Cta.astro';
+import Icon from '../../components/Icon.astro';
+import { img } from '../../data/images';
+import { promos } from '../../data/content';
+
+export function getStaticPaths() {
+  return promos.map((p) => ({ params: { slug: p.slug }, props: { p } }));
+}
+const { p } = Astro.props;
+---
+<Layout title={`${p.title}: акция фитнес-клуба в Хабаровске`} description={`${p.title}. ${p.text}`.slice(0, 190)} image="/og.jpg">
+  <PageHero title={p.title} lead={p.text} crumbs={[{ href: '/promo/', label: 'Акции' }, { href: `/promo/${p.slug}/`, label: p.title }]}>
+    <Cta goal={p.goal} block={`promo_${p.slug}`}>{p.cta}</Cta>
+  </PageHero>
+  <section class="sec" style="padding-top:0" aria-labelledby="terms-t">
+    <div class="wrap split">
+      <div class="ph"><Image src={img(`/images/promo/${p.slug}.jpg`)} alt={p.title} widths={[640, 1000]} sizes="(min-width: 900px) 50vw, 100vw" format="avif" quality={50} /></div>
+      <div>
+        <h2 id="terms-t">Условия</h2>
+        <ul class="plan" style="background:none;border:0;padding:0;margin-top:20px;color:inherit">
+          {p.terms.map((t) => <li><Icon name="check" />{t}</li>)}
+        </ul>
+        <p style="margin-top:24px" class="muted">Подробности и сроки акции уточняйте у администратора.</p>
+      </div>
+    </div>
+  </section>
+  <Final title={p.title} goal={p.goal} block={`final_${p.slug}`} button={p.cta} formTitle={p.cta} />
+</Layout>

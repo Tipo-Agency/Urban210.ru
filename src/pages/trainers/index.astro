@@ -1,0 +1,17 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Trainers from '../../components/Trainers.astro';
+import Final from '../../components/Final.astro';
+import Cta from '../../components/Cta.astro';
+import { personalText } from '../../data/content';
+---
+<Layout title="Тренеры фитнес-клуба в Хабаровске" description="Тренеры фитнес-клуба Urban210 в Хабаровске: персональные тренировки, групповые программы, постановка техники. Первая персональная тренировка бесплатно при покупке подписки.">
+  <PageHero title="Тренеры" lead={`${personalText.lead} ${personalText.bonus}.`} crumbs={[{ href: '/trainers/', label: 'Тренеры' }]}>
+    <Cta goal="Персональные тренировки" block="trainers_hero">Записаться к тренеру</Cta>
+  </PageHero>
+  <section class="sec" style="padding-top:0" data-block="trainers" aria-label="Команда тренеров">
+    <div class="wrap"><Trainers /></div>
+  </section>
+  <Final title="Первая тренировка с тренером" text="Оставьте номер: тренер или администратор перезвонит и подберёт время. При покупке подписки первая персональная тренировка бесплатно." goal="Персональные тренировки" block="final_trainers" formTitle="Записаться к тренеру" button="Записаться" />
+</Layout>

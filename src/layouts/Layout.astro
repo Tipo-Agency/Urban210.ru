@@ -1,0 +1,189 @@
+---
+import '../styles/global.css';
+import Logo from '../components/Logo.astro';
+import Icon from '../components/Icon.astro';
+import LeadDialog from '../components/LeadDialog.astro';
+import { site, nav, SITE_URL, whatsappLink, telegramLink } from '../data/site';
+import { plans } from '../data/pricing';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  noindex?: boolean;
+  jsonld?: Record<string, unknown>[];
+  type?: 'website' | 'article';
+}
+const { title, description, image = '/og.jpg', noindex = false, jsonld = [], type = 'website' } = Astro.props;
+const path = Astro.url.pathname;
+const canonical = SITE_URL + path;
+const fullTitle = path === '/' ? title : `${title} | Urban210`;
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+
+const YM_ID = import.meta.env.PUBLIC_YM_ID || '108422317';
+const CT_ID = import.meta.env.PUBLIC_CALLTOUCH_ID || '';
+const CT_SITE = import.meta.env.PUBLIC_CALLTOUCH_SITE_ID || '';
+
+// schema.org: клуб как ExerciseGym. Только факты из src/data/site.ts.
+const gym = {
+  '@context': 'https://schema.org',
+  '@type': ['ExerciseGym', 'LocalBusiness'],
+  '@id': SITE_URL + '/#club',
+  name: site.fullName,
+  url: SITE_URL + '/',
+  image: SITE_URL + '/og.jpg',
+  telephone: site.phone.href.replace('tel:', ''),
+  email: site.email,
+  priceRange: `${plans[0].month}–${plans[2].month} ₽ в месяц`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    postalCode: site.address.postalCode,
+    addressLocality: site.address.locality,
+    addressRegion: site.address.region,
+    addressCountry: 'RU',
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: site.address.lat, longitude: site.address.lng },
+  openingHoursSpecification: site.hours.map((h) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: h.schema.days, opens: h.schema.opens, closes: h.schema.closes })),
+  sameAs: [site.instagram, site.maps.yandex, site.maps.twoGis],
+  parentOrganization: { '@type': 'Organization', name: site.legal.name, taxID: site.legal.inn },
+};
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="apple-touch-icon" href="/apple-icon.png" />
+    <meta name="theme-color" content="#0f0c0a" />
+    <meta property="og:type" content={type} />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content="Urban210" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, SITE_URL).href} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preload" href="/fonts/unbounded-cyrillic-700.woff2" as="font" type="font/woff2" crossorigin />
+    <script type="application/ld+json" set:html={JSON.stringify(gym)} />
+    {jsonld.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('reduce');
+    </script>
+    <slot name="head" />
+  </head>
+  <body data-ym={YM_ID} data-ct-site={CT_SITE}>
+    <a class="skip" href="#main">К содержанию</a>
+
+    <header class="header" data-header>
+      <div class="wrap">
+        <Logo />
+        <nav class="nav" aria-label="Основное меню">
+          {nav.map((n) => <a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a>)}
+        </nav>
+        <a class="header-tel" href={site.phone.href}>{site.phone.display}</a>
+        <a class="btn" href="#zayavka" data-lead="Пробный день за 1 ₽" data-block="header">Пробный день за 1 ₽<Icon name="chev" class="chev" /></a>
+        <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="menu" data-burger><i></i><i></i></button>
+      </div>
+    </header>
+
+    <div class="menu" id="menu" data-menu>
+      <nav aria-label="Меню">
+        {[{ href: '/', label: 'Главная' }, ...nav, { href: '/blog/', label: 'Блог' }].map((n, i) => (
+          <a href={n.href} style={`transition-delay:${Math.min(i * 0.05, 0.4)}s`} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a>
+        ))}
+      </nav>
+      <div class="menu-foot">
+        <a href={site.phone.href}>{site.phone.display}</a>
+        <p class="muted">{site.address.short} · {site.hours.map((h) => `${h.days} ${h.time}`).join(', ')}</p>
+        <a class="btn" href="#zayavka" data-lead="Пробный день за 1 ₽" data-block="menu">Пробный день за 1 ₽<Icon name="chev" class="chev" /></a>
+      </div>
+    </div>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer-top">
+          <div>
+            <h2>Клуб</h2>
+            <p>{site.address.locality}, {site.address.street}<br />{site.district}</p>
+            <p class="muted" style="margin-top:10px">{site.hours.map((h) => `${h.days}: ${h.time}`).join(' · ')}</p>
+            <p style="margin-top:14px"><a href={site.phone.href} style="font-weight:650;font-size:1.15rem">{site.phone.display}</a></p>
+          </div>
+          <div>
+            <h2>Клуб и цены</h2>
+            <ul>
+              {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+            </ul>
+          </div>
+          <div>
+            <h2>Ещё</h2>
+            <ul>
+              <li><a href="/personal/">Персональные тренировки</a></li>
+              <li><a href="/virtual-tour/">3D-тур по клубу</a></li>
+              <li><a href="/blog/">Блог</a></li>
+              <li><a href="/rules/">Правила клуба</a></li>
+              <li><a href="/oferta/">Договор-оферта</a></li>
+              <li><a href="/policy/">Политика конфиденциальности</a></li>
+            </ul>
+          </div>
+          <div>
+            <h2>На связи</h2>
+            <ul>
+              <li><a href={whatsappLink('Здравствуйте! Вопрос по клубу Urban210')} target="_blank" rel="noopener">WhatsApp</a></li>
+              <li><a href={telegramLink('site_footer')} target="_blank" rel="noopener">Telegram-бот</a></li>
+              <li><a href={site.instagram} target="_blank" rel="noopener">Instagram</a></li>
+              <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+              <li><a href={site.maps.yandexReviews} target="_blank" rel="noopener">Отзывы на Яндекс Картах</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-big" aria-hidden="true">URBAN<b>210</b><Icon name="chev" /></div>
+        <div class="footer-bottom">
+          <span>© {new Date().getFullYear()} {site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn}</span>
+          <span>Фитнес-клуб в Хабаровске</span>
+        </div>
+      </div>
+    </footer>
+
+    <div class="mbar" data-mbar>
+      <a class="ic" href={site.phone.href} aria-label="Позвонить"><Icon name="phone" /></a>
+      <a class="ic" href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener" aria-label="WhatsApp"><Icon name="wa" /></a>
+      <a class="btn" href="#zayavka" data-lead="Пробный день за 1 ₽" data-block="mobile_bar">Пробный день за 1 ₽<Icon name="chev" class="chev" /></a>
+    </div>
+
+    <LeadDialog />
+
+    <script>
+      import { boot } from '../scripts/site';
+      boot();
+    </script>
+
+    {YM_ID && (
+      <script is:inline define:vars={{ YM_ID, CT_ID }}>
+        // Метрика и Calltouch грузятся после load, чтобы не мешать первому экрану
+        // на localhost и тестовых адресах счётчики не включаем, чтобы не портить статистику
+        if (/(^|\.)urban210\.ru$/.test(location.hostname)) addEventListener('load', function () {
+          setTimeout(function () {
+            (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
+            ym(Number(YM_ID), 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: true });
+            if (CT_ID) {
+              (function(w,d,n,c){w.CalltouchDataObject=n;w[n]=function(){w[n]['callbacks'].push(arguments)};if(!w[n]['callbacks']){w[n]['callbacks']=[]}w[n]['loaded']=false;if(typeof c!=='object'){c=[c]}w[n]['counters']=c;for(var i=0;i<c.length;i+=1){p(c[i])}function p(cId){var a=d.getElementsByTagName('script')[0],s=d.createElement('script'),i=function(){a.parentNode.insertBefore(s,a)},m=typeof Array.prototype.find==='function',n=m?'init-min.js':'init.js';s.async=true;s.src='https://mod.calltouch.ru/'+n+'?id='+cId;i()}})(window,document,'ct',CT_ID);
+            }
+          }, 1500);
+        });
+      </script>
+    )}
+    <noscript><div><img src={`https://mc.yandex.ru/watch/${YM_ID}`} style="position:absolute;left:-9999px" alt="" /></div></noscript>
+  </body>
+</html>

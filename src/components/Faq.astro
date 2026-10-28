@@ -1,0 +1,21 @@
+---
+import type { Faq as Item } from '../data/content';
+interface Props { items: Item[]; title?: string; text?: string }
+const { items, title = 'Частые вопросы', text } = Astro.props;
+---
+<section class="sec" data-block="faq" aria-labelledby="faq-t">
+  <div class="wrap faq-wrap">
+    <div class="head">
+      <h2 id="faq-t">{title}</h2>
+      {text && <p>{text}</p>}
+    </div>
+    <div class="faq">
+      {items.map((f, i) => (
+        <details open={i === 0}>
+          <summary>{f.q}<i aria-hidden="true"></i></summary>
+          <p class="a">{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

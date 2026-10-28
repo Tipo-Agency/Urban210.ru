@@ -1,0 +1,57 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Plans from '../../components/Plans.astro';
+import Promos from '../../components/Promos.astro';
+import Faq from '../../components/Faq.astro';
+import Final from '../../components/Final.astro';
+import Cta from '../../components/Cta.astro';
+import { plans, rub, trial } from '../../data/pricing';
+import { faqGeneral, personalText, comparison } from '../../data/content';
+
+const faq = [
+  faqGeneral[1],
+  faqGeneral[2],
+  { q: 'Чем дневная карта отличается от полного дня?', a: `Дневная карта действует ${plans[0].hours}, это самый дешёвый способ тренироваться, если вы свободны утром или днём. «Полный день» открывает клуб на всё время работы.` },
+  { q: 'Что входит в «Всё включено»?', a: 'Всё из «Полного дня», плюс групповые программы без доплат, SPA-зона с финской сауной, хаммамом и релакс-зоной, приоритетное обслуживание.' },
+  faqGeneral[3],
+  { q: 'Можно ли оплатить частями?', a: 'Да, договор допускает рассрочку. Условия подскажет администратор при оформлении.' },
+];
+const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) };
+---
+<Layout title="Цены на абонементы в фитнес-клуб, Хабаровск" description={`Абонемент в фитнес-клуб Urban210: от ${rub(plans[0].month)} в месяц, за год от ${rub(plans[0].year)}. Без вступительного взноса. Тренажёрный зал, групповые, сауна и хаммам. Пробный день за 1 ₽.`} jsonld={[faqLd]}>
+  <PageHero title="Цены на абонементы" lead={`Три тарифа, безлимит в выбранное время. Без вступительного взноса и скрытых платежей. Перед покупкой можно прийти на ${trial.title.toLowerCase()}.`} crumbs={[{ href: '/price/', label: 'Тарифы' }]}>
+    <Cta block="price_hero">Пробный день за 1 ₽</Cta>
+  </PageHero>
+  <section class="sec on-paper" data-block="price" aria-label="Тарифы">
+    <div class="wrap"><Plans block="price_page" /></div>
+  </section>
+  <section class="sec" data-block="personal_price" aria-labelledby="pt-t">
+    <div class="wrap split">
+      <div>
+        <h2 id="pt-t">Персональные тренировки</h2>
+        <p>{personalText.lead}</p>
+      </div>
+      <div class="tile">
+        <p class="num" style="font-size:clamp(2rem,1.4rem+2vw,3rem);color:var(--ink)">{personalText.price}</p>
+        <p>{personalText.bonus}</p>
+        <div><Cta goal="Персональные тренировки" block="personal_price">Записаться к тренеру</Cta></div>
+      </div>
+    </div>
+  </section>
+  <section class="sec" style="padding-top:0" aria-labelledby="vs-t">
+    <div class="wrap">
+      <div class="head"><h2 id="vs-t">Сравнение с сетевым клубом</h2></div>
+      <div class="table-scroll">
+        <table class="versus">
+          <thead><tr>{comparison.head.map((h) => <th scope="col">{h}</th>)}</tr></thead>
+          <tbody>{comparison.rows.map((r) => <tr><th scope="row">{r[0]}</th><td>{r[1]}</td><td>{r[2]}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <p class="muted" style="margin-top:16px;font-size:0.9rem">{comparison.note}</p>
+    </div>
+  </section>
+  <Promos />
+  <Faq items={faq} title="Вопросы о тарифах" />
+  <Final />
+</Layout>

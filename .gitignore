@@ -1,9 +1,7 @@
 node_modules
-.next
-out
+dist
+.astro
 .env*
 !.env.example
-*.tsbuildinfo
-next-env.d.ts
 .DS_Store
 import/

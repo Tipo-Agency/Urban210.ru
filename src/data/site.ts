@@ -1,7 +1,7 @@
 // Единый источник фактов о клубе. Контакты, часы, цены и юрданные меняются только здесь.
 // Поля с пометкой «уточнить» на старом сайте противоречили друг другу: см. docs/open-questions.md.
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://urban210.ru").replace(/\/$/, "");
+export const SITE_URL = ((import.meta.env.PUBLIC_SITE_URL as string | undefined) || "https://urban210.ru").replace(/\/$/, "");
 
 export const site = {
   name: "Urban210",

@@ -1,0 +1,43 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Trainers from '../../components/Trainers.astro';
+import Faq from '../../components/Faq.astro';
+import Final from '../../components/Final.astro';
+import Cta from '../../components/Cta.astro';
+import { personalText } from '../../data/content';
+import { personal, rub } from '../../data/pricing';
+
+const steps = [
+  ['Знакомство', 'Тренер спросит про цель, опыт и ограничения по здоровью, проверит подвижность и базовую силу.'],
+  ['Программа', 'Составит план под вашу цель: снижение веса, набор массы, здоровая спина или подготовка к старту.'],
+  ['Техника', 'На каждой тренировке следит за техникой и подбирает вес, чтобы был прогресс без травм.'],
+  ['Прогресс', 'Замеры и корректировка плана по ходу. Вы видите результат в цифрах, а не только в зеркале.'],
+];
+const faq = [
+  { q: 'Сколько стоят персональные тренировки?', a: `Пакет из ${personal.pack} тренировок стоит ${rub(personal.price)}, это ${rub(Math.round(personal.price / personal.pack))} за занятие. Абонемент в зал оплачивается отдельно.` },
+  { q: 'Можно ли попробовать бесплатно?', a: `Да. ${personal.firstFree}.` },
+  { q: 'Сколько раз в неделю заниматься с тренером?', a: 'Чаще всего 2–3 раза. Между тренировками можно заниматься самостоятельно по программе, которую составит тренер.' },
+];
+---
+<Layout title="Персональный тренер в Хабаровске" description={`Персональные тренировки в фитнес-клубе Urban210: ${personalText.price}. Программа под цель, постановка техники, контроль прогресса. Первая тренировка бесплатно при покупке подписки.`}>
+  <PageHero title="Персональный тренер" lead={personalText.lead} crumbs={[{ href: '/personal/', label: 'Персональные тренировки' }]} image="/images/functional.jpg" alt="Тренер Urban210 занимается с клиентом">
+    <Cta goal="Персональные тренировки" block="personal_hero">Первая тренировка бесплатно</Cta>
+  </PageHero>
+  <section class="sec" style="padding-top:0" data-block="personal_how" aria-labelledby="how-t">
+    <div class="wrap">
+      <div class="head"><h2 id="how-t">Как это работает</h2></div>
+      <ol class="steps">{steps.map(([t, d]) => <li><h3>{t}</h3><p>{d}</p></li>)}</ol>
+      <div class="trial on-accent" style="margin-top:18px">
+        <p class="num" style="font-size:clamp(2rem,1.4rem+2.4vw,3.4rem)">{rub(personal.price)}</p>
+        <div><h3>{personal.pack} персональных тренировок</h3><p style="margin-top:8px">{personalText.bonus}</p></div>
+        <Cta variant="dark" goal="Персональные тренировки" block="personal_offer">Записаться</Cta>
+      </div>
+    </div>
+  </section>
+  <section class="sec" style="padding-top:0" data-block="trainers" aria-labelledby="team-t">
+    <div class="wrap"><div class="head"><h2 id="team-t">Тренеры</h2></div><Trainers /></div>
+  </section>
+  <Faq items={faq} title="Вопросы о персональных" />
+  <Final title="Первая тренировка с тренером бесплатно" text="Оставьте номер, подберём тренера и время. Бесплатная тренировка действует при покупке подписки." goal="Персональные тренировки" block="final_personal" formTitle="Записаться к тренеру" button="Записаться" />
+</Layout>

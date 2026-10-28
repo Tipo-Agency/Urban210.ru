@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from './PageHero.astro';
+interface Props { title: string; description: string; path: string; html: string }
+const { title, description, path, html } = Astro.props;
+---
+<Layout title={title} description={description}>
+  <PageHero title={title} crumbs={[{ href: path, label: title }]} />
+  <section class="sec" style="padding-top:0"><div class="wrap"><div class="legal" set:html={html} /></div></section>
+</Layout>
