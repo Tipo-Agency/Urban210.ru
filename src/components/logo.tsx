@@ -1,7 +1,7 @@
 // Логотип из старого сайта: «URBAN» цветом текста, «210›» акцентом.
 export function Logo({ className = "" }: { className?: string }) {
   return (
-    <span className={`inline-flex items-baseline font-display text-[1.65rem] font-bold leading-none tracking-tight ${className}`} role="img" aria-label="Urban210">
+    <span className={`inline-flex items-baseline font-[family-name:var(--font-logo)] text-[1.65rem] font-bold leading-none tracking-tight ${className}`} role="img" aria-label="Urban210">
       <span aria-hidden="true">URBAN</span>
       <span aria-hidden="true" className="text-accent">
         210

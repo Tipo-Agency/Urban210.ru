@@ -14,7 +14,7 @@ export function Breadcrumbs({ items }: { items: { href: string; label: string }[
               {i === all.length - 1 ? (
                 <span aria-current="page">{c.label}</span>
               ) : (
-                <Link href={c.href} className="hover:text-ink">
+                <Link prefetch={false} href={c.href} className="hover:text-ink">
                   {c.label}
                 </Link>
               )}

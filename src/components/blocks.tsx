@@ -24,7 +24,7 @@ export function Marquee({ items, tone = "accent", reverse = false, className = "
     </ul>
   );
   return (
-    <div className={`marquee-wrap overflow-hidden py-4 md:py-6 ${tone === "accent" ? "bg-accent text-[#120804]" : "bg-ink text-bg"} ${className}`}>
+    <div className={`marquee-wrap overflow-hidden py-4 md:py-6 ${tone === "accent" ? "bg-accent text-paper-ink" : "bg-ink text-bg"} ${className}`}>
       <div className={`marquee ${reverse ? "marquee-rev" : ""}`}>
         {row(false)}
         {row(true)}
@@ -111,7 +111,7 @@ export function ZoneStack() {
               key={z.id}
               href={z.href}
               style={{ "--i": i } as React.CSSProperties}
-              className={`stack-card group relative isolate flex h-[min(78svh,44rem)] min-h-[28rem] flex-col justify-between overflow-hidden rounded-[2rem] p-6 shadow-[0_-20px_60px_-20px_rgba(0,0,0,0.8)] md:p-10 ${z.image ? "bg-card" : "bg-accent text-[#120804]"}`}
+              className={`stack-card group relative isolate flex h-[min(78svh,44rem)] min-h-[28rem] flex-col justify-between overflow-hidden p-6 shadow-[0_-20px_60px_-20px_rgba(0,0,0,0.8)] md:p-10 ${z.image ? "bg-card" : "bg-accent text-paper-ink"}`}
               data-block={`zone_${z.id}`}
             >
               {z.image ? (
@@ -120,11 +120,11 @@ export function ZoneStack() {
                   <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(11,11,10,0.25)_0%,rgba(11,11,10,0.1)_40%,rgba(11,11,10,0.88)_100%)]" />
                 </>
               ) : (
-                <span aria-hidden="true" className="mega pointer-events-none absolute -bottom-[0.12em] -right-[0.04em] -z-10 text-[clamp(7rem,30vw,26rem)] text-[#120804]/12 deco" data-text="40–50°" />
+                <span aria-hidden="true" className="mega pointer-events-none absolute -bottom-[0.12em] -right-[0.04em] -z-10 text-[clamp(7rem,30vw,26rem)] text-paper-ink/12 deco" data-text="40–50°" />
               )}
               <div className="flex items-start justify-between">
                 <span className={`num text-6xl md:text-8xl ${z.image ? "outline-ink" : "outline"}`}>{String(i + 1).padStart(2, "0")}</span>
-                <span className={`grid h-14 w-14 place-items-center rounded-full transition-transform duration-500 group-hover:rotate-[-45deg] md:h-16 md:w-16 ${z.image ? "bg-accent text-[#120804]" : "bg-[#120804] text-accent"}`}>
+                <span className={`grid h-14 w-14 place-items-center rounded-full transition-transform duration-500 group-hover:rotate-[-45deg] md:h-16 md:w-16 ${z.image ? "bg-accent text-paper-ink" : "bg-paper-ink text-accent"}`}>
                   <IconArrow size={26} />
                 </span>
               </div>
@@ -150,10 +150,10 @@ export function VersusNetwork() {
           <br />
           <span className="text-accent">а не за вход в сеть</span>
         </h2>
-        <div className="mt-12 grid gap-px overflow-hidden rounded-[2rem] border border-line bg-line md:mt-16">
+        <div className="mt-12 grid gap-px overflow-hidden border border-line bg-line md:mt-16">
           <div className="hidden grid-cols-[1.1fr_1fr_1fr] bg-bg md:grid">
             <span />
-            <p className="kicker bg-accent px-8 py-5 text-[#120804]">Urban210</p>
+            <p className="kicker bg-accent px-8 py-5 text-paper-ink">Urban210</p>
             <p className="kicker px-8 py-5 text-muted">Федеральная сеть</p>
           </div>
           {comparison.rows.map((r, i) => (
@@ -183,10 +183,10 @@ export function ProgramList() {
     <ul className="border-t border-line">
       {programs.map((p, i) => (
         <li key={p.group} data-reveal className="group relative border-b border-line">
-          <Link href="/group/" className="grid items-center gap-5 py-7 md:grid-cols-[3rem_1fr_auto] md:gap-6 md:py-9">
+          <Link prefetch={false} href="/group/" className="grid items-center gap-5 py-7 md:grid-cols-[3rem_1fr_auto] md:gap-6 md:py-9">
             <span className="kicker hidden text-muted md:block">{String(i + 1).padStart(2, "0")}</span>
             <div className="flex min-w-0 items-center gap-4">
-              <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl md:hidden">
+              <span className="relative h-16 w-16 shrink-0 overflow-hidden md:hidden">
                 <Image src={programImages[i]} alt="" fill sizes="64px" className="duo object-cover" />
               </span>
               <div className="min-w-0">
@@ -199,7 +199,7 @@ export function ProgramList() {
                 <span className="block font-medium text-ink">{p.items.join(" · ")}</span>
                 {p.text}
               </p>
-              <span className="relative h-28 w-40 shrink-0 overflow-hidden rounded-2xl">
+              <span className="relative h-28 w-40 shrink-0 overflow-hidden">
                 <Image src={programImages[i]} alt="" fill sizes="160px" className="duo object-cover group-hover:scale-110" />
               </span>
             </div>
@@ -214,7 +214,7 @@ export function TrainerWall() {
   return (
     <ul className="grid gap-4 md:grid-cols-3">
       {trainers.map((t, i) => (
-        <li key={t.name} data-reveal style={{ "--d": `${i * 110}ms` } as React.CSSProperties} className="group relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-card">
+        <li key={t.name} data-reveal style={{ "--d": `${i * 110}ms` } as React.CSSProperties} className="group relative aspect-[4/5] overflow-hidden bg-card">
           {t.photo && <Image src={t.photo} alt={`${t.name}, тренер Urban210`} fill sizes="(min-width: 768px) 33vw, 100vw" className="duo object-cover group-hover:scale-[1.04]" />}
           <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,transparent_45%,rgba(11,11,10,0.92)_100%)]" />
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-6">
@@ -226,7 +226,7 @@ export function TrainerWall() {
               </h3>
               <p className="mt-2 text-sm text-[#cfc7be]">{t.role}</p>
             </div>
-            <a href="#zayavka" data-lead="Персональные тренировки" data-block="trainer_card" aria-label={`Записаться к тренеру: ${t.name}`} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-accent text-[#120804] transition-transform duration-500 hover:rotate-[-45deg]">
+            <a href="#zayavka" data-lead="Персональные тренировки" data-block="trainer_card" aria-label={`Записаться к тренеру: ${t.name}`} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-accent text-paper-ink transition-transform duration-500 hover:rotate-[-45deg]">
               <IconArrow />
             </a>
           </div>
@@ -242,7 +242,7 @@ export function CommunityReel() {
   const row = (hidden: boolean) => (
     <ul aria-hidden={hidden || undefined} className="flex shrink-0 gap-4 pr-4">
       {community.map((n, i) => (
-        <li key={n} className={`relative h-[22rem] w-[12.5rem] shrink-0 overflow-hidden rounded-[1.5rem] md:h-[30rem] md:w-[17rem] ${i % 2 ? "md:translate-y-10" : ""}`}>
+        <li key={n} className={`relative h-[22rem] w-[12.5rem] shrink-0 overflow-hidden md:h-[30rem] md:w-[17rem] ${i % 2 ? "md:translate-y-10" : ""}`}>
           <Image src={`/images/community/${n}.jpg`} alt={hidden ? "" : "Гости клуба Urban210 на тренировке"} fill sizes="(min-width: 768px) 272px, 200px" className="object-cover" />
         </li>
       ))}
@@ -262,7 +262,7 @@ export function ReviewRail() {
   return (
     <ul className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0">
       {reviews.map((r, i) => (
-        <li key={r.name} data-reveal style={{ "--d": `${(i % 2) * 100}ms` } as React.CSSProperties} className="flex w-[85vw] max-w-md shrink-0 snap-start flex-col rounded-[2rem] border border-line bg-card p-7 md:w-auto md:max-w-none md:p-10">
+        <li key={r.name} data-reveal style={{ "--d": `${(i % 2) * 100}ms` } as React.CSSProperties} className="flex w-[85vw] max-w-md shrink-0 snap-start flex-col border border-line bg-card p-7 md:w-auto md:max-w-none md:p-10">
           <span aria-hidden="true" className="font-display text-8xl font-bold leading-[0.6] text-accent">“</span>
           <p className="mt-4 flex-1 text-lg leading-relaxed md:text-xl">{r.text}</p>
           <div className="mt-8 flex items-center justify-between gap-4 border-t border-line pt-5">
@@ -295,7 +295,7 @@ export function PromoCards({ exclude }: { exclude?: string }) {
             href={`/promo/${p.slug}/`}
             data-reveal
             style={{ "--d": `${i * 100}ms` } as React.CSSProperties}
-            className="group relative isolate flex min-h-[26rem] flex-col justify-end overflow-hidden rounded-[2rem] bg-[#141210] p-7 md:min-h-[30rem]"
+            className="group relative isolate flex min-h-[26rem] flex-col justify-end overflow-hidden bg-[#141210] p-7 md:min-h-[30rem]"
           >
             {/* Справа на баннерах старого сайта предмет (гиря, монета, карта), слева их текст: показываем только предмет */}
             <Image src={promoImages[p.slug]} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="-z-20 object-cover object-[88%_center] transition-transform duration-700 group-hover:scale-105" />

@@ -6,7 +6,7 @@ import { IconPhone, IconWhatsApp } from "./icons";
 export function MobileBar() {
   return (
     <div data-mobile-bar className="fixed inset-x-0 bottom-0 z-30 px-3 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden" data-block="mobile_bar">
-      <div className="flex gap-1.5 rounded-full border border-white/10 bg-[#0b0b0a]/80 p-1.5 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+      <div className="flex gap-1.5 rounded border border-line bg-bg/95 p-1.5 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)]">
         <a href={site.phone.href} className="btn min-h-12 w-12 shrink-0 bg-white/5 px-0" aria-label={`Позвонить ${site.phone.display}`}>
           <IconPhone />
         </a>

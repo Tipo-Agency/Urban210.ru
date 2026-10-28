@@ -29,23 +29,23 @@ export function Footer() {
           <ul className="grid gap-2.5 text-muted">
             {nav.map((n) => (
               <li key={n.href}>
-                <Link href={n.href} className="hover:text-ink">
+                <Link prefetch={false} href={n.href} className="hover:text-ink">
                   {n.label}
                 </Link>
               </li>
             ))}
             <li>
-              <Link href="/personal/" className="hover:text-ink">
+              <Link prefetch={false} href="/personal/" className="hover:text-ink">
                 Персональные тренировки
               </Link>
             </li>
             <li>
-              <Link href="/virtual-tour/" className="hover:text-ink">
+              <Link prefetch={false} href="/virtual-tour/" className="hover:text-ink">
                 3D-тур по клубу
               </Link>
             </li>
             <li>
-              <Link href="/blog/" className="hover:text-ink">
+              <Link prefetch={false} href="/blog/" className="hover:text-ink">
                 Блог
               </Link>
             </li>
@@ -63,9 +63,9 @@ export function Footer() {
           </ul>
           <p className="mb-4 mt-8 font-medium">Документы</p>
           <ul className="grid gap-2.5 text-muted">
-            <li><Link href="/oferta/" className="hover:text-ink">Договор-оферта</Link></li>
-            <li><Link href="/rules/" className="hover:text-ink">Правила клуба</Link></li>
-            <li><Link href="/policy/" className="hover:text-ink">Политика конфиденциальности</Link></li>
+            <li><Link prefetch={false} href="/oferta/" className="hover:text-ink">Договор-оферта</Link></li>
+            <li><Link prefetch={false} href="/rules/" className="hover:text-ink">Правила клуба</Link></li>
+            <li><Link prefetch={false} href="/policy/" className="hover:text-ink">Политика конфиденциальности</Link></li>
           </ul>
         </div>
 
@@ -86,7 +86,7 @@ export function Footer() {
         </address>
       </div>
 
-      <p aria-hidden="true" className="mega mt-16 select-none whitespace-nowrap text-center text-[23.6vw] leading-[0.76] text-[#1a1817]">
+      <p aria-hidden="true" className="mega mt-16 select-none whitespace-nowrap text-center text-[14.6vw] leading-[0.8] text-[#211b18]">
         <span className="deco" data-text="URBAN" />
         <span className="deco text-accent/90" data-text="210" />
       </p>

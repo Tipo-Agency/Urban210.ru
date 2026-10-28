@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { nav, site } from "@/data/site";
 import { trial } from "@/data/pricing";
+import { Arrows } from "./cta";
 
 const links = [{ href: "/", label: "Главная" }, ...nav, { href: "/virtual-tour/", label: "3D-тур" }, { href: "/blog/", label: "Блог" }];
 
@@ -23,7 +24,7 @@ export function MobileMenu() {
     <div className="lg:hidden">
       <button
         type="button"
-        className="relative z-50 grid h-11 w-11 place-items-center rounded-full bg-white/5 md:h-12 md:w-12"
+        className="relative z-50 grid h-11 w-11 place-items-center rounded bg-white/5 md:h-12 md:w-12"
         aria-expanded={open}
         aria-controls="mobile-nav"
         aria-label={open ? "Закрыть меню" : "Открыть меню"}
@@ -41,9 +42,9 @@ export function MobileMenu() {
         aria-label="Мобильное меню"
         aria-hidden={!open}
         inert={!open}
-        className={`fixed inset-0 z-[35] overflow-y-auto lg:hidden bg-[#0b0b0a]/95 backdrop-blur-2xl transition-opacity duration-300 ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        className={`fixed inset-0 z-[35] overflow-y-auto lg:hidden bg-bg transition-opacity duration-300 ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
       >
-        {/* Панель вынесена в body: у шапки backdrop-filter, внутри неё fixed считался бы от шапки */}
+        {/* Панель вынесена в body, чтобы её не обрезали стили шапки */}
         <ul className="wrap pt-24">
           {links.map((n, i) => (
             <li
@@ -52,12 +53,13 @@ export function MobileMenu() {
               className={`transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${open ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
             >
               <Link
+                prefetch={false}
                 href={n.href}
                 aria-current={path === n.href ? "page" : undefined}
-                className={`flex items-baseline gap-4 border-b border-line py-3.5 font-display text-4xl font-bold uppercase ${path === n.href ? "text-accent" : ""}`}
+                className={`flex items-center justify-between gap-4 border-b border-line py-3.5 font-display text-[1.75rem] font-bold ${path === n.href ? "text-accent" : ""}`}
               >
-                <span className="w-7 font-sans text-xs font-medium text-muted">{String(i + 1).padStart(2, "0")}</span>
                 {n.label}
+                <Arrows className="h-4 w-4 text-accent" />
               </Link>
             </li>
           ))}

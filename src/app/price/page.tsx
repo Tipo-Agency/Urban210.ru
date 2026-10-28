@@ -3,7 +3,7 @@ import { Faq } from "@/components/faq";
 import { JsonLd } from "@/components/json-ld";
 import { LeadSection } from "@/components/lead-section";
 import { PageHero } from "@/components/page-hero";
-import { Pricing } from "@/components/pricing";
+import { PricingCards } from "@/components/home/pricing-cards";
 import { VersusNetwork } from "@/components/blocks";
 import { Promos, SectionHead } from "@/components/sections";
 import { faqGeneral, personalText } from "@/data/content";
@@ -44,7 +44,7 @@ export default function Page() {
           <h2 id="plans-title" className="sr-only">
             Тарифы
           </h2>
-          <Pricing block="price_page" />
+          <PricingCards block="price_page" />
         </div>
       </section>
 

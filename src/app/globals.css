@@ -1,34 +1,36 @@
 @import "tailwindcss";
 
-/* Токены из DESIGN.md. Фирменный стиль клуба: графит с гранж-фактурой, оранжевый #ff5722, Oswald + Fira Code. */
+/* Токены из DESIGN.md (v4). Тёплый графит вместо асфальта, оранжевый клуба как цвет плоскостей,
+   форма бренда: шеврон «›» из логотипа (кнопки, вырезы фото, окно с видео). */
 @theme {
-  --color-bg: #101010;
-  --color-card: #171717;
-  --color-raise: #222;
-  --color-line: rgb(255 255 255 / 0.13);
-  --color-ink: #fff;
-  --color-muted: #a3a3a3;
+  --color-bg: #110e0c;
+  --color-card: #1b1715;
+  --color-raise: #26201d;
+  --color-line: rgb(255 240 230 / 0.12);
+  --color-ink: #f5f1ec;
+  --color-muted: #a39a93;
   --color-accent: #ff5722;
-  --color-accent-hover: #ff6d3f;
-  --color-paper: #f3eee8;
-  --color-paper-ink: #191715;
-  --color-paper-muted: #5f5852;
-  --color-paper-line: #ddd5cc;
+  --color-accent-hover: #ff7043;
+  --color-paper: #ece7e1;
+  --color-paper-ink: #16110e;
+  --color-paper-muted: #5d554f;
+  --color-paper-line: #d3cbc3;
 
-  --font-display: var(--font-oswald), "Arial Narrow", sans-serif;
-  --font-sans: var(--font-fira), ui-monospace, monospace;
+  --font-display: var(--font-unbounded), "Arial Black", sans-serif;
+  --font-sans: var(--font-golos), system-ui, sans-serif;
   --font-prose: var(--font-golos), system-ui, sans-serif;
+  --font-logo: var(--font-oswald), "Arial Narrow", sans-serif;
 
-  --radius-card: 2rem;
-  --radius-btn: 0.875rem;
+  --radius-card: 0.25rem;
+  --radius-btn: 0.25rem;
 
-  --text-hero: clamp(2.75rem, 1.6rem + 5.6vw, 6.5rem);
-  --text-mega: clamp(4.25rem, 19vw, 19rem);
-  --text-h2: clamp(2.5rem, 1.5rem + 4vw, 5.5rem);
-  --text-h3: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);
-  --text-lead: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  --text-hero: clamp(2.5rem, 1.2rem + 5.4vw, 7rem);
+  --text-mega: clamp(3.5rem, 15vw, 15rem);
+  --text-h2: clamp(2rem, 1.3rem + 3vw, 4.25rem);
+  --text-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+  --text-lead: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
 
-  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @layer base {
@@ -38,121 +40,118 @@
     scroll-padding-top: 5rem;
   }
   body {
-    background: var(--color-bg) url("/images/brand/grunge-bg.jpg") center top / 1200px auto repeat;
+    background: var(--color-bg);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-size: 0.9375rem;
-    line-height: 1.65;
-    letter-spacing: -0.01em;
+    font-size: 1.0625rem;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
   }
   h1, h2, h3 {
     font-family: var(--font-display);
-    font-weight: 600;
-    line-height: 1;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
     text-wrap: balance;
   }
+  h3 { letter-spacing: -0.02em; }
   p { text-wrap: pretty; }
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
-    border-radius: 6px;
   }
-  ::selection { background: var(--color-accent); color: var(--color-bg); }
+  ::selection { background: var(--color-accent); color: var(--color-paper-ink); }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   }
 }
 
 @layer components {
-  .wrap { width: 100%; max-width: 80rem; margin-inline: auto; padding-inline: 1rem; }
+  .wrap { width: 100%; max-width: 84rem; margin-inline: auto; padding-inline: 1rem; }
   @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
 
-  .section { padding-block: clamp(4.5rem, 3rem + 6vw, 8.5rem); }
+  .section { padding-block: clamp(4.5rem, 3rem + 6vw, 9rem); }
+
+  .h2 { font-size: var(--text-h2); }
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-    min-height: 3.5rem; padding: 0.875rem 1.75rem; border-radius: 999px;
+    min-height: 3.5rem; padding: 0.875rem 1.5rem; border-radius: var(--radius-btn);
     font-weight: 600; font-size: 1rem; line-height: 1.2; white-space: nowrap;
-    transition: background-color 180ms var(--ease-out-quart), color 180ms var(--ease-out-quart), transform 180ms var(--ease-out-quart), border-color 180ms var(--ease-out-quart);
+    transition: background-color 200ms var(--ease-out-quart), color 200ms var(--ease-out-quart), border-color 200ms var(--ease-out-quart), transform 200ms var(--ease-out-quart);
     cursor: pointer;
   }
   .btn:active { transform: scale(0.98); }
-  .btn-accent { background: var(--color-accent); color: #120804; box-shadow: 0 0 0 0 rgb(255 90 31 / 0.5); }
-  .btn-accent:hover { background: var(--color-accent-hover); box-shadow: 0 10px 40px -8px rgb(255 90 31 / 0.65); transform: translateY(-2px); }
-  .btn-accent:active { transform: translateY(0) scale(0.98); }
-  .btn-ink { background: var(--color-bg); color: var(--color-ink); }
-  .btn-ink:hover { background: #000; transform: translateY(-2px); }
+  .btn-accent { background: var(--color-accent); color: var(--color-paper-ink); }
+  .btn-accent:hover { background: var(--color-accent-hover); }
+  .btn-ink { background: var(--color-paper-ink); color: var(--color-ink); }
+  .btn-ink:hover { background: #000; }
   .btn-ghost { border: 1px solid var(--color-line); color: var(--color-ink); background: transparent; }
   .btn-ghost:hover { border-color: var(--color-ink); }
   .on-paper .btn-ghost { border-color: var(--color-paper-line); color: var(--color-paper-ink); }
   .on-paper .btn-ghost:hover { border-color: var(--color-paper-ink); }
 
-  /* Фирменная кнопка клуба: оранжевая капсула с белым кругом и гантелей */
+  /* Главная кнопка в форме шеврона из логотипа. Фокус показываем сменой заливки:
+     обводку clip-path обрезал бы. */
   .btn-brand {
-    position: relative; isolation: isolate; overflow: hidden;
-    display: inline-flex; align-items: center; gap: 0.875rem;
-    min-height: 3.5rem; padding: 0.375rem 1.75rem 0.375rem 0.375rem; border-radius: 999px;
-    background: var(--color-accent); color: #fff; font-weight: 500; font-size: 0.9375rem; line-height: 1.2; white-space: nowrap;
-    transition: transform 300ms var(--ease-out-quart), box-shadow 300ms var(--ease-out-quart);
+    position: relative; display: inline-flex; align-items: center; justify-content: space-between; gap: 1.25rem;
+    min-height: 3.75rem; padding: 0 2.5rem 0 1.5rem;
+    background: var(--color-accent); color: var(--color-paper-ink);
+    font-weight: 600; font-size: 1rem; line-height: 1.2; white-space: nowrap;
+    clip-path: polygon(0 0, calc(100% - 1.25rem) 0, 100% 50%, calc(100% - 1.25rem) 100%, 0 100%);
+    transition: background-color 200ms var(--ease-out-quart), color 200ms var(--ease-out-quart), transform 200ms var(--ease-out-quart);
     cursor: pointer;
   }
-  .btn-brand::after {
-    content: ""; position: absolute; inset: 0; z-index: -1;
-    background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.35) 50%, transparent 65%);
-    transform: translateX(-120%); transition: transform 700ms var(--ease-out-quart);
-  }
-  .btn-brand:hover { box-shadow: 0 12px 40px -10px rgb(255 87 34 / 0.75); transform: translateY(-2px); }
-  .btn-brand:hover::after { transform: translateX(120%); }
+  .btn-brand .arrows { width: 1.25rem; height: 1rem; flex-shrink: 0; transition: transform 300ms var(--ease-out-quart); }
+  .btn-brand:hover { background: var(--color-accent-hover); }
+  .btn-brand:hover .arrows { transform: translateX(0.375rem); }
   .btn-brand:active { transform: scale(0.98); }
-  .btn-brand .ico {
-    display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: 999px;
-    background: #fff; color: #101010; transition: transform 500ms var(--ease-out-quart);
-  }
-  .btn-brand:hover .ico { transform: rotate(-35deg); }
-  .btn-brand.light { background: #fff; color: #101010; }
-  .btn-brand.light .ico { background: var(--color-accent); color: #fff; }
-  .btn-brand.light:hover { box-shadow: 0 12px 40px -12px rgb(255 255 255 / 0.5); }
-  .btn-brand.wide { width: 100%; justify-content: flex-start; }
-  .btn-brand.wide > span:last-child { flex: 1; text-align: center; padding-right: 2.75rem; }
+  .btn-brand:focus-visible { outline: none; background: var(--color-ink); color: var(--color-paper-ink); }
+  .btn-brand.light { background: var(--color-ink); color: var(--color-paper-ink); }
+  .btn-brand.light:hover { background: #fff; }
+  .btn-brand.light:focus-visible { background: var(--color-accent); }
+  .btn-brand.dark { background: var(--color-paper-ink); color: #f5f1ec; }
+  .btn-brand.dark:hover { background: #000; }
+  .btn-brand.dark:focus-visible { background: var(--color-ink); color: var(--color-paper-ink); }
+  .btn-brand.wide { width: 100%; }
+  .btn-brand[disabled] { opacity: 0.6; cursor: progress; }
 
-  .eyebrow {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    font-size: 0.9375rem; font-weight: 500; color: var(--color-accent);
-  }
+  .eyebrow { font-size: 1rem; font-weight: 600; color: var(--color-accent); }
 
   /* Светлые секции переопределяют токены, поэтому утилиты text-muted и border-line работают и тут */
   .on-paper {
-    --color-ink: #121110;
-    --color-muted: #5a534d;
-    --color-line: #d9d1c7;
+    --color-ink: #16110e;
+    --color-muted: #5d554f;
+    --color-line: #d3cbc3;
     background: var(--color-paper);
+    color: var(--color-paper-ink);
+  }
+  .on-accent {
+    --color-ink: #16110e;
+    --color-muted: #3d2318;
+    --color-line: rgb(22 17 14 / 0.25);
+    background: var(--color-accent);
     color: var(--color-paper-ink);
   }
 
   .field {
-    width: 100%; min-height: 3.5rem; padding: 0.75rem 1.375rem; border-radius: 999px;
-    background: #fff; border: 2px solid transparent; color: #101010;
-    font-size: 0.9375rem; transition: border-color 160ms, box-shadow 160ms;
+    width: 100%; min-height: 3.5rem; padding: 0.75rem 1rem; border-radius: var(--radius-btn);
+    background: #fff; border: 2px solid transparent; color: var(--color-paper-ink);
+    font-size: 1rem; transition: border-color 160ms, box-shadow 160ms;
   }
-  .field::placeholder { color: #8a8a8a; }
-  .field:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 4px rgb(255 87 34 / 0.25); }
-  .field[aria-invalid="true"] { border-color: #ff6b6b; }
-  select.field { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' fill='none' stroke='%23101010' stroke-width='2'%3E%3Cpath d='M1 1l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1.25rem center; }
+  .field::placeholder { color: #857c75; }
+  .field:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px rgb(255 87 34 / 0.3); }
+  .field[aria-invalid="true"] { border-color: #e5484d; }
+  select.field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' fill='none' stroke='%2316110e' stroke-width='2'%3E%3Cpath d='M1 1l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
 
-  /* Гигантская типографика */
-  .mega { font-family: var(--font-display); font-weight: 700; font-size: var(--text-mega); line-height: 0.8; letter-spacing: -0.035em; text-transform: uppercase; }
-  .outline { color: transparent; -webkit-text-stroke: 2px var(--stroke, #120804); }
-  .outline-ink { color: transparent; -webkit-text-stroke: 2px var(--color-ink); }
-  @media (min-width: 768px) { .outline, .outline-ink { -webkit-text-stroke-width: 3px; } }
-  .num { font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; line-height: 0.85; }
-  .kicker { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }
+  .mega { font-family: var(--font-display); font-weight: 700; font-size: var(--text-mega); line-height: 0.85; letter-spacing: -0.05em; text-transform: uppercase; }
+  .outline { color: transparent; -webkit-text-stroke: 2px var(--stroke, var(--color-paper-ink)); }
+  .outline-ink { color: transparent; -webkit-text-stroke: 1.5px var(--color-ink); }
+  .num { font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.04em; line-height: 0.9; }
+  .kicker { font-size: 0.9375rem; font-weight: 600; }
 
-  .prose-u { max-width: 68ch; font-family: var(--font-prose); font-size: 1.0625rem; letter-spacing: 0; }
+  .prose-u { max-width: 68ch; font-family: var(--font-prose); font-size: 1.0625rem; }
   .prose-u h2 { font-size: var(--text-h3); margin-top: 2.5rem; margin-bottom: 0.75rem; }
   .prose-u h3 { font-size: 1.25rem; margin-top: 1.75rem; margin-bottom: 0.5rem; }
   .prose-u p, .prose-u ul, .prose-u ol { margin-bottom: 1rem; }
@@ -168,44 +167,66 @@
   .prose-u a { color: var(--color-accent); text-decoration: underline; text-underline-offset: 3px; }
 }
 
-/* Появление первого экрана: только opacity и transform, без задержки LCP-картинки */
-@keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
-.rise { animation: rise 900ms var(--ease-out-quart) both; }
-.rise-2 { animation-delay: 120ms; }
-.rise-3 { animation-delay: 240ms; }
-.rise-4 { animation-delay: 360ms; }
+/* Фото со срезом-шевроном справа: та же форма, что у кнопок и логотипа */
+.cut-r { clip-path: polygon(0 0, calc(100% - var(--cut, 2.5rem)) 0, 100% 50%, calc(100% - var(--cut, 2.5rem)) 100%, 0 100%); }
+.cut-l { clip-path: polygon(var(--cut, 2.5rem) 0, 100% 0, 100% 100%, var(--cut, 2.5rem) 100%, 0 50%); }
 
+/* Первый экран: окно-шеврон с видео. --p от 0 до 1 задаёт скролл (hero-stage.tsx),
+   на телефоне --p не меняется и окно стоит на месте. */
+.hero-stage { --p: 0; }
+.hero-window {
+  clip-path: polygon(
+    calc(38% - 38% * var(--p)) 0,
+    calc(74% + 26% * var(--p)) 0,
+    100% calc(50% - 50% * var(--p)),
+    100% 50%,
+    100% calc(50% + 50% * var(--p)),
+    calc(74% + 26% * var(--p)) 100%,
+    calc(38% - 38% * var(--p)) 100%,
+    calc(64% - 64% * var(--p)) 50%
+  );
+}
+@media (max-width: 1023px) {
+  .hero-window { clip-path: polygon(0 0, 78% 0, 100% 50%, 78% 100%, 0 100%, 22% 50%); }
+}
+
+.hero-shade { opacity: calc(0.12 + var(--p) * 0.38); }
+.hero-copy { opacity: calc(1 - var(--p) * 2.4); transform: translate3d(calc(var(--p) * -6vw), 0, 0); }
+.hero-after { opacity: clamp(0, calc((var(--p) - 0.55) * 3), 1); transform: translate3d(0, calc((1 - clamp(0, calc((var(--p) - 0.55) * 3), 1)) * 2rem), 0); }
+
+/* Появление первого экрана: только opacity и transform */
+@keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 800ms var(--ease-out-quart) both; }
+.rise-2 { animation-delay: 100ms; }
+.rise-3 { animation-delay: 200ms; }
+.rise-4 { animation-delay: 300ms; }
 
 /* Бегущая строка */
 @keyframes marquee { to { transform: translateX(-50%); } }
-.marquee { display: flex; width: max-content; will-change: transform; animation: marquee var(--marquee-speed, 32s) linear infinite; }
+.marquee { display: flex; width: max-content; animation: marquee var(--marquee-speed, 40s) linear infinite; }
 .marquee-rev { animation-direction: reverse; }
 .marquee-wrap:hover .marquee { animation-play-state: paused; }
 
-/* Появление на скролле. Без JavaScript всё видно сразу. */
-.js [data-reveal] { opacity: 0; transform: translateY(40px); transition: opacity 900ms var(--ease-out-quart), transform 900ms var(--ease-out-quart); transition-delay: var(--d, 0ms); }
-.js [data-reveal="left"] { transform: translateX(-60px); }
-.js [data-reveal="scale"] { transform: scale(0.92); }
-.js [data-reveal].in { opacity: 1; transform: none; }
-.js [data-clip] { clip-path: inset(100% 0 0 0); transition: clip-path 1100ms var(--ease-out-quart); transition-delay: var(--d, 0ms); }
-.js [data-clip].in { clip-path: inset(0 0 0 0); }
-.js [data-words] .w { opacity: 0.18; transition: opacity 500ms var(--ease-out-quart); }
+/* Контент виден сразу. Атрибуты data-reveal и data-clip остались в разметке внутренних страниц,
+   но больше ничего не прячут: медленное появление блоков воспринималось как тормоза. */
+
+/* Проявление слов в слогане по скроллу (motion.tsx) */
+.js [data-words] .w { opacity: 0.42; transition: opacity 500ms var(--ease-out-quart); }
 .js [data-words] .w.on { opacity: 1; }
 
-/* Декоративный текст рисуем псевдоэлементом: его не читают скринридеры и не проверяют на контраст */
 .deco::before { content: attr(data-text); }
 
-/* Нижняя панель на телефоне появляется после первого экрана, чтобы не закрывать его */
+/* Нижняя панель на телефоне появляется после первого экрана */
 .js:not(.scrolled) [data-mobile-bar] { transform: translateY(130%); }
 
-/* Липкие карточки зон складываются стопкой */
-.stack-card { position: sticky; top: calc(5.5rem + var(--i) * 1.25rem); }
+/* Шапка: прозрачная над первым экраном, плотная после скролла */
+.js.scrolled [data-header] { background: rgb(17 14 12 / 0.96); border-color: var(--color-line); }
 
 /* Фото: чёрно-белое по умолчанию, цвет на ховере */
-.duo { filter: grayscale(1) contrast(1.08); transition: filter 600ms var(--ease-out-quart), transform 900ms var(--ease-out-quart); }
+.duo { filter: grayscale(1) contrast(1.06); transition: filter 500ms var(--ease-out-quart), transform 700ms var(--ease-out-quart); }
 .group:hover .duo { filter: grayscale(0) contrast(1); }
 
-dialog::backdrop { background: rgb(8 7 6 / 0.8); backdrop-filter: blur(6px); }
+dialog::backdrop { background: rgb(8 6 5 / 0.85); }
 dialog[open] { animation: rise 260ms var(--ease-out-quart); }
 
 details > summary { list-style: none; cursor: pointer; }
@@ -214,43 +235,5 @@ details[open] .faq-icon { transform: rotate(45deg); }
 
 @media (prefers-reduced-motion: reduce) {
   .marquee { animation: none; }
-  .js [data-reveal], .js [data-clip] { opacity: 1; transform: none; clip-path: none; }
   .js [data-words] .w { opacity: 1; }
-}
-
-/* Неоновая карта: плавает и наклоняется за курсором */
-@keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -14px; } }
-.neon-card-inner {
-  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  transform-style: preserve-3d;
-  transition: transform 500ms var(--ease-out-quart);
-  animation: float 6s ease-in-out infinite;
-  filter: drop-shadow(0 30px 60px rgb(0 0 0 / 0.6));
-}
-.neon-card-shine {
-  position: absolute; inset: 8% 4%; border-radius: 1.5rem; pointer-events: none; mix-blend-mode: overlay;
-  background: radial-gradient(circle at var(--gx, 30%) var(--gy, 30%), rgb(255 255 255 / 0.55), transparent 45%);
-}
-
-/* Наклейка с адресом медленно вращается */
-@keyframes spin { to { rotate: 360deg; } }
-.spin-slow { animation: spin 28s linear infinite; }
-
-/* Подписи в квадратных скобках, как на вывесках клуба: [Отдел продаж] */
-.bracket::before { content: "["; }
-.bracket::after { content: "]"; }
-
-/* Тег-плашка: «43 ₽/день» */
-.tag-accent { display: inline-block; padding: 0.05em 0.45em; border-radius: 0.4em; background: var(--color-accent); color: #fff; transform: rotate(-2deg); }
-
-/* Панель-карточка в стиле клуба */
-.panel { border-radius: 2rem; background: rgb(23 23 23 / 0.85); border: 1px solid var(--color-line); }
-.panel-light { border-radius: 2rem; background: #fff; color: #101010; }
-
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
-.lenis.lenis-stopped { overflow: hidden; }
-
-@media (prefers-reduced-motion: reduce) {
-  .neon-card-inner, .spin-slow { animation: none; }
 }

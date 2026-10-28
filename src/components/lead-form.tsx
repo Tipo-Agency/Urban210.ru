@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Dumbbell } from "./cta";
+import { Arrows } from "./cta";
 import { useEffect, useId, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
 import { readAttribution } from "@/lib/attribution";
@@ -124,7 +124,7 @@ export function LeadForm({ goal = GOALS[0], block, formId, compact, simple, subm
           </label>
           <input id={`${id}-name`} name="name" className="field" autoComplete="given-name" required minLength={2} {...err("name")} />
           {errors.name && (
-            <p id={`${id}-name-err`} className="mt-1.5 text-sm text-[#ff8a80]">
+            <p id={`${id}-name-err`} className="mt-1.5 text-sm text-[#ff9b8f]">
               {errors.name}
             </p>
           )}
@@ -147,7 +147,7 @@ export function LeadForm({ goal = GOALS[0], block, formId, compact, simple, subm
             {...err("phone")}
           />
           {errors.phone && (
-            <p id={`${id}-phone-err`} className="mt-1.5 text-sm text-[#ff8a80]">
+            <p id={`${id}-phone-err`} className="mt-1.5 text-sm text-[#ff9b8f]">
               {errors.phone}
             </p>
           )}
@@ -179,22 +179,20 @@ export function LeadForm({ goal = GOALS[0], block, formId, compact, simple, subm
         <input type="checkbox" name="consent" required className="mt-1 h-4 w-4 shrink-0 accent-[var(--color-accent)]" {...err("consent")} />
         <span>
           Согласен на обработку персональных данных по{" "}
-          <Link href="/policy/" className="underline underline-offset-2 hover:text-ink" target="_blank">
+          <Link prefetch={false} href="/policy/" className="underline underline-offset-2 hover:text-ink" target="_blank">
             политике конфиденциальности
           </Link>
         </span>
       </label>
-      {errors.consent && <p className="-mt-2 text-sm text-[#ff8a80]">{errors.consent}</p>}
+      {errors.consent && <p className="-mt-2 text-sm text-[#ff9b8f]">{errors.consent}</p>}
 
       <button type="submit" className="btn-brand wide" disabled={state === "loading"} aria-busy={state === "loading"}>
-        <span className="ico">
-          <Dumbbell />
-        </span>
         <span>{state === "loading" ? "Отправляем…" : submitLabel}</span>
+        <Arrows />
       </button>
       <p className="text-sm text-muted">Перезвоним за 15 минут в часы работы клуба, чтобы подобрать время визита. Без спама.</p>
       {state === "error" && message && (
-        <p role="alert" className="text-sm text-[#ff8a80]">
+        <p role="alert" className="text-sm text-[#ff9b8f]">
           {message}{" "}
           <a href={site.phone.href} className="underline">
             {site.phone.display}
