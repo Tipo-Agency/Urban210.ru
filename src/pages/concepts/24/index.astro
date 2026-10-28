@@ -1,0 +1,787 @@
+---
+// Концепция 24 «Вайнгарт»: швейцарский панк, типографский плакат в духе Вольфганга Вайнгарта.
+// Набор разных кеглей и углов, растровые (halftone) фото, наложение плашек (multiply), повтор букв со сдвигом,
+// модульная сетка, которую нарочно ломают. Чёрный, оранжевый и голубой как третья краска поверх бумаги.
+// Golos Text (весь набор) и IBM Plex Mono (подписи и служебные пометки). Движение: повторы букв расходятся,
+// плашки сдвигаются «с приводкой» при попадании в экран (CSS + IntersectionObserver).
+import pmCyr4 from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-cyrillic-400-normal.woff2?url';
+import pmLat4 from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url';
+import pmCyr5 from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-cyrillic-500-normal.woff2?url';
+import pmLat5 from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2?url';
+import { Image } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import LeadForm from '../../../components/LeadForm.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site, whatsappLink, telegramLink } from '../../../data/site';
+import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { reviews, trainers, zones, promos, reasons, programs } from '../../../data/content';
+
+const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
+const UL = 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
+const ff = (w: number, url: string, range: string) => `@font-face{font-family:'Plex w';font-style:normal;font-display:swap;font-weight:${w};src:url(${url}) format('woff2');unicode-range:${range}}`;
+const fonts = [ff(400, pmCyr4, UR), ff(400, pmLat4, UL), ff(500, pmCyr5, UR), ff(500, pmLat5, UL)].join('');
+
+const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
+const rating = site.rating.value.toString().replace('.', ',');
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const z = Object.fromEntries(zones.map((x) => [x.id, x]));
+const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const sidePromos = promos.filter((p) => p.slug !== '1-rubl');
+const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
+const steps = [0, 1, 2, 3, 4, 5];
+const groupTags = programs.flatMap((p) => p.items);
+---
+<Layout title="Концепция 24 «Вайнгарт»" description="Концепция дизайна сайта Urban210: типографский плакат в духе швейцарского панка, растровые фото и наложение красок." noindex bare>
+  <Fragment slot="head">
+    <style set:html={fonts} />
+  </Fragment>
+  <div class="wg">
+    <header class="wg-top">
+      <div class="wg-w wg-top-in">
+        <a class="wg-logo" href="/concepts/24/" aria-label="Urban210, на главную">URBAN210<Icon name="chev" /></a>
+        <nav class="wg-nav" aria-label="Разделы">
+          <a href="#zony"><i>01</i>Зоны</a><a href="#tarify"><i>02</i>Тарифы</a><a href="#trenery"><i>03</i>Тренеры</a><a href="#otzyvy"><i>04</i>Отзывы</a><a href="#zayavka"><i>05</i>Адрес</a>
+        </nav>
+        <a class="wg-tel" href={site.phone.href}>{site.phone.display}</a>
+        <a class="wg-btn wg-btn-s" href="#zayavka" data-lead={trial.title} data-block="24_header">День за 1 ₽<Icon name="chev" /></a>
+      </div>
+    </header>
+
+    <!-- Первый экран: типографский плакат -->
+    <section class="wg-first" aria-labelledby="wg-h1" data-m>
+      <div class="wg-w wg-first-in">
+        <span class="wg-cols" aria-hidden="true">{Array.from({ length: 12 }).map(() => <i></i>)}</span>
+        <p class="wg-kick"><b>Urban210</b><span>фитнес-клуб</span><span>{site.city}</span><span>{site.address.short}</span></p>
+
+        <h1 id="wg-h1" class="wg-h1">
+          <span class="a">Сила</span>
+          <span class="b"><i>в</i>наборе</span>
+          <span class="wg-sr">: первый день в Urban210 за 1 ₽</span>
+        </h1>
+
+        <div class="wg-art" aria-hidden="true">
+          <span class="wg-plate wg-plate-or" data-p style="--x:-40px;--y:24px"></span>
+          <figure class="wg-dt wg-dt-cy wg-por" data-p style="--x:30px;--y:-20px;--d:80ms">
+            <div class="wg-ht">
+              <Image src={img('/images/community/2.jpg')} alt="" widths={[360, 480, 640]} sizes="(min-width: 1000px) 30vw, 62vw" loading="eager" fetchpriority="high" format="webp" quality={50} />
+            </div>
+          </figure>
+          <figure class="wg-dt wg-sub" data-p style="--x:-30px;--y:30px;--d:120ms">
+            <div class="wg-ht">
+              <Image src={img('/images/group-strength.jpg')} alt="" widths={[320, 480]} sizes="(min-width: 1000px) 22vw, 50vw" loading="eager" format="webp" quality={40} />
+            </div>
+          </figure>
+          <span class="wg-plate wg-plate-k" data-p style="--x:50px;--d:160ms"></span>
+          <div class="wg-step wg-step-hero">
+            {steps.map((i) => <span style={`--i:${i}`}>1₽</span>)}
+          </div>
+          <span class="wg-reg wg-reg-1"></span>
+          <span class="wg-reg wg-reg-2"></span>
+          <span class="wg-vert">Хабаровск · Железнодорожный район · пр. 60-летия Октября, 210</span>
+          <ul class="wg-spec">
+            <li><i>Пн–Пт</i>06:30–23:30</li>
+            <li><i>Сб–Вс</i>07:30–22:30</li>
+            <li><i>Яндекс</i>{rating} · {site.rating.count}</li>
+            <li><i>Взнос</i>0 ₽</li>
+          </ul>
+        </div>
+
+        <div class="wg-offer">
+          <p class="wg-lead">Первый день в Urban210 за&nbsp;1&nbsp;₽. Зал {site.facts.area}, {site.facts.machines} {site.facts.brands}, групповые и SPA. Вступительного взноса нет.</p>
+          <div class="wg-cta">
+            <a class="wg-btn" href="#zayavka" data-lead={trial.title} data-block="24_hero">Записаться за 1 ₽<Icon name="chev" /></a>
+            <a class="wg-link" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Повтор со сдвигом: без взноса -->
+    <section class="wg-sec wg-why" aria-labelledby="wg-why-h" data-m>
+      <div class="wg-w">
+        <h2 id="wg-why-h" class="wg-sr">Почему Urban210</h2>
+        <div class="wg-cascade" aria-hidden="true">
+          {['Без взноса', 'Без взноса', 'Без взноса', 'Без взноса', 'Без взноса'].map((t, i) => <p style={`--i:${i}`}>{t}</p>)}
+        </div>
+        <ol class="wg-reasons">
+          {reasons.map((r, i) => (
+            <li data-p style={`--y:30px;--d:${i * 80}ms`}>
+              <span class="wg-n">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{r.title}</h3>
+              <p>{cap(r.text)}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <!-- Зоны -->
+    <section class="wg-sec wg-zones-s" id="zony" aria-labelledby="wg-zones-h">
+      <div class="wg-w">
+        <header class="wg-shead" data-m>
+          <p class="wg-mono">01 / зоны клуба</p>
+          <h2 id="wg-zones-h" class="wg-h2" data-p style="--x:-30px"><span>Четыре</span> <span class="o">зоны</span></h2>
+        </header>
+        <div class="wg-zones">
+          <a class="wz wz-zal" href={z.zal.href} data-m>
+            <figure class="wg-dt wg-dt-cy wz-img" data-p style="--x:-30px;--y:20px">
+              <div class="wg-ht"><Image src={img('/images/free-weights.jpg')} alt="Свободные веса в зале Urban210" widths={[480, 720, 960]} sizes="(min-width: 1000px) 52vw, 92vw" loading="lazy" format="avif" quality={45} /></div>
+            </figure>
+            <span class="wz-plate" data-p style="--x:40px;--d:120ms"></span>
+            <span class="wz-big" aria-hidden="true">ЗАЛ</span>
+            <div class="wz-tx" data-p style="--y:20px;--d:200ms">
+              <h3>{z.zal.title}</h3>
+              <p>{cap(z.zal.text)}</p>
+              <span class="wg-more">Подробнее о зале<Icon name="chev" /></span>
+            </div>
+          </a>
+          <a class="wz wz-cardio" href={z.cardio.href} data-m>
+            <figure class="wg-dt wg-dt-or wz-img" data-p style="--x:30px;--y:-20px">
+              <div class="wg-ht"><Image src={img('/images/cardio.jpg')} alt="Беговые дорожки в кардиозоне" widths={[400, 600, 800]} sizes="(min-width: 1000px) 34vw, 92vw" loading="lazy" format="avif" quality={45} /></div>
+            </figure>
+            <span class="wz-vert" aria-hidden="true">Кардио</span>
+            <div class="wz-tx" data-p style="--y:20px;--d:160ms">
+              <h3>{z.cardio.title}</h3>
+              <p>{z.cardio.text}</p>
+              <span class="wg-more">Подробнее<Icon name="chev" /></span>
+            </div>
+          </a>
+          <a class="wz wz-group" href={z.group.href} data-m>
+            <figure class="wg-dt wg-dt-k wz-img" data-p style="--x:-20px;--y:-30px">
+              <div class="wg-ht"><Image src={img('/images/group.jpg')} alt="Групповая тренировка в зале 150 м²" widths={[400, 600, 800]} sizes="(min-width: 1000px) 40vw, 92vw" loading="lazy" format="avif" quality={45} /></div>
+            </figure>
+            <div class="wz-tx" data-p style="--y:20px;--d:160ms">
+              <h3>{z.group.title}</h3>
+              <p>{cap(z.group.text)}</p>
+              <ul class="wz-tags">{groupTags.map((t) => <li>{t}</li>)}</ul>
+            </div>
+          </a>
+          <a class="wz wz-spa" href={z.spa.href} data-m>
+            <div class="wz-deg" aria-hidden="true" data-p style="--x:-40px">
+              <span>40</span><span>50</span><b>°C</b>
+            </div>
+            <div class="wz-tx" data-p style="--y:20px;--d:140ms">
+              <h3>{z.spa.title}</h3>
+              <p>{z.spa.text}</p>
+              <p class="wz-note">В тарифе «{plans[2].name}»</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Тарифы -->
+    <section class="wg-sec wg-price" id="tarify" aria-labelledby="wg-price-h">
+      <div class="wg-w">
+        <header class="wg-shead" data-m>
+          <p class="wg-mono">02 / тарифы · вступительного взноса нет</p>
+          <h2 id="wg-price-h" class="wg-h2" data-p style="--x:-30px"><span>Три</span> <span class="o">тарифа</span></h2>
+        </header>
+        <div class="wg-plans" data-m>
+          {plans.map((p, i) => (
+            <article class={`wp wp-${p.id}`} data-p style={`--y:${30 + i * 10}px;--d:${i * 90}ms`}>
+              <header>
+                <span class="wg-mono">{String(i + 1).padStart(2, '0')}{p.tag ? ` · ${p.tag}` : ''}</span>
+                <h3>{p.name}</h3>
+                <p class="wp-h">{cap(p.hours)}</p>
+              </header>
+              <p class="wp-price"><b>{num(p.month)}</b><span>₽ / месяц</span></p>
+              <p class="wp-year">За год {rub(p.year)}, это {perDay(p.year, 365)}&nbsp;₽ в день</p>
+              <ul>
+                {p.features.map((f) => <li><Icon name="check" />{f}</li>)}
+                {p.excluded?.map((f) => <li class="no"><Icon name="minus" /><s>{f}</s></li>)}
+              </ul>
+              <a class="wg-btn wg-btn-w" href="#zayavka" data-lead={`Тариф «${p.name}»`} data-block={`24_plan_${p.id}`}>Выбрать<Icon name="chev" /></a>
+            </article>
+          ))}
+        </div>
+
+        <div class="wg-try" data-m>
+          <div class="wg-step wg-step-try" aria-hidden="true">
+            {steps.map((i) => <span style={`--i:${i}`}>1₽</span>)}
+          </div>
+          <span class="wg-try-plate" data-p style="--x:-60px" aria-hidden="true"></span>
+          <div class="wg-try-tx" data-p style="--y:30px;--d:180ms">
+            <p class="wg-mono">Для новых гостей</p>
+            <h3>Пробный день за 1 ₽</h3>
+            <p>{trial.text}</p>
+            <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
+            <a class="wg-btn" href="#zayavka" data-lead={trial.title} data-block="24_trial">{trialPromo.cta}<Icon name="chev" /></a>
+          </div>
+        </div>
+
+        <div class="wg-side">
+          {sidePromos.map((pr, i) => (
+            <article class="wg-sp" data-rise>
+              <span class="wg-mono">Акция {String(i + 1).padStart(2, '0')}</span>
+              <h3>{pr.title}</h3>
+              <p>{pr.text}</p>
+              <a class="wg-link" href="#zayavka" data-lead={pr.goal} data-block={`24_promo_${pr.slug}`}>{pr.cta}</a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Тренеры -->
+    <section class="wg-sec wg-team" id="trenery" aria-labelledby="wg-team-h">
+      <div class="wg-w">
+        <header class="wg-shead" data-m>
+          <p class="wg-mono">03 / тренеры клуба</p>
+          <h2 id="wg-team-h" class="wg-h2" data-p style="--x:-30px"><span>Ставят</span> <span class="o">технику</span></h2>
+        </header>
+        <div class="wg-coaches">
+          {trainers.map((t, i) => (
+            <figure class={`wc wc-${i}`} data-m>
+              <div class={`wg-dt ${i === 1 ? 'wg-dt-cy' : 'wg-dt-or'} wc-img`} data-p style={`--y:40px;--d:${i * 90}ms`}>
+                <div class="wg-ht"><Image src={img(t.photo)} alt={t.name} widths={[320, 480, 640]} sizes="(min-width: 1000px) 28vw, 80vw" loading="lazy" format="avif" quality={50} /></div>
+              </div>
+              <figcaption>
+                <b>{t.name.split(' ')[1]}</b>
+                <span>{t.name.split(' ')[0]}</span>
+                <small>{t.role}</small>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <div class="wg-pers" data-rise>
+          <p class="wg-mono">Персональные тренировки</p>
+          <p class="wg-pers-p">{personalLine}</p>
+          <p class="wg-pers-t">{personal.firstFree}. Тренер поставит технику, составит программу под вашу цель и будет следить за прогрессом.</p>
+          <a class="wg-btn" href="#zayavka" data-lead="Персональные тренировки" data-block="24_personal">Записаться к тренеру<Icon name="chev" /></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Отзывы -->
+    <section class="wg-sec wg-rev" id="otzyvy" aria-labelledby="wg-rev-h">
+      <div class="wg-w">
+        <header class="wg-rev-head" data-m>
+          <div>
+            <p class="wg-mono">04 / отзывы гостей</p>
+            <h2 id="wg-rev-h" class="wg-h2" data-p style="--x:-30px"><span>Слово</span> <span class="o">гостям</span></h2>
+          </div>
+          <a class="wg-score" href={site.maps.yandexReviews} target="_blank" rel="noopener" data-p style="--x:40px;--d:120ms">
+            <span class="wg-score-n" aria-hidden="true">{[0, 1, 2].map((i) => <i style={`--i:${i}`}>{rating}</i>)}</span>
+            <span class="wg-score-t"><b>{rating} из 5</b> на Яндекс Картах, {site.rating.text}</span>
+          </a>
+        </header>
+        <div class="wg-quotes">
+          {reviews.map((r, i) => (
+            <blockquote class={`wq wq-${i}`} data-rise>
+              <span class="wq-mark" aria-hidden="true">«</span>
+              <p>{r.text}</p>
+              <footer><b>{r.name}</b><span>{r.source}</span></footer>
+            </blockquote>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Заявка -->
+    <section class="wg-final" id="zayavka" aria-labelledby="wg-final-h" data-m>
+      <div class="wg-step wg-step-fin" aria-hidden="true">
+        {steps.map((i) => <span style={`--i:${i}`}>1₽</span>)}
+      </div>
+      <div class="wg-w wg-final-in">
+        <div class="wg-final-tx">
+          <p class="wg-mono">05 / заявка</p>
+          <h2 id="wg-final-h" class="wg-h2"><span>Начни</span> <span>набор</span> <span class="w">за 1 ₽</span></h2>
+          <dl class="wg-facts">
+            <div><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}<br />{site.district}</dd></div>
+            <div><dt>Часы</dt><dd>{site.hours.map((h) => <>{`${h.days} ${h.time}`}<br /></>)}</dd></div>
+            <div><dt>Парковка</dt><dd>Бесплатная, 50 мест под видеонаблюдением</dd></div>
+            <div><dt>Телефон</dt><dd><a href={site.phone.href}>{site.phone.display}</a></dd></div>
+          </dl>
+        </div>
+        <div class="wg-form" data-p style="--y:50px;--d:200ms">
+          <span class="wg-form-plate" aria-hidden="true"></span>
+          <LeadForm id="wg" block="24_final" />
+        </div>
+      </div>
+    </section>
+
+    <footer class="wg-foot">
+      <div class="wg-w">
+        <p class="wg-foot-big" aria-hidden="true">
+          <span class="c">URBAN210</span><span class="o">URBAN210</span><span class="k">URBAN210<Icon name="chev" /></span>
+        </p>
+        <div class="wg-foot-cols">
+          <div>
+            <h2>Клуб</h2>
+            <p>{site.address.locality}, {site.address.street}<br />{site.district}</p>
+            <p>{site.hours.map((h) => <>{`${h.days}: ${h.time}`}<br /></>)}</p>
+          </div>
+          <div>
+            <h2>Связь</h2>
+            <ul>
+              <li><a href={site.phone.href}>{site.phone.display}</a></li>
+              <li><a href={whatsappLink('Здравствуйте! Вопрос по клубу Urban210')} target="_blank" rel="noopener">WhatsApp</a></li>
+              <li><a href={telegramLink('site_footer')} target="_blank" rel="noopener">Telegram-бот</a></li>
+              <li><a href={site.instagram} target="_blank" rel="noopener">Instagram</a></li>
+              <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+            </ul>
+          </div>
+          <div>
+            <h2>Клуб и цены</h2>
+            <ul>
+              <li><a href="/price/">Тарифы</a></li><li><a href="/zal/">Тренажёрный зал</a></li><li><a href="/group/">Групповые</a></li><li><a href="/spa/">SPA</a></li><li><a href="/trainers/">Тренеры</a></li><li><a href="/promo/">Акции</a></li>
+            </ul>
+          </div>
+          <div>
+            <h2>Документы</h2>
+            <ul>
+              <li><a href="/rules/">Правила клуба</a></li><li><a href="/oferta/">Договор-оферта</a></li><li><a href="/policy/">Политика конфиденциальности</a></li><li><a href={site.maps.yandexReviews} target="_blank" rel="noopener">Отзывы на Яндекс Картах</a></li>
+            </ul>
+          </div>
+        </div>
+        <p class="wg-legal">© {new Date().getFullYear()} {site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn}</p>
+      </div>
+    </footer>
+  </div>
+</Layout>
+
+<script>
+  // Блоки «печатаются» один раз при попадании в экран: плашки съезжаются, повторы букв расходятся.
+  const groups = document.querySelectorAll<HTMLElement>('.wg [data-m]');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !('IntersectionObserver' in window)) groups.forEach((g) => g.classList.add('on'));
+  else {
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('on');
+      io.unobserve(e.target);
+    }), { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
+    groups.forEach((g) => io.observe(g));
+  }
+</script>
+
+<style is:global>
+  body:has(.wg) { background: #f2efe8; color: #141210; color-scheme: light; overflow-x: clip; }
+  body:has(.wg) ::selection { background: #00a6d6; color: #141210; }
+  body:has(.wg) :focus-visible { outline: 3px solid #00a6d6; outline-offset: 3px; }
+  body:has(.wg) .form { background: #f2efe8; color: #141210; --ink: #141210; --muted: #4f4943; --card: #fff; --line: #141210; border-radius: 0; border: 2px solid #141210; gap: 14px; }
+  body:has(.wg) .form h3 { font-family: 'Golos Text Variable', system-ui, sans-serif; font-weight: 900; font-size: 2.1rem; line-height: 0.95; letter-spacing: -0.04em; }
+  body:has(.wg) .form .muted, body:has(.wg) .form .consent, body:has(.wg) .form .form-note, body:has(.wg) .form .form-note a { color: #4f4943; }
+  body:has(.wg) .form .field { color: #141210; font-family: 'Plex w', ui-monospace, monospace; font-weight: 500; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  body:has(.wg) .form .field input { border-radius: 0; border: 2px solid #141210; background: #fff; color: #141210; font-family: 'Golos Text Variable', system-ui, sans-serif; text-transform: none; letter-spacing: 0; }
+  body:has(.wg) .form .field input::placeholder { color: #8b847c; }
+  body:has(.wg) .form .field input:focus { border-color: #00a6d6; box-shadow: 0 0 0 3px rgb(0 166 214 / 0.25); }
+  body:has(.wg) .form .field .err, body:has(.wg) .form .consent.bad { color: #b3200f; text-transform: none; font-family: 'Golos Text Variable', system-ui, sans-serif; letter-spacing: 0; }
+  body:has(.wg) .form .field.bad input { border-color: #b3200f; }
+  body:has(.wg) .form .consent input { accent-color: #141210; }
+  body:has(.wg) .form .btn { border-radius: 0; background: #ff5722; color: #141210; font-weight: 800; font-size: 1.1rem; letter-spacing: -0.01em; min-height: 58px; }
+  body:has(.wg) .form .btn:hover { background: #141210; color: #f2efe8; }
+  body:has(.wg) .form .form-msg.is-err { border-radius: 0; background: #f6d4c6; color: #8f1a0c; }
+  body:has(.wg) .form .form-done .ok { background: #ff5722; color: #141210; border-radius: 0; }
+  body:has(.wg) dialog.lead::backdrop { background: rgb(20 18 16 / 0.8); backdrop-filter: none; }
+  body:has(.wg) dialog.lead .form { box-shadow: 10px 10px 0 #00a6d6; }
+  body:has(.wg) dialog.lead .x { color: #141210; }
+  body:has(.wg) .mbar { background: #f2efe8; border-top: 2px solid #141210; backdrop-filter: none; }
+  body:has(.wg) .mbar a.ic { border-radius: 0; border: 2px solid #141210; color: #141210; }
+  body:has(.wg) .mbar .btn { border-radius: 0; background: #ff5722; color: #141210; font-weight: 800; }
+</style>
+
+<style>
+  .wg {
+    --paper: #f2efe8; --paper-2: #e7e2d8; --ink: #141210; --muted: #4f4943;
+    --or: #ff5722; --cy: #00a6d6;
+    --fb: 'Golos Text Variable', system-ui, sans-serif;
+    --fm: 'Plex w', ui-monospace, 'SFMono-Regular', monospace;
+    --ez: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --gut: clamp(16px, 4vw, 56px);
+    background: var(--paper); color: var(--ink); font-family: var(--fb); overflow-x: clip;
+  }
+  .wg :global(h2), .wg :global(h3) { hyphens: manual; -webkit-hyphens: manual; text-wrap: balance; }
+  .wg-w { position: relative; width: 100%; max-width: 1440px; margin: 0 auto; padding-inline: var(--gut); }
+  .wg-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .wg-mono { font-family: var(--fm); font-weight: 500; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* Кнопки */
+  .wg-btn {
+    display: inline-flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 60px; padding: 0 22px 0 24px;
+    background: var(--or); color: var(--ink); text-decoration: none; font-weight: 800; font-size: 1.12rem; letter-spacing: -0.01em; line-height: 1;
+    box-shadow: inset 0 0 0 2px var(--ink);
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .wg-btn :global(svg) { width: 20px; height: 18px; transition: transform 0.3s var(--ez); }
+  .wg-btn:hover { background: var(--ink); color: var(--paper); }
+  .wg-btn:hover :global(svg) { transform: translateX(5px); }
+  .wg-btn:active { transform: scale(0.97); }
+  .wg-btn-s { min-height: 44px; font-size: 0.98rem; padding: 0 14px 0 16px; gap: 10px; }
+  .wg-btn-s :global(svg) { width: 15px; height: 14px; }
+  .wg-btn-w { width: 100%; }
+  .wg-link { font-weight: 700; font-size: 1.02rem; text-decoration: none; border-bottom: 2px solid currentColor; padding-bottom: 3px; transition: color 0.2s ease, border-color 0.2s ease; }
+  .wg-link:hover { color: #c83a10; }
+  .wg-more { display: inline-flex; align-items: center; gap: 8px; font-family: var(--fm); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 2px solid currentColor; padding-bottom: 3px; }
+  .wg-more :global(svg) { width: 12px; height: 11px; transition: transform 0.3s var(--ez); }
+
+  /* Шапка */
+  .wg-top { position: sticky; top: 0; z-index: 30; background: var(--paper); border-bottom: 2px solid var(--ink); }
+  .wg-top-in { display: flex; align-items: center; gap: 28px; min-height: 62px; }
+  .wg-logo { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.05em; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; line-height: 1; }
+  .wg-logo :global(svg) { width: 17px; height: 16px; color: var(--or); }
+  .wg-nav { display: none; gap: 24px; margin-left: auto; }
+  .wg-nav a { font-weight: 650; font-size: 0.98rem; text-decoration: none; display: inline-flex; align-items: flex-start; gap: 5px; }
+  .wg-nav a i { font-family: var(--fm); font-style: normal; font-size: 0.62rem; color: var(--muted); padding-top: 1px; }
+  .wg-nav a:hover { color: #c83a10; }
+  .wg-tel { display: none; font-family: var(--fm); font-weight: 500; text-decoration: none; font-size: 0.9rem; white-space: nowrap; }
+  .wg-top .wg-btn { margin-left: auto; }
+  @media (min-width: 1100px) {
+    .wg-nav, .wg-tel { display: flex; }
+    .wg-top .wg-btn { margin-left: 0; }
+  }
+
+  /* Растр: фото раскладывается на точки, цвет задаёт плашка-краска, наложение multiply */
+  .wg-dt { position: relative; margin: 0; overflow: hidden; isolation: isolate; mix-blend-mode: multiply; }
+  .wg-ht { position: absolute; inset: 0; background: #fff; filter: contrast(18) grayscale(1); }
+  .wg-ht :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.25) brightness(1.02) blur(0.4px); }
+  .wg-ht::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at center, #000 0, #fff 4.3px) 0 0 / 6px 6px; opacity: 0.5; }
+  .wg-dt::after { content: ''; position: absolute; inset: 0; background: var(--ink); mix-blend-mode: lighten; pointer-events: none; }
+  .wg-dt-cy::after { background: var(--cy); }
+  .wg-dt-or::after { background: var(--or); }
+  @media (min-width: 1000px) { .wg-ht::after { background-size: 7px 7px; background-image: radial-gradient(circle at center, #000 0, #fff 5px); } }
+
+  /* Повтор со сдвигом */
+  .wg-step { position: absolute; font-weight: 900; letter-spacing: -0.07em; line-height: 0.78; white-space: nowrap; pointer-events: none; }
+  .wg-step span { position: absolute; left: 0; top: 0; color: transparent; -webkit-text-stroke: 1.5px var(--ink); transform: translate(calc(var(--i) * var(--sx, 0.05em)), calc(var(--i) * var(--sy, -0.05em))); }
+  .wg-step span:last-child { position: relative; color: var(--or); -webkit-text-stroke: 0; mix-blend-mode: multiply; }
+
+  /* Первый экран */
+  .wg-first { position: relative; overflow: clip; border-bottom: 2px solid var(--ink); }
+  .wg-first-in { position: relative; padding-top: 22px; padding-bottom: 36px; }
+  .wg-cols { position: absolute; inset: 0 var(--gut); display: grid; grid-template-columns: repeat(4, 1fr); pointer-events: none; z-index: 0; }
+  .wg-cols i { border-left: 1px solid rgb(20 18 16 / 0.09); }
+  .wg-cols i:nth-child(n + 5) { display: none; }
+  .wg-cols i:last-child { border-right: 1px solid rgb(20 18 16 / 0.09); }
+  .wg-kick { position: relative; z-index: 3; display: flex; flex-wrap: wrap; gap: 4px 14px; font-family: var(--fm); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .wg-kick b { font-weight: 500; background: var(--ink); color: var(--paper); padding: 2px 7px; }
+  .wg-kick span { padding: 2px 0; }
+
+  .wg-h1 { position: relative; z-index: 4; margin: 28px 0 0; font-weight: 900; text-transform: uppercase; letter-spacing: -0.075em; line-height: 0.8; }
+  .wg-h1 .a { display: block; font-size: clamp(5rem, 24vw, 18.5rem); margin-left: -0.05em; }
+  .wg-h1 .b { display: flex; align-items: flex-start; gap: 0.12em; white-space: nowrap; font-size: clamp(2.8rem, 15.6vw, 9.6rem); margin-top: 0.08em; transform: rotate(-4deg); transform-origin: 0 50%; mix-blend-mode: multiply; }
+  .wg-h1 .b i { font-family: var(--fm); font-style: normal; font-weight: 500; font-size: 0.24em; letter-spacing: 0; text-transform: lowercase; border: 2px solid var(--ink); padding: 0.18em 0.32em 0.22em; margin-top: 0.12em; background: var(--paper); line-height: 1; }
+
+  .wg-art { position: relative; z-index: 2; height: 116vw; margin-top: 26px; }
+  .wg-plate { position: absolute; display: block; mix-blend-mode: multiply; }
+  .wg-plate-or { left: -4%; top: 30%; width: 58%; height: 42%; background: var(--or); }
+  .wg-sub { position: absolute; left: 6%; top: 42%; width: 50%; aspect-ratio: 4 / 3; transform: rotate(-3deg); }
+  .wg-plate-k { right: -2%; bottom: 30%; width: 44%; height: 9px; background: var(--ink); transform: rotate(-4deg); }
+  .wg-por { position: absolute; right: -4%; top: 0; width: 58%; aspect-ratio: 600 / 900; transform: rotate(3deg); }
+  .wg-step-hero { left: -1%; bottom: 0; font-size: 34vw; z-index: 3; }
+  .wg-reg { position: absolute; width: 26px; height: 26px; z-index: 4; }
+  .wg-reg::before, .wg-reg::after { content: ''; position: absolute; background: var(--ink); }
+  .wg-reg::before { left: 50%; top: 0; bottom: 0; width: 1px; }
+  .wg-reg::after { top: 50%; left: 0; right: 0; height: 1px; }
+  .wg-reg { border-radius: 50%; box-shadow: inset 0 0 0 1px var(--ink); }
+  .wg-reg-1 { left: 40%; top: 24%; }
+  .wg-reg-2 { right: 4%; bottom: 2%; }
+  .wg-vert { display: none; }
+  .wg-spec { position: absolute; z-index: 4; left: 0; top: 2%; list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-family: var(--fm); font-size: 0.74rem; line-height: 1.3; }
+  .wg-spec li { display: grid; grid-template-columns: 56px auto; gap: 8px; }
+  .wg-spec i { font-style: normal; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .wg-offer { position: relative; z-index: 5; display: grid; gap: 22px; margin-top: 8px; }
+  .wg-lead { font-size: 1.06rem; line-height: 1.5; max-width: 40ch; }
+  .wg-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 26px; }
+
+  @media (min-width: 700px) and (max-width: 999px) {
+    .wg-art { height: 100vw; }
+    .wg-por { width: 54%; }
+    .wg-step-hero { font-size: 30vw; }
+  }
+
+  @media (min-width: 1000px) {
+    .wg-cols { grid-template-columns: repeat(12, 1fr); }
+    .wg-cols i:nth-child(n + 5) { display: block; }
+    .wg-first-in { min-height: min(calc(100svh - 64px), 900px); padding-top: 26px; padding-bottom: 44px; display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: auto 1fr auto; column-gap: 0; }
+    .wg-kick { grid-column: 1 / -1; }
+    .wg-h1 { grid-column: 1 / 9; grid-row: 2; margin-top: clamp(28px, 4vh, 56px); align-self: start; }
+    .wg-h1 .a { font-size: clamp(9rem, 16vw, 15.5rem); }
+    .wg-h1 .b { font-size: clamp(4.6rem, 8.4vw, 8rem); margin-left: 8.33%; }
+    .wg-art { position: absolute; inset: 0 var(--gut); height: auto; margin: 0; }
+    .wg-plate-or { left: 41.6%; top: 50%; width: 25%; height: 38%; }
+    .wg-sub { left: 37%; top: 66%; width: 22%; transform: rotate(-4deg); }
+    .wg-por { right: 4%; left: auto; top: 7%; width: 31%; transform: rotate(4deg); }
+    .wg-plate-k { right: -3%; bottom: 52%; width: 40%; height: 14px; }
+    .wg-step-hero { left: auto; right: 9%; bottom: 3%; font-size: clamp(12rem, 22vw, 21rem); }
+    .wg-reg-1 { left: 31%; top: 12%; }
+    .wg-reg-2 { right: 1%; bottom: 4%; }
+    .wg-vert { display: block; position: absolute; z-index: 4; right: -10px; top: 9%; writing-mode: vertical-rl; font-family: var(--fm); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; }
+    .wg-spec { left: 43.5%; top: 53%; }
+    .wg-offer { grid-column: 1 / 6; grid-row: 3; align-self: end; margin-top: 30px; }
+    .wg-lead { font-size: 1.12rem; }
+  }
+
+  /* Каскад «Без взноса» */
+  .wg-sec { position: relative; padding-block: clamp(64px, 8vw, 116px); }
+  .wg-why { padding-top: clamp(48px, 6vw, 90px); overflow: clip; }
+  .wg-cascade { margin-bottom: clamp(40px, 6vw, 80px); }
+  .wg-cascade p { font-weight: 900; text-transform: uppercase; letter-spacing: -0.07em; line-height: 0.78; white-space: nowrap; font-size: calc(clamp(3.4rem, 15vw, 12rem) * (1 - var(--i) * 0.17)); margin-left: calc(var(--i) * 6%); }
+  .wg-cascade p:nth-child(1) { color: var(--ink); }
+  .wg-cascade p:nth-child(2) { color: transparent; -webkit-text-stroke: 1.5px var(--ink); }
+  .wg-cascade p:nth-child(3) { color: var(--or); }
+  .wg-cascade p:nth-child(4) { color: var(--cy); }
+  .wg-cascade p:nth-child(5) { font-family: var(--fm); font-weight: 500; letter-spacing: 0.1em; font-size: 0.86rem; line-height: 1.4; margin-top: 12px; }
+  .wg-reasons { list-style: none; margin: 0; padding: 0; display: grid; border-top: 2px solid var(--ink); }
+  .wg-reasons li { display: grid; grid-template-columns: 44px 1fr; gap: 8px 14px; padding: 22px 0 24px; border-bottom: 1px solid var(--ink); }
+  .wg-n { font-family: var(--fm); font-weight: 500; font-size: 0.8rem; padding-top: 6px; }
+  .wg-reasons h3 { font-weight: 850; font-size: 1.6rem; line-height: 1; letter-spacing: -0.04em; margin: 0; }
+  .wg-reasons p { grid-column: 2; font-size: 1rem; line-height: 1.5; color: var(--muted); max-width: 40ch; }
+  @media (min-width: 900px) {
+    .wg-reasons { grid-template-columns: repeat(4, 1fr); border-bottom: 2px solid var(--ink); }
+    .wg-reasons li { grid-template-columns: 1fr; border-bottom: 0; padding: 24px 24px 36px 0; align-content: start; gap: 14px; }
+    .wg-reasons li + li { border-left: 1px solid var(--ink); padding-left: 24px; }
+    .wg-reasons li:nth-child(2) { margin-top: 48px; border-top: 1px solid var(--ink); }
+    .wg-reasons li:nth-child(4) { margin-top: 24px; border-top: 1px solid var(--ink); }
+    .wg-reasons p { grid-column: auto; }
+    .wg-reasons h3 { font-size: 1.8rem; }
+  }
+
+  /* Заголовки секций */
+  .wg-shead { position: relative; display: grid; gap: 14px; margin-bottom: clamp(36px, 5vw, 64px); }
+  .wg-h2 { font-weight: 900; text-transform: uppercase; letter-spacing: -0.07em; line-height: 0.8; font-size: clamp(3rem, 14.6vw, 10.5rem); margin: 0; }
+  .wg-h2 span { display: inline-block; }
+  .wg-h2 .o { color: var(--or); mix-blend-mode: multiply; transform: rotate(-3deg) translateY(0.06em); margin-left: 0.04em; }
+  @media (min-width: 1000px) {
+    .wg-shead { grid-template-columns: 2fr 10fr; align-items: end; }
+    .wg-shead .wg-mono { padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  }
+
+  /* Зоны */
+  .wg-zones { display: grid; gap: 56px; }
+  .wz { position: relative; display: grid; text-decoration: none; isolation: isolate; }
+  .wz h3 { font-weight: 900; font-size: clamp(2.2rem, 8vw, 3.4rem); line-height: 0.92; letter-spacing: -0.055em; margin: 0 0 12px; }
+  .wz p { font-size: 1rem; line-height: 1.5; max-width: 42ch; }
+  .wz-tx { position: relative; z-index: 3; padding-top: 18px; display: grid; justify-items: start; gap: 4px; }
+  .wz-tx .wg-more { margin-top: 12px; }
+  .wz:hover .wg-more :global(svg) { transform: translateX(4px); }
+  .wz-img { aspect-ratio: 4 / 3; width: 100%; }
+  .wz-zal .wz-img { aspect-ratio: 5 / 4; }
+  .wz-plate { position: absolute; z-index: 2; left: 18%; top: 36%; width: 70%; height: 30%; background: var(--or); mix-blend-mode: multiply; }
+  .wz-big { position: absolute; z-index: 2; left: -0.04em; top: -0.12em; font-weight: 900; font-size: 34vw; line-height: 0.8; letter-spacing: -0.08em; color: var(--ink); mix-blend-mode: multiply; pointer-events: none; }
+  .wz-vert { display: none; }
+  .wz-tags { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .wz-tags li { font-family: var(--fm); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; border: 1px solid var(--ink); padding: 3px 8px; }
+  .wz-spa { background: var(--ink); color: var(--paper); padding: 26px 22px 30px; overflow: hidden; }
+  .wz-deg { display: flex; align-items: flex-start; font-weight: 900; letter-spacing: -0.07em; line-height: 0.8; font-size: 30vw; }
+  .wz-deg span:first-child { color: var(--cy); }
+  .wz-deg span:nth-child(2) { color: var(--or); margin-left: -0.2em; margin-top: 0.24em; }
+  .wz-deg span:first-child { position: relative; z-index: 1; color: transparent; -webkit-text-stroke: 2px var(--cy); }
+  .wz-deg b { font-family: var(--fm); font-weight: 500; font-size: 0.16em; letter-spacing: 0; margin-left: 0.3em; }
+  .wz-note { margin-top: 14px; display: inline-block; background: var(--or); color: var(--ink); font-family: var(--fm); font-weight: 500; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 5px 9px; }
+  .wz-spa .wz-tx { padding-top: 22px; }
+  @media (min-width: 1000px) {
+    .wg-zones { grid-template-columns: repeat(12, 1fr); gap: 0; row-gap: 90px; }
+    .wz-zal { grid-column: 1 / 8; }
+    .wz-zal .wz-img { aspect-ratio: 16 / 11; }
+    .wz-zal h3, .wz-cardio h3 { font-size: 2.5rem; }
+    .wz-zal .wz-tx { position: absolute; left: 34%; bottom: -80px; width: 56%; background: var(--paper); padding: 22px 24px 24px; box-shadow: inset 0 0 0 2px var(--ink); }
+    .wz-big { font-size: 15rem; top: -0.2em; left: -0.06em; }
+    .wz-cardio { grid-column: 9 / 13; margin-top: -40px; align-self: start; }
+    .wz-cardio .wz-img { aspect-ratio: 3 / 4; }
+    .wz-cardio .wz-tx { margin-left: -14%; margin-top: -90px; background: var(--paper); padding: 20px 22px; box-shadow: inset 0 0 0 2px var(--ink); max-width: 400px; }
+    .wz-vert { display: block; position: absolute; z-index: 3; left: -1.1em; top: 0; writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 900; font-size: 5.4rem; line-height: 0.8; letter-spacing: -0.06em; text-transform: uppercase; color: var(--cy); mix-blend-mode: multiply; }
+    .wz-group { grid-column: 2 / 8; grid-template-columns: 1fr 1fr; align-items: end; gap: 0 32px; }
+    .wz-group .wz-img { aspect-ratio: 1; }
+    .wz-group .wz-tx { padding: 0 0 6px; }
+    .wz-spa { grid-column: 9 / 13; align-self: end; margin-bottom: -40px; transform: rotate(-2deg); padding: 30px 30px 34px; }
+    .wz-deg { font-size: 9.5rem; }
+  }
+
+  /* Тарифы */
+  .wg-price { background: var(--paper-2); border-block: 2px solid var(--ink); }
+  .wg-plans { display: grid; gap: 22px; }
+  .wp { position: relative; display: flex; flex-direction: column; gap: 14px; padding: 26px 22px 24px; background: var(--paper); box-shadow: inset 0 0 0 2px var(--ink); }
+  .wp header { display: grid; gap: 8px; }
+  .wp h3 { font-weight: 900; font-size: 2.2rem; line-height: 0.95; letter-spacing: -0.05em; margin: 0; }
+  .wp-h { font-size: 0.95rem; color: var(--muted); }
+  .wp-price { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+  .wp-price b { font-weight: 900; font-size: clamp(5rem, 22vw, 7.4rem); line-height: 0.78; letter-spacing: -0.07em; font-variant-numeric: lining-nums; }
+  .wp-price span { font-family: var(--fm); font-weight: 500; font-size: 0.86rem; padding-bottom: 4px; }
+  .wp-year { font-family: var(--fm); font-size: 0.82rem; padding-bottom: 14px; border-bottom: 1px solid currentColor; }
+  .wp ul { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 9px; font-size: 0.98rem; line-height: 1.35; }
+  .wp li { display: grid; grid-template-columns: 20px 1fr; gap: 10px; }
+  .wp li :global(svg) { width: 20px; height: 20px; }
+  .wp li.no { opacity: 0.55; }
+  .wp .wg-btn { margin-top: auto; }
+  .wp-full { background: var(--or); }
+  .wp-full .wp-h { color: var(--ink); }
+  .wp-full .wg-btn { background: var(--ink); color: var(--paper); }
+  .wp-full .wg-btn:hover { background: var(--paper); color: var(--ink); }
+  .wp-all { background: var(--ink); color: var(--paper); box-shadow: none; }
+  .wp-all .wp-h { color: #bdb5ab; }
+  .wp-all .wp-price b { color: var(--cy); }
+  .wp-all li:not(.no) :global(svg) { color: var(--cy); }
+  .wp-all .wg-btn { box-shadow: none; }
+  .wp-all .wg-btn:hover { background: var(--paper); color: var(--ink); }
+  .wp-day li:not(.no) :global(svg) { color: #c83a10; }
+  @media (min-width: 1000px) {
+    .wg-plans { grid-template-columns: repeat(12, 1fr); gap: 0; align-items: start; }
+    .wp { padding: 34px 30px 30px; }
+    .wp-day { grid-column: 1 / 5; margin-top: 60px; }
+    .wp-full { grid-column: 5 / 9; z-index: 2; transform: rotate(-2deg); margin-inline: -10px; }
+    .wp-full[data-p] { --r0: -2deg; }
+    .wp-all { grid-column: 9 / 13; margin-top: 110px; }
+    .wp-price b { font-size: clamp(5.4rem, 7.4vw, 7.6rem); }
+  }
+
+  .wg-try { position: relative; margin-top: clamp(64px, 9vw, 130px); display: grid; min-height: 420px; align-items: end; }
+  .wg-step-try { left: -0.04em; top: 0; font-size: 62vw; z-index: 1; }
+  .wg-step-try span:last-child { color: var(--cy); }
+  .wg-try-plate { position: absolute; z-index: 1; right: -6%; top: 26%; width: 70%; height: 34%; background: var(--or); mix-blend-mode: multiply; }
+  .wg-try-tx { position: relative; z-index: 2; margin-top: 52vw; background: var(--paper); box-shadow: inset 0 0 0 2px var(--ink); padding: 26px 22px; display: grid; gap: 14px; justify-items: start; }
+  .wg-try-tx h3 { font-weight: 900; font-size: clamp(2.4rem, 10vw, 4.2rem); line-height: 0.9; letter-spacing: -0.06em; margin: 0; }
+  .wg-try-tx p { font-size: 1.04rem; line-height: 1.5; max-width: 44ch; }
+  .wg-try-tx ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .wg-try-tx li { font-family: var(--fm); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid var(--ink); padding: 4px 8px; }
+  @media (min-width: 1000px) {
+    .wg-try { grid-template-columns: repeat(12, 1fr); min-height: 520px; align-items: center; }
+    .wg-step-try { font-size: 31rem; left: 2%; top: 50%; translate: 0 -50%; }
+    .wg-try-plate { left: 30%; right: auto; top: 18%; width: 40%; height: 64%; }
+    .wg-try-tx { grid-column: 7 / 13; margin-top: 0; padding: 40px 40px 38px; }
+  }
+
+  .wg-side { display: grid; gap: 0; margin-top: clamp(56px, 7vw, 90px); border-top: 2px solid var(--ink); }
+  .wg-sp { display: grid; gap: 10px; justify-items: start; padding: 22px 0 26px; border-bottom: 1px solid var(--ink); }
+  .wg-sp h3 { font-weight: 900; font-size: 1.9rem; line-height: 0.95; letter-spacing: -0.05em; margin: 0; }
+  .wg-sp p { font-size: 1rem; line-height: 1.5; color: var(--muted); max-width: 46ch; }
+  @media (min-width: 900px) {
+    .wg-side { grid-template-columns: 1fr 1fr; }
+    .wg-sp { padding: 26px 32px 30px 0; border-bottom: 0; }
+    .wg-sp + .wg-sp { border-left: 1px solid var(--ink); padding-left: 32px; }
+  }
+
+  /* Тренеры */
+  .wg-coaches { display: grid; gap: 44px; }
+  .wc { position: relative; margin: 0; display: grid; }
+  .wc-img { aspect-ratio: 4 / 5; width: 86%; }
+  .wc-1 .wc-img { justify-self: end; }
+  .wc-img :global(img) { filter: grayscale(1) contrast(1.7) brightness(0.86) blur(0.4px); object-position: 50% 20%; }
+  .wc figcaption { position: relative; z-index: 2; margin-top: -60px; display: grid; justify-items: start; }
+  .wc-1 figcaption { justify-items: end; text-align: right; }
+  .wc figcaption b { font-weight: 900; font-size: clamp(3rem, 15vw, 4.6rem); line-height: 0.82; letter-spacing: -0.07em; text-transform: uppercase; mix-blend-mode: multiply; }
+  .wc figcaption span { font-family: var(--fm); font-weight: 500; font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 8px; }
+  .wc figcaption small { font-size: 0.95rem; color: var(--muted); margin-top: 6px; max-width: 30ch; line-height: 1.4; }
+  @media (min-width: 1000px) {
+    .wg-coaches { grid-template-columns: repeat(12, 1fr); gap: 0; align-items: start; }
+    .wc-0 { grid-column: 1 / 5; }
+    .wc-1 { grid-column: 5 / 9; margin-top: 120px; padding-left: 20px; }
+    .wc-2 { grid-column: 9 / 13; margin-top: 40px; padding-left: 20px; }
+    .wc figcaption b { font-size: clamp(3rem, 4.6vw, 4.4rem); }
+  }
+  .wg-pers { margin-top: clamp(64px, 8vw, 110px); padding-top: 24px; border-top: 2px solid var(--ink); display: grid; gap: 14px; justify-items: start; }
+  .wg-pers-p { font-weight: 900; font-size: clamp(2.4rem, 9vw, 5.4rem); line-height: 0.88; letter-spacing: -0.06em; }
+  .wg-pers-t { font-size: 1.02rem; line-height: 1.5; max-width: 52ch; color: var(--muted); }
+  @media (min-width: 900px) {
+    .wg-pers { grid-template-columns: 1fr auto; align-items: end; column-gap: 48px; }
+    .wg-pers > :not(.wg-btn) { grid-column: 1; }
+    .wg-pers .wg-btn { grid-column: 2; grid-row: 2 / span 2; }
+  }
+
+  /* Отзывы */
+  .wg-rev { background: var(--ink); color: var(--paper); }
+  .wg-rev .wg-h2 .o { mix-blend-mode: normal; }
+  .wg-rev-head { display: grid; gap: 30px; margin-bottom: clamp(40px, 5vw, 70px); }
+  .wg-rev-head > div { display: grid; gap: 14px; }
+  .wg-score { display: grid; gap: 26px; text-decoration: none; justify-self: start; }
+  .wg-score-n { position: relative; display: block; font-weight: 900; font-size: clamp(6rem, 32vw, 13rem); line-height: 0.78; letter-spacing: -0.07em; }
+  .wg-score-n i { font-style: normal; display: block; }
+  .wg-score-n i:not(:last-child) { position: absolute; left: 0; top: 0; }
+  .wg-score-n i:nth-child(1) { color: var(--cy); transform: translate(-0.05em, 0.04em); }
+  .wg-score-n i:nth-child(2) { color: var(--or); transform: translate(0.04em, -0.03em); }
+  .wg-score-n i:nth-child(3) { color: transparent; -webkit-text-stroke: 1.5px var(--paper); }
+  .wg-score-t { font-family: var(--fm); font-size: 0.82rem; line-height: 1.45; max-width: 32ch; }
+  .wg-score-t b { font-weight: 500; color: var(--or); }
+  .wg-score:hover .wg-score-t { text-decoration: underline; }
+  @media (min-width: 1000px) { .wg-rev-head { grid-template-columns: 1fr auto; align-items: end; } }
+  .wg-quotes { display: grid; gap: 0; border-top: 1px solid rgb(242 239 232 / 0.4); }
+  .wq { position: relative; margin: 0; padding: 30px 0 30px 0; border-bottom: 1px solid rgb(242 239 232 / 0.4); display: grid; gap: 16px; }
+  .wq-mark { font-weight: 900; font-size: 5rem; line-height: 0.5; color: var(--or); height: 0.4em; }
+  .wq p { font-size: 1.04rem; line-height: 1.6; color: #e3ddd4; max-width: 60ch; }
+  .wq-0 p { font-size: clamp(1.25rem, 2vw, 1.6rem); line-height: 1.4; letter-spacing: -0.02em; color: var(--paper); font-weight: 500; }
+  .wq footer { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; }
+  .wq footer b { font-weight: 800; font-size: 1.1rem; }
+  .wq footer span { font-family: var(--fm); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: #bdb5ab; }
+  @media (min-width: 1000px) {
+    .wg-quotes { grid-template-columns: repeat(12, 1fr); border-top: 0; }
+    .wq { border-bottom: 0; border-top: 1px solid rgb(242 239 232 / 0.4); padding: 30px 32px 10px 0; }
+    .wq-0 { grid-column: 1 / 8; grid-row: 1 / 3; padding-right: 64px; }
+    .wq-1 { grid-column: 8 / 13; }
+    .wq-2 { grid-column: 8 / 13; margin-top: 30px; }
+    .wq-3 { grid-column: 3 / 9; margin-top: 50px; }
+  }
+
+  /* Заявка */
+  .wg-final { position: relative; background: var(--or); color: var(--ink); overflow: clip; padding: clamp(80px, 10vw, 140px) 0 clamp(80px, 10vw, 140px); border-top: 2px solid var(--ink); isolation: isolate; }
+  .wg-step-fin { right: -0.1em; bottom: -0.12em; font-size: 70vw; z-index: 0; }
+  .wg-step-fin span { -webkit-text-stroke-color: rgb(20 18 16 / 0.5); }
+  .wg-step-fin span:last-child { color: var(--cy); }
+  .wg-final-in { position: relative; z-index: 1; display: grid; gap: 48px; }
+  .wg-final-tx { display: grid; gap: 16px; align-content: start; }
+  .wg-final .wg-h2 { font-size: clamp(3.4rem, 16vw, 9rem); }
+  .wg-final .wg-h2 span { display: block; }
+  .wg-final .wg-h2 span:nth-child(2) { margin-left: 0.6em; }
+  .wg-final .wg-h2 .w { color: var(--paper); transform: rotate(-3deg); transform-origin: 0 50%; margin-top: 0.06em; }
+  .wg-facts { display: grid; margin: 20px 0 0; max-width: 520px; }
+  .wg-facts div { display: grid; grid-template-columns: 100px 1fr; gap: 14px; padding: 12px 0; border-top: 2px solid var(--ink); }
+  .wg-facts dt { font-family: var(--fm); font-weight: 500; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; padding-top: 3px; }
+  .wg-facts dd { margin: 0; font-weight: 550; line-height: 1.45; }
+  .wg-facts a { font-weight: 700; text-decoration: none; border-bottom: 2px solid currentColor; }
+  .wg-form { position: relative; align-self: start; max-width: 500px; width: 100%; }
+  .wg-form-plate { position: absolute; inset: 0; background: var(--cy); transform: translate(12px, 12px); mix-blend-mode: multiply; }
+  .wg-form :global(.form) { position: relative; }
+  @media (min-width: 1000px) {
+    .wg-final-in { grid-template-columns: 1fr 480px; gap: 72px; align-items: center; }
+    .wg-form { justify-self: end; }
+    .wg-step-fin { font-size: 40rem; right: 26%; bottom: -0.16em; }
+  }
+
+  /* Подвал */
+  .wg-foot { background: var(--ink); color: var(--paper); padding: clamp(56px, 7vw, 96px) 0 calc(36px + 80px); overflow: clip; }
+  @media (min-width: 1100px) { .wg-foot { padding-bottom: 36px; } }
+  .wg-foot-big { position: relative; font-weight: 900; font-size: clamp(2.6rem, 15.4vw, 16.4rem); line-height: 0.78; letter-spacing: -0.075em; margin: 0 0 clamp(40px, 6vw, 72px); white-space: nowrap; }
+  .wg-foot-big span { display: flex; align-items: center; gap: 0.03em; }
+  .wg-foot-big .c, .wg-foot-big .o { position: absolute; left: 0; top: 0; }
+  .wg-foot-big .c { color: var(--cy); transform: translate(-0.035em, 0.03em); }
+  .wg-foot-big .o { color: var(--or); transform: translate(0.03em, -0.025em); }
+  .wg-foot-big .k { position: relative; color: transparent; -webkit-text-stroke: 1.5px var(--paper); }
+  .wg-foot-big :global(svg) { width: 0.48em; height: 0.46em; color: var(--paper); flex: none; }
+  .wg-foot-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 36px 24px; padding-top: 28px; border-top: 1px solid rgb(242 239 232 / 0.4); }
+  .wg-foot-cols h2 { font-family: var(--fm); font-weight: 500; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--or); margin: 0 0 12px; }
+  .wg-foot-cols p, .wg-foot-cols li { font-size: 0.95rem; line-height: 1.6; color: #d9d2c8; }
+  .wg-foot-cols p + p { margin-top: 10px; }
+  .wg-foot-cols ul { list-style: none; margin: 0; padding: 0; }
+  .wg-foot-cols a { text-decoration: none; }
+  .wg-foot-cols a:hover { color: var(--or); }
+  .wg-legal { margin-top: 40px; font-family: var(--fm); font-size: 0.74rem; color: #9c948a; }
+  @media (min-width: 900px) { .wg-foot-cols { grid-template-columns: 1.3fr 1fr 1fr 1fr; } }
+
+  /* Движение */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .wg-h1 .a { animation: wg-in 0.9s var(--ez) both; }
+    :global(.js) .wg-h1 .b { animation: wg-in-b 0.9s 0.1s var(--ez) both; }
+    :global(.js) .wg [data-m] .wg-step span { transition: transform 1.1s var(--ez) calc(var(--i) * 60ms + 200ms); }
+    :global(.js) .wg [data-m]:not(.on) .wg-step span { transform: none; }
+    :global(.js) .wg [data-m] [data-p] {
+      opacity: 0;
+      transform: translate(var(--x, 0px), var(--y, 0px)) rotate(var(--r0, 0deg));
+      transition: opacity 0.5s ease var(--d, 0ms), transform 0.9s var(--ez) var(--d, 0ms);
+    }
+    :global(.js) .wg [data-m].on [data-p] { opacity: 1; transform: rotate(var(--r0, 0deg)); }
+    :global(.js) .wg [data-m] .wg-por[data-p] { --r0: 3deg; }
+    :global(.js) .wg [data-m] .wg-plate-k[data-p] { --r0: -4deg; }
+    :global(.js) .wg [data-m] .wg-sub[data-p] { --r0: -3deg; }
+    :global(.js) .wg-cascade p { transition: transform 1s var(--ez) calc(var(--i) * 80ms); }
+    :global(.js) .wg-why:not(.on) .wg-cascade p { transform: translateX(calc(var(--i) * -6vw)); }
+    .wg-shead:hover .wg-h2 .o, .wg-rev-head:hover .wg-h2 .o { transform: rotate(-1deg) translate(0.03em, 0.04em); }
+    .wg-h2 .o { transition: transform 0.4s var(--ez); }
+  }
+  @media (prefers-reduced-motion: no-preference) and (min-width: 1000px) {
+    :global(.js) .wg [data-m] .wg-por[data-p] { --r0: 4deg; }
+  }
+  @keyframes wg-in { from { transform: translateX(-0.2em); opacity: 0; } }
+  @keyframes wg-in-b { from { transform: rotate(-12deg) translateX(0.3em); opacity: 0; } }
+</style>
