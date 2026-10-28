@@ -13,8 +13,10 @@ interface Props {
   noindex?: boolean;
   jsonld?: Record<string, unknown>[];
   type?: 'website' | 'article';
+  // bare: страница рисует свою шапку и подвал (концепции дизайна)
+  bare?: boolean;
 }
-const { title, description, image = '/og.jpg', noindex = false, jsonld = [], type = 'website' } = Astro.props;
+const { title, description, image = '/og.jpg', noindex = false, jsonld = [], type = 'website', bare = false } = Astro.props;
 const path = Astro.url.pathname;
 const canonical = SITE_URL + path;
 const fullTitle = path === '/' ? title : `${title} | Urban210`;
@@ -82,6 +84,7 @@ const gym = {
   <body data-ym={YM_ID} data-ct-site={CT_SITE}>
     <a class="skip" href="#main">К содержанию</a>
 
+    {!bare && <>
     <header class="header" data-header>
       <div class="wrap">
         <Logo />
@@ -106,12 +109,13 @@ const gym = {
         <a class="btn" href="#zayavka" data-lead="Пробный день за 1 ₽" data-block="menu">Пробный день за 1 ₽<Icon name="chev" class="chev" /></a>
       </div>
     </div>
+    </>}
 
     <main id="main">
       <slot />
     </main>
 
-    <footer class="footer">
+    {!bare && <footer class="footer">
       <div class="wrap">
         <div class="footer-top">
           <div>
@@ -154,7 +158,7 @@ const gym = {
           <span>Фитнес-клуб в Хабаровске</span>
         </div>
       </div>
-    </footer>
+    </footer>}
 
     <div class="mbar" data-mbar>
       <a class="ic" href={site.phone.href} aria-label="Позвонить"><Icon name="phone" /></a>

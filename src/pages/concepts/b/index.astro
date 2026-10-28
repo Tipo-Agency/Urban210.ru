@@ -1,0 +1,248 @@
+---
+// Концепция B «Кино»: тёмная, полноэкранная. Видео на весь экран, зал главами: фото раскрывается
+// из узкой щели при прокрутке (CSS view timeline, без перехвата скролла). Manrope, оранжевый только в кнопках.
+import '@fontsource-variable/manrope/wght.css';
+import { Image } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import LeadForm from '../../../components/LeadForm.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site, whatsappLink } from '../../../data/site';
+import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { reviews, trainers, programs } from '../../../data/content';
+import poster from '../../../assets/images/hero.jpg';
+
+const chapters = [
+  { t: 'Железо', s: 'Свободные веса до 60 кг, стойки, помосты и скамьи. Очередь не собирается даже вечером.', i: '/images/free-weights.jpg', href: '/zal/' },
+  { t: 'Кардио', s: 'Второй этаж, дорожки Technogym Skillrun с видом на проспект. Свободная находится почти всегда.', i: '/images/cardio.jpg', href: '/zal/#cardio' },
+  { t: 'В группе', s: `${programs.flatMap((p) => p.items).join(', ')}. Зал 150 м², запись в приложении.`, i: '/images/group.jpg', href: '/group/' },
+  { t: 'Выдох', s: 'Растяжка и пилатес в зале групповых, потом финская сауна, хаммам 40–50 °C и массажные кресла. Входят в «Всё включено».', i: '/images/stretching.jpg', href: '/spa/' },
+];
+const quotes = reviews.map((r) => ({ q: r.text.split('. ')[0] + '.', n: r.name }));
+---
+<Layout title="Концепция B «Кино»" description="Концепция дизайна сайта Urban210: тёмная, кинематографичная." noindex bare>
+  <div class="cb">
+    <header class="cb-top">
+      <a class="cb-logo" href="/concepts/b/">URBAN<b>210</b></a>
+      <nav aria-label="Меню"><a href="#ch">Клуб</a><a href="#price">Цены</a><a href="#team">Тренеры</a></nav>
+      <a class="cb-pill" href="#lead" data-lead={trial.title} data-block="b_header">Пробный день · 1 ₽</a>
+    </header>
+
+    <section class="cb-hero" aria-labelledby="cb-h">
+      <div class="cb-media">
+        <Image src={poster} alt="" widths={[640, 1024, 1600, 2200]} sizes="100vw" loading="eager" fetchpriority="high" format="webp" quality={45} />
+        <video data-hero-video data-src="/video/hero-bw.mp4" muted loop playsinline preload="none" aria-hidden="true"></video>
+      </div>
+      <div class="cb-hero-in">
+        <p class="cb-kick">Хабаровск · {site.address.short}</p>
+        <h1 id="cb-h">Сильнее<br /><em>с каждым</em> подходом</h1>
+        <div class="cb-hero-row">
+          <p>{site.facts.area[0].toUpperCase() + site.facts.area.slice(1)}, {site.facts.machines}, сауна и хаммам. Без вступительного взноса.</p>
+          <a class="cb-btn" href="#lead" data-lead={trial.title} data-block="b_hero"><span>Прийти за 1 ₽</span><Icon name="chev" /></a>
+        </div>
+      </div>
+      <a class="cb-scroll" href="#ch" aria-label="Листать дальше"><i></i></a>
+    </section>
+
+    <section class="cb-intro" aria-label="Коротко">
+      <p>Один клуб в Железнодорожном районе. <span>Два этажа, 6:30–23:30, парковка на 50 машин.</span> Приходите посмотреть, прежде чем платить.</p>
+    </section>
+
+    <div id="ch">
+      {chapters.map((c, i) => (
+        <section class="cb-ch" aria-labelledby={`cb-c${i}`}>
+          <div class="cb-ch-ph">
+            <Image src={img(c.i)} alt="" widths={[640, 1024, 1600]} sizes="100vw" format="avif" quality={40} />
+          </div>
+          <div class="cb-ch-cap">
+            <h2 id={`cb-c${i}`}>{c.t}</h2>
+            <p>{c.s}</p>
+            <a href={c.href}>Подробнее <Icon name="chev" /></a>
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <section class="cb-sec" id="price" aria-labelledby="cb-p">
+      <div class="cb-head">
+        <h2 id="cb-p">Цена</h2>
+        <div class="cb-toggle" role="group" aria-label="Период оплаты">
+          <button type="button" aria-pressed="true" data-period="m">Месяц</button>
+          <button type="button" aria-pressed="false" data-period="y">Год</button>
+        </div>
+      </div>
+      <div class="cb-plans" data-plans>
+        {plans.map((p) => (
+          <article class:list={['cb-plan', p.id === 'all' && 'hot']}>
+            <h3>{p.name}</h3>
+            <p class="cb-hrs">{p.hours}</p>
+            <p class="cb-sum"><b data-m={rub(p.month)} data-y={rub(p.year)}>{rub(p.month)}</b><small data-m="в месяц" data-y="за год">в месяц</small></p>
+            <p class="cb-day" data-m={`${perDay(p.month, 30)} ₽ в день`} data-y={`${perDay(p.year, 365)} ₽ в день`}>{perDay(p.month, 30)} ₽ в день</p>
+            <ul>{p.features.map((f) => <li>{f}</li>)}</ul>
+            <a class="cb-line" href="#lead" data-lead={p.name} data-block={`b_${p.id}`}>Выбрать {p.name} <Icon name="chev" /></a>
+          </article>
+        ))}
+      </div>
+      <p class="cb-note">Персональные: {personal.pack} тренировок за {rub(personal.price)}. {personal.firstFree}.</p>
+    </section>
+
+    <section class="cb-quotes" aria-label="Отзывы">
+      <p class="cb-rate"><b>{site.rating.value.toString().replace('.', ',')}</b> на Яндекс Картах · {site.rating.text}</p>
+      <div class="cb-marq"><div class="cb-marq-t">
+        {[0, 1].map(() => quotes.map((q) => <figure aria-hidden="false"><blockquote>«{q.q}»</blockquote><figcaption>{q.n}</figcaption></figure>))}
+      </div></div>
+    </section>
+
+    <section class="cb-sec" id="team" aria-labelledby="cb-t">
+      <div class="cb-head"><h2 id="cb-t">Люди</h2><p>Инструкторы в зале и персональные тренеры.</p></div>
+      <ul class="cb-team">
+        {trainers.map((t) => (
+          <li><Image src={img(t.photo)} alt={t.name} widths={[360, 600]} sizes="(min-width: 900px) 33vw, 85vw" format="avif" quality={45} /><div><b>{t.name}</b><span>{t.role}</span></div></li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="cb-lead" id="lead" aria-labelledby="cb-l">
+      <div class="cb-lead-bg"><Image src={img('/images/reception.jpg')} alt="" widths={[640, 1280]} sizes="100vw" format="avif" quality={35} /></div>
+      <div class="cb-lead-in">
+        <div>
+          <h2 id="cb-l">Пробный день<br />за 1 ₽</h2>
+          <p>{trial.text}</p>
+          <p class="cb-contact"><a href={site.phone.href}>{site.phone.display}</a><a href={whatsappLink('Здравствуйте! Хочу на пробный день')} target="_blank" rel="noopener">WhatsApp</a></p>
+        </div>
+        <LeadForm block="b_final" id="b" />
+      </div>
+    </section>
+
+    <footer class="cb-foot"><span>URBAN210 · {site.legal.name}</span><span><a href="/concepts/a/">← A</a> · <a href="/concepts/c/">C →</a></span></footer>
+  </div>
+</Layout>
+
+<script>
+  // Месяц / год у тарифов
+  const box = document.querySelector<HTMLElement>('[data-plans]');
+  document.querySelectorAll<HTMLButtonElement>('[data-period]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const k = b.dataset.period!;
+      document.querySelectorAll('[data-period]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      box?.querySelectorAll<HTMLElement>('[data-m]').forEach((el) => (el.textContent = el.dataset[k] || ''));
+    });
+  });
+</script>
+
+<style is:global>
+  body:has(.cb) { background: #050505; }
+</style>
+
+<style>
+  .cb { --acc: #ff5722; --mut: #a7a19b; --line: rgb(255 255 255 / 0.14); font-family: 'Manrope Variable', var(--font-body); color: #f4f1ed; }
+  .cb :global(h1), .cb :global(h2), .cb :global(h3) { font-family: 'Manrope Variable', sans-serif; font-weight: 700; letter-spacing: -0.045em; }
+  .cb-top { position: fixed; inset: 16px 16px auto; z-index: 30; display: flex; align-items: center; gap: 24px; max-width: 1200px; margin-inline: auto; padding: 10px 10px 10px 22px; background: rgb(10 10 10 / 0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--line); border-radius: 999px; }
+  .cb-logo { font-weight: 800; letter-spacing: -0.04em; font-size: 1.15rem; text-decoration: none; }
+  .cb-logo b { color: var(--acc); }
+  .cb-top nav { display: none; gap: 22px; margin-left: auto; }
+  .cb-top nav a { text-decoration: none; color: var(--mut); font-weight: 600; }
+  .cb-top nav a:hover { color: #fff; }
+  .cb-pill { margin-left: auto; padding: 12px 18px; border-radius: 999px; background: var(--acc); color: #120a06; font-weight: 800; text-decoration: none; white-space: nowrap; transition: transform 0.3s var(--ease); }
+  .cb-pill:hover { transform: scale(1.04); }
+  @media (min-width: 900px) { .cb-top nav { display: flex; } .cb-pill { margin-left: 0; } }
+
+  .cb-hero { position: relative; height: 100svh; min-height: 620px; display: flex; align-items: flex-end; overflow: hidden; isolation: isolate; }
+  .cb-media { position: absolute; inset: 0; z-index: -1; }
+  .cb-media :global(img), .cb-media video { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.15) brightness(0.75); }
+  .cb-media video { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s var(--ease); }
+  .cb-media :global(video.is-on) { opacity: 1; }
+  .cb-hero::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, #050505 2%, transparent 55%); }
+  .cb-hero-in { width: 100%; padding: 0 var(--gut) clamp(40px, 7vw, 88px); }
+  .cb-kick { color: var(--mut); font-weight: 600; }
+  .cb-hero h1 { margin-top: 14px; font-size: clamp(3rem, 1rem + 9vw, 10.5rem); line-height: 0.88; font-weight: 700; }
+  .cb-hero h1 em { font-style: normal; color: transparent; -webkit-text-stroke: 1.5px #f4f1ed; }
+  .cb-hero-row { margin-top: 28px; display: grid; gap: 20px; align-items: end; }
+  @media (min-width: 900px) { .cb-hero-row { grid-template-columns: minmax(0, 34ch) auto; justify-content: space-between; } }
+  .cb-hero-row p { font-size: 1.15rem; line-height: 1.5; color: #d7d1cb; }
+  .cb-btn { display: inline-flex; align-items: center; gap: 16px; padding: 22px 30px; background: var(--acc); color: #120a06; font-weight: 800; font-size: 1.15rem; text-decoration: none; border-radius: 999px; width: fit-content; transition: gap 0.4s var(--ease), background-color 0.3s; }
+  .cb-btn:hover { gap: 26px; background: #ff7043; }
+  .cb-btn :global(svg) { width: 22px; height: 16px; }
+  .cb-scroll { position: absolute; right: var(--gut); bottom: clamp(40px, 7vw, 88px); width: 2px; height: 64px; background: var(--line); display: none; }
+  .cb-scroll i { position: absolute; inset: 0 0 auto; height: 40%; background: #fff; animation: drop 1.8s var(--ease) infinite; }
+  @keyframes drop { from { transform: translateY(-100%); } to { transform: translateY(250%); } }
+  @media (min-width: 900px) { .cb-scroll { display: block; } }
+
+  .cb-intro { padding: clamp(80px, 12vw, 180px) var(--gut); max-width: 1280px; }
+  .cb-intro p { font-size: clamp(1.7rem, 1rem + 3vw, 3.8rem); line-height: 1.08; letter-spacing: -0.04em; font-weight: 700; }
+  .cb-intro span { color: var(--mut); }
+
+  /* Главы: фото раскрывается из щели по мере прокрутки */
+  .cb-ch { position: relative; min-height: 115svh; display: grid; align-items: end; }
+  .cb-ch-ph { position: sticky; top: 0; height: 100svh; overflow: hidden; grid-area: 1 / 1; }
+  .cb-ch-ph :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.1) brightness(0.7); }
+  .cb-ch-cap { grid-area: 1 / 1; position: relative; z-index: 1; padding: 0 var(--gut) clamp(48px, 8vw, 110px); max-width: 760px; }
+  .cb-ch-cap h2 { font-size: clamp(3.4rem, 1rem + 10vw, 11rem); line-height: 0.85; }
+  .cb-ch-cap p { margin-top: 18px; font-size: 1.2rem; line-height: 1.5; max-width: 40ch; color: #e2ddd8; }
+  .cb-ch-cap a { margin-top: 18px; display: inline-flex; align-items: center; gap: 10px; color: var(--acc); font-weight: 800; text-decoration: none; }
+  .cb-ch-cap a :global(svg) { width: 18px; height: 13px; }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .cb-ch-ph { animation: open linear both; animation-timeline: view(); animation-range: entry 0% cover 45%; }
+      .cb-ch-ph :global(img) { animation: settle linear both; animation-timeline: view(); animation-range: entry 0% cover 60%; }
+    }
+  }
+  @keyframes open { from { clip-path: inset(38% 12% 38% 12%); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes settle { from { transform: scale(1.25); } to { transform: scale(1); } }
+
+  .cb-sec { padding: clamp(80px, 11vw, 160px) var(--gut) 0; max-width: 1360px; margin-inline: auto; }
+  .cb-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 20px; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  .cb-head h2 { font-size: clamp(3rem, 1rem + 8vw, 8rem); line-height: 0.85; }
+  .cb-head p { color: var(--mut); font-size: 1.1rem; }
+  .cb-toggle { display: inline-flex; padding: 4px; border: 1px solid var(--line); border-radius: 999px; }
+  .cb-toggle button { border: 0; background: none; padding: 10px 18px; border-radius: 999px; font-weight: 700; cursor: pointer; color: var(--mut); }
+  .cb-toggle button[aria-pressed='true'] { background: #f4f1ed; color: #050505; }
+  .cb-plans { display: grid; }
+  @media (min-width: 900px) { .cb-plans { grid-template-columns: repeat(3, 1fr); } }
+  .cb-plan { padding: 32px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 14px; }
+  @media (min-width: 900px) { .cb-plan { padding: 40px 32px; border-bottom: 0; border-right: 1px solid var(--line); } .cb-plan:first-child { padding-left: 0; } .cb-plan:last-child { border-right: 0; } }
+  .cb-plan h3 { font-size: 1.6rem; }
+  .cb-plan.hot h3::after { content: ' · максимум'; color: var(--acc); font-size: 1rem; letter-spacing: 0; }
+  .cb-hrs, .cb-day { color: var(--mut); }
+  .cb-sum b { font-size: clamp(2.8rem, 2rem + 2.4vw, 4.2rem); font-weight: 800; letter-spacing: -0.05em; }
+  .cb-sum small { margin-left: 8px; color: var(--mut); font-size: 1rem; }
+  .cb-plan ul { list-style: none; display: grid; gap: 8px; color: #d7d1cb; }
+  .cb-plan li::before { content: ''; display: inline-block; width: 10px; height: 2px; margin: 0 10px 4px 0; background: var(--acc); }
+  .cb-line { margin-top: auto; padding-top: 12px; display: inline-flex; align-items: center; gap: 10px; font-weight: 800; text-decoration: none; color: #fff; }
+  .cb-line:hover { color: var(--acc); }
+  .cb-line :global(svg) { width: 18px; height: 13px; color: var(--acc); }
+  .cb-note { margin-top: 24px; color: var(--mut); }
+
+  .cb-quotes { padding-top: clamp(80px, 11vw, 160px); overflow: hidden; }
+  .cb-rate { padding: 0 var(--gut); color: var(--mut); font-weight: 600; }
+  .cb-rate b { color: var(--acc); font-size: 1.6rem; margin-right: 6px; }
+  .cb-marq { margin-top: 28px; }
+  .cb-marq-t { display: flex; gap: 20px; width: max-content; animation: marq 70s linear infinite; }
+  .cb-marq:hover .cb-marq-t { animation-play-state: paused; }
+  .cb-marq figure { margin: 0; width: min(78vw, 520px); padding: 28px; border: 1px solid var(--line); border-radius: 24px; }
+  .cb-marq blockquote { margin: 0; font-size: 1.35rem; line-height: 1.35; font-weight: 600; letter-spacing: -0.02em; }
+  .cb-marq figcaption { margin-top: 16px; color: var(--mut); }
+  @keyframes marq { to { transform: translateX(calc(-50% - 10px)); } }
+  @media (prefers-reduced-motion: reduce) { .cb-marq-t { animation: none; } .cb-marq { overflow-x: auto; } }
+
+  .cb-team { list-style: none; display: grid; gap: 16px; margin-top: 24px; }
+  @media (min-width: 900px) { .cb-team { grid-template-columns: repeat(3, 1fr); } }
+  .cb-team li { position: relative; border-radius: 24px; overflow: hidden; aspect-ratio: 3 / 4; }
+  .cb-team :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: transform 0.9s var(--ease), filter 0.6s; }
+  .cb-team li:hover :global(img) { transform: scale(1.05); filter: grayscale(0.2); }
+  .cb-team div { position: absolute; inset: auto 0 0; padding: 20px; background: linear-gradient(0deg, rgb(0 0 0 / 0.85), transparent); display: grid; gap: 4px; }
+  .cb-team b { font-size: 1.3rem; letter-spacing: -0.03em; }
+  .cb-team span { color: #cfc9c3; font-size: 0.95rem; }
+
+  .cb-lead { position: relative; margin-top: clamp(80px, 11vw, 160px); isolation: isolate; overflow: hidden; }
+  .cb-lead-bg { position: absolute; inset: 0; z-index: -1; }
+  .cb-lead-bg :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(0.3); }
+  .cb-lead-in { max-width: 1360px; margin-inline: auto; padding: clamp(64px, 10vw, 140px) var(--gut); display: grid; gap: 40px; }
+  @media (min-width: 960px) { .cb-lead-in { grid-template-columns: 1fr 440px; align-items: center; } }
+  .cb-lead h2 { font-size: clamp(2.6rem, 1rem + 6vw, 6.8rem); line-height: 0.9; }
+  .cb-lead p { margin-top: 18px; color: #d7d1cb; font-size: 1.1rem; max-width: 42ch; }
+  .cb-contact { display: flex; gap: 20px; font-weight: 700; }
+  .cb-lead :global(.form) { border-radius: 24px; background: rgb(10 10 10 / 0.8); backdrop-filter: blur(10px); }
+  .cb-lead :global(.form .btn) { border-radius: 999px; }
+  .cb-foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 28px var(--gut) 40px; color: var(--mut); }
+</style>

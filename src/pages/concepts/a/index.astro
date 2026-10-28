@@ -1,0 +1,301 @@
+---
+// Концепция A «Табло»: светлый спортивный плакат. Бумага, чёрный Dela Gothic One, оранжевый как метка.
+// Табло с часами работы и статусом «открыто сейчас», зоны строками со всплывающим фото, ценники.
+import '@fontsource/dela-gothic-one/cyrillic-400.css';
+import '@fontsource/dela-gothic-one/latin-400.css';
+import { Image } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import LeadForm from '../../../components/LeadForm.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site, whatsappLink } from '../../../data/site';
+import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { reviews, trainers, zones, programs, faqGeneral } from '../../../data/content';
+import hero from '../../../assets/images/zal.jpg';
+
+const board = [
+  { k: 'Пн–Пт', v: '06:30', w: '23:30' },
+  { k: 'Сб–Вс', v: '07:30', w: '22:30' },
+];
+const stats = [
+  ['1300', 'м² зала'],
+  ['60+', 'тренажёров'],
+  ['4,7', 'Яндекс Карты'],
+  ['0 ₽', 'вступительный'],
+];
+---
+<Layout title="Концепция A «Табло»" description="Концепция дизайна сайта Urban210: светлый спортивный плакат." noindex bare>
+  <div class="ca">
+    <header class="ca-top">
+      <a class="ca-logo" href="/concepts/a/">URBAN<b>210</b><Icon name="chev" /></a>
+      <nav class="ca-nav" aria-label="Меню">
+        <a href="#zones">Зал</a><a href="#price">Тарифы</a><a href="#team">Тренеры</a><a href="#lead">Контакты</a>
+      </nav>
+      <span class="ca-status" data-status><i></i><span>Хабаровск</span></span>
+      <a class="ca-btn" href="#lead" data-lead={trial.title} data-block="a_header">1 ₽ первый день</a>
+    </header>
+
+    <!-- Первый экран: плакат -->
+    <section class="ca-hero" aria-labelledby="ca-h">
+      <div class="ca-hero-text">
+        <p class="ca-tag">Фитнес-клуб · {site.district}</p>
+        <h1 id="ca-h">Зал<br />без<br />очереди<span class="ca-dot">.</span></h1>
+        <p class="ca-lead">{site.facts.machines} {site.facts.brands}, свободные веса до 60 кг, сауна и хаммам. От {perDay(plans[0].month, 30)} ₽ в день.</p>
+        <div class="ca-cta">
+          <a class="ca-btn big" href="#lead" data-lead={trial.title} data-block="a_hero">Пробный день за 1 ₽ <Icon name="chev" /></a>
+          <a class="ca-link" href="#price">Тарифы</a>
+        </div>
+      </div>
+      <figure class="ca-hero-ph">
+        <Image src={hero} alt="Тренажёрный зал Urban210 с панорамными окнами" widths={[480, 800, 1100]} sizes="(min-width: 980px) 45vw, 100vw" loading="eager" fetchpriority="high" format="webp" quality={55} />
+        <figcaption><span>пр. 60-летия Октября, 210</span><span>№ 210</span></figcaption>
+      </figure>
+    </section>
+
+    <!-- Табло -->
+    <section class="ca-board" aria-label="Цифры клуба и часы работы">
+      <ul class="ca-stats">
+        {stats.map(([n, l]) => <li><b class="flip" data-flip>{n}</b><span>{l}</span></li>)}
+      </ul>
+      <div class="ca-hours">
+        <p class="ca-hours-t">Расписание</p>
+        {board.map((r) => (
+          <div class="ca-row"><span>{r.k}</span><b class="flip" data-flip>{r.v}</b><i>→</i><b class="flip" data-flip>{r.w}</b></div>
+        ))}
+        <p class="ca-hours-s">{site.parking}</p>
+      </div>
+    </section>
+
+    <!-- Зоны строками -->
+    <section class="ca-sec" id="zones" aria-labelledby="ca-z">
+      <div class="ca-head"><h2 id="ca-z">Что внутри</h2><p>Два этажа. Наведите на строку, чтобы увидеть зону.</p></div>
+      <ul class="ca-zones" data-zones>
+        {zones.map((z) => (
+          <li>
+            <a href={z.href}>
+              <span class="ca-zn">{z.title}</span>
+              <span class="ca-zt">{z.text}</span>
+              <Icon name="chev" class="ca-zi" />
+              {z.image && <Image class="ca-zp" src={img(z.image)} alt="" widths={[360, 560]} sizes="(min-width: 980px) 320px, 90vw" format="avif" quality={45} />}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div class="ca-chips">{programs.flatMap((p) => p.items).map((i) => <span>{i}</span>)}</div>
+    </section>
+
+    <!-- Ценники -->
+    <section class="ca-sec ca-price" id="price" aria-labelledby="ca-p">
+      <div class="ca-head"><h2 id="ca-p">Ценники</h2><p>Безлимит в своё время. Вступительного взноса нет.</p></div>
+      <div class="ca-tickets">
+        {plans.map((p) => (
+          <article class:list={['ca-ticket', p.id === 'all' && 'hot']}>
+            <header><h3>{p.name}</h3>{p.tag && <span>{p.tag}</span>}</header>
+            <p class="ca-hrs">{p.hours}</p>
+            <p class="ca-per"><b>{perDay(p.month, 30)}</b> ₽ в день</p>
+            <dl>
+              <div><dt>Месяц</dt><dd>{rub(p.month)}</dd></div>
+              <div><dt>Год</dt><dd>{rub(p.year)}</dd></div>
+            </dl>
+            <ul>{p.features.map((f) => <li>{f}</li>)}</ul>
+            <a class="ca-btn" href="#lead" data-lead={p.name} data-block={`a_${p.id}`}>Выбрать</a>
+          </article>
+        ))}
+        <article class="ca-ticket trial">
+          <header><h3>{trial.title}</h3></header>
+          <p class="ca-per"><b>1</b> ₽</p>
+          <p>{trial.text}</p>
+          <a class="ca-btn" href="#lead" data-lead={trial.title} data-block="a_trial">Записаться</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- Отзывы -->
+    <section class="ca-sec" aria-labelledby="ca-r">
+      <div class="ca-head"><h2 id="ca-r"><span class="flip" data-flip>{site.rating.value.toString().replace('.', ',')}</span> из 5</h2><p>{site.rating.text} на Яндекс Картах и в 2ГИС.</p></div>
+      <div class="ca-quotes">
+        {reviews.slice(0, 3).map((r) => (
+          <figure><blockquote>«{r.text.split('. ').slice(0, 2).join('. ')}.»</blockquote><figcaption>{r.name}, {r.source}</figcaption></figure>
+        ))}
+      </div>
+    </section>
+
+    <!-- Тренеры -->
+    <section class="ca-sec" id="team" aria-labelledby="ca-t">
+      <div class="ca-head"><h2 id="ca-t">Тренеры</h2><p>{personal.firstFree}.</p></div>
+      <ul class="ca-team">
+        {trainers.map((t) => (
+          <li><Image src={img(t.photo)} alt={t.name} widths={[320, 520]} sizes="(min-width: 980px) 28vw, 80vw" format="avif" quality={50} /><b>{t.name}</b><span>{t.role}</span></li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- Заявка -->
+    <section class="ca-lead-sec" id="lead" aria-labelledby="ca-l">
+      <div>
+        <h2 id="ca-l">Первый день<br />за 1 ₽</h2>
+        <p>{faqGeneral[0].a}</p>
+        <p class="ca-contacts"><a href={site.phone.href}>{site.phone.display}</a> · <a href={whatsappLink('Здравствуйте! Хочу на пробный день')} target="_blank" rel="noopener">WhatsApp</a> · {site.address.short}</p>
+      </div>
+      <LeadForm block="a_final" id="a" />
+    </section>
+
+    <footer class="ca-foot">
+      <span>URBAN210 · {site.legal.name}, ИНН {site.legal.inn}</span>
+      <a href="/concepts/b/">Концепция B →</a>
+    </footer>
+  </div>
+</Layout>
+
+<script>
+  // Статус «открыто сейчас» по времени Хабаровска
+  const st = document.querySelector<HTMLElement>('[data-status]');
+  if (st) {
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Vladivostok' }));
+    const d = now.getDay();
+    const m = now.getHours() * 60 + now.getMinutes();
+    const [o, c] = d === 0 || d === 6 ? [450, 1350] : [390, 1410];
+    const open = m >= o && m < c;
+    const pad = (x: number) => `${Math.floor(x / 60)}:${String(x % 60).padStart(2, '0')}`;
+    st.classList.toggle('open', open);
+    st.querySelector('span')!.textContent = open ? `Открыто до ${pad(c)}` : `Откроемся в ${pad(o)}`;
+  }
+  // Цифры табло перелистываются, когда попадают в экран
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('go'); io.unobserve(e.target); } }), { threshold: 0.6 });
+  document.querySelectorAll<HTMLElement>('[data-flip]').forEach((el) => {
+    el.innerHTML = [...el.textContent!].map((ch, i) => `<span style="--i:${i}">${ch === ' ' ? '&nbsp;' : ch}</span>`).join('');
+    io.observe(el);
+  });
+  // Фото зоны идёт за курсором
+  const list = document.querySelector<HTMLElement>('[data-zones]');
+  list?.addEventListener('pointermove', (e) => {
+    list.style.setProperty('--x', `${e.clientX}px`);
+    list.style.setProperty('--y', `${e.clientY}px`);
+  });
+</script>
+
+<style is:global>
+  body:has(.ca) { background: #f1ede6; color: #121010; }
+  body:has(.ca) .skip { color: #121010; }
+</style>
+
+<style>
+  .ca { --ink: #121010; --paper: #f1ede6; --line: #121010; --acc: #ff5722; --mut: #5d564f; color: var(--ink); font-family: var(--font-body); }
+  .ca :global(h1), .ca :global(h2), .ca :global(h3) { font-family: 'Dela Gothic One', var(--font-display); font-weight: 400; letter-spacing: -0.02em; }
+  .ca-top { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 20px; padding: 14px var(--gut); background: rgb(241 237 230 / 0.92); backdrop-filter: blur(10px); border-bottom: 2px solid var(--line); }
+  .ca-logo { font-family: 'Dela Gothic One'; font-size: 1.25rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+  .ca-logo b { color: var(--acc); font-weight: 400; }
+  .ca-logo :global(svg) { width: 20px; height: 16px; color: var(--acc); }
+  .ca-nav { display: none; gap: 22px; margin-left: 16px; }
+  .ca-nav a { text-decoration: none; font-weight: 600; }
+  .ca-nav a:hover { color: var(--acc); }
+  .ca-status { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+  .ca-status i { width: 10px; height: 10px; border-radius: 50%; background: #9a928a; }
+  .ca-status.open i { background: #19a35b; box-shadow: 0 0 0 4px rgb(25 163 91 / 0.18); }
+  .ca-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; background: var(--ink); color: var(--paper); text-decoration: none; font-weight: 700; border-radius: 0; white-space: nowrap; transition: background-color 0.3s var(--ease), transform 0.3s var(--ease); }
+  .ca-btn:hover { background: var(--acc); color: #160d08; }
+  .ca-btn:active { transform: scale(0.98); }
+  .ca-btn.big { min-height: 60px; padding: 0 24px; font-size: 1.05rem; background: var(--acc); color: #160d08; }
+  .ca-btn.big:hover { background: var(--ink); color: var(--paper); }
+  .ca-btn :global(svg) { width: 20px; height: 14px; }
+  .ca-top .ca-btn { display: none; }
+  @media (min-width: 980px) { .ca-nav, .ca-top .ca-btn { display: inline-flex; } }
+  .ca-link { font-weight: 700; text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; text-decoration-color: var(--acc); }
+
+  .ca-hero { display: grid; gap: 28px; padding: clamp(28px, 5vw, 64px) var(--gut) 0; }
+  @media (min-width: 980px) { .ca-hero { grid-template-columns: 1.1fr 0.9fr; align-items: end; gap: 48px; } }
+  .ca-tag { font-weight: 600; }
+  .ca-hero h1 { font-size: clamp(3.6rem, 14vw, 10rem); line-height: 0.86; margin-top: 18px; padding-bottom: 0.12em; letter-spacing: -0.035em; }
+  .ca-dot { color: var(--acc); }
+  .ca-lead { margin-top: 20px; max-width: 34ch; font-size: clamp(1.1rem, 1rem + 0.5vw, 1.35rem); line-height: 1.45; }
+  .ca-cta { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; }
+  .ca-hero-ph { margin: 0; position: relative; border: 2px solid var(--line); background: var(--ink); }
+  .ca-hero-ph :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(1) contrast(1.1); }
+  @media (max-width: 979px) { .ca-hero-ph :global(img) { aspect-ratio: 4 / 3; } }
+  .ca-hero-ph figcaption { position: absolute; inset: auto 0 0; display: flex; justify-content: space-between; padding: 10px 14px; background: var(--acc); color: #160d08; font-weight: 700; font-size: 0.9rem; }
+
+  .ca-board { margin: clamp(32px, 5vw, 64px) var(--gut) 0; display: grid; border: 2px solid var(--line); }
+  @media (min-width: 980px) { .ca-board { grid-template-columns: 1.4fr 1fr; } }
+  .ca-stats { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 700px) { .ca-stats { grid-template-columns: repeat(4, 1fr); } }
+  .ca-stats li { padding: 22px 18px; border-right: 2px solid var(--line); border-bottom: 2px solid var(--line); display: grid; gap: 6px; }
+  .ca-stats b { font-family: 'Dela Gothic One'; font-weight: 400; font-size: clamp(1.8rem, 1.2rem + 1.8vw, 3rem); line-height: 1; white-space: nowrap; }
+  .ca-stats span { color: var(--mut); font-weight: 600; }
+  .ca-hours { background: var(--ink); color: var(--paper); padding: 22px; display: grid; gap: 12px; align-content: center; }
+  .ca-hours-t { color: var(--acc); font-weight: 700; }
+  .ca-row { display: grid; grid-template-columns: 70px auto 24px auto; align-items: center; gap: 10px; font-size: 1.05rem; }
+  .ca-row b { font-family: 'Dela Gothic One'; font-weight: 400; font-size: clamp(1.8rem, 1.2rem + 2vw, 2.8rem); background: #262220; padding: 2px 8px; }
+  .ca-row i { color: var(--acc); font-style: normal; }
+  .ca-hours-s { color: #b9b0a7; font-size: 0.92rem; }
+
+  /* перелистывание цифр */
+  .flip { display: inline-block; }
+  .flip :global(span) { display: inline-block; }
+  :global(.js) .flip:not(.go) :global(span) { transform: rotateX(90deg); opacity: 0; }
+  .flip.go :global(span) { animation: flipIn 0.7s var(--ease) both; animation-delay: calc(var(--i) * 70ms); }
+  @keyframes flipIn { from { transform: rotateX(90deg); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .ca-sec { padding: clamp(64px, 9vw, 128px) var(--gut) 0; }
+  .ca-head { display: grid; gap: 14px; margin-bottom: 32px; border-bottom: 2px solid var(--line); padding-bottom: 18px; }
+  @media (min-width: 980px) { .ca-head { grid-template-columns: 1fr 1fr; align-items: end; } }
+  .ca-head h2 { font-size: clamp(2.4rem, 1.4rem + 4.4vw, 6rem); line-height: 0.9; }
+  .ca-head p { color: var(--mut); font-size: 1.1rem; max-width: 46ch; }
+
+  .ca-zones { list-style: none; position: relative; }
+  .ca-zones li { border-bottom: 2px solid var(--line); }
+  .ca-zones a { display: grid; gap: 8px; padding: 24px 0; text-decoration: none; position: relative; }
+  @media (min-width: 980px) { .ca-zones a { grid-template-columns: 1fr 1fr 40px; align-items: center; gap: 32px; } }
+  .ca-zn { font-family: 'Dela Gothic One'; font-size: clamp(1.8rem, 1.2rem + 2.6vw, 3.6rem); line-height: 1; transition: color 0.3s var(--ease), transform 0.4s var(--ease); }
+  .ca-zt { color: var(--mut); }
+  .ca-zones :global(.ca-zi) { width: 32px; height: 26px; color: var(--acc); }
+  .ca-zones a:hover .ca-zn { color: var(--acc); transform: translateX(10px); }
+  .ca-zones :global(.ca-zp) { display: none; }
+  @media (hover: hover) and (min-width: 980px) {
+    .ca-zones :global(.ca-zp) { display: block; position: fixed; left: 0; top: 0; width: 300px; aspect-ratio: 4 / 3; object-fit: cover; pointer-events: none; z-index: 5; filter: grayscale(1); opacity: 0; visibility: hidden; transform: translate(calc(var(--x, 0px) + 24px), calc(var(--y, 0px) - 50%)) rotate(-3deg) scale(0.9); transition: opacity 0.3s var(--ease), transform 0.25s var(--ease); border: 2px solid var(--line); }
+    .ca-zones a:hover :global(.ca-zp) { opacity: 1; visibility: visible; transform: translate(calc(var(--x, 0px) + 24px), calc(var(--y, 0px) - 50%)) rotate(-3deg) scale(1); }
+  }
+  @media (max-width: 979px) { .ca-zones :global(.ca-zp) { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; filter: grayscale(1); margin-top: 8px; } }
+  .ca-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .ca-chips span { padding: 8px 14px; border: 2px solid var(--line); font-weight: 700; }
+
+  .ca-tickets { display: grid; gap: 16px; }
+  @media (min-width: 760px) { .ca-tickets { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1180px) { .ca-tickets { grid-template-columns: repeat(4, 1fr); } }
+  .ca-ticket { background: #fff; border: 2px solid var(--line); padding: 22px; display: flex; flex-direction: column; gap: 14px; position: relative; }
+  .ca-ticket::before { content: ''; position: absolute; left: -2px; right: -2px; top: 58px; border-top: 2px dashed var(--line); }
+  .ca-ticket header { display: flex; justify-content: space-between; gap: 8px; min-height: 36px; }
+  .ca-ticket h3 { font-size: 1.25rem; }
+  .ca-ticket header span { background: var(--acc); padding: 3px 8px; font-weight: 700; font-size: 0.8rem; height: fit-content; }
+  .ca-hrs { color: var(--mut); margin-top: 8px; }
+  .ca-per b { font-family: 'Dela Gothic One'; font-weight: 400; font-size: 4rem; line-height: 1; }
+  .ca-ticket dl { margin: 0; display: grid; gap: 4px; }
+  .ca-ticket dl div { display: flex; justify-content: space-between; border-bottom: 1px dotted var(--line); padding: 4px 0; }
+  .ca-ticket dd { margin: 0; font-weight: 700; }
+  .ca-ticket ul { list-style: none; display: grid; gap: 6px; color: var(--mut); font-size: 0.95rem; }
+  .ca-ticket ul li::before { content: '+ '; color: var(--acc); font-weight: 700; }
+  .ca-ticket .ca-btn { margin-top: auto; justify-content: center; }
+  .ca-ticket.hot { background: var(--ink); color: var(--paper); --line: #f1ede6; --mut: #b9b0a7; }
+  .ca-ticket.hot .ca-btn { background: var(--acc); color: #160d08; }
+  .ca-ticket.trial { background: var(--acc); color: #160d08; --mut: #3a1d10; }
+
+  .ca-quotes { display: grid; gap: 28px; }
+  @media (min-width: 980px) { .ca-quotes { grid-template-columns: repeat(3, 1fr); } }
+  .ca-quotes figure { margin: 0; border-top: 6px solid var(--acc); padding-top: 18px; }
+  .ca-quotes blockquote { margin: 0; font-size: 1.2rem; line-height: 1.45; font-weight: 500; }
+  .ca-quotes figcaption { margin-top: 14px; color: var(--mut); font-weight: 600; }
+
+  .ca-team { list-style: none; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+  .ca-team li { display: grid; gap: 6px; }
+  .ca-team :global(img) { width: 100%; aspect-ratio: 1; object-fit: cover; filter: grayscale(1) contrast(1.1); border: 2px solid var(--line); }
+  .ca-team b { font-family: 'Dela Gothic One'; font-weight: 400; font-size: 1.2rem; margin-top: 8px; }
+  .ca-team span { color: var(--mut); }
+
+  .ca-lead-sec { margin: clamp(64px, 9vw, 128px) var(--gut) 0; background: var(--ink); color: var(--paper); padding: clamp(24px, 5vw, 64px); display: grid; gap: 32px; }
+  @media (min-width: 980px) { .ca-lead-sec { grid-template-columns: 1fr 440px; align-items: center; } }
+  .ca-lead-sec h2 { font-size: clamp(2.6rem, 1.4rem + 5vw, 6.4rem); line-height: 0.9; color: var(--acc); }
+  .ca-lead-sec p { margin-top: 20px; max-width: 46ch; color: #d8d0c8; }
+  .ca-contacts a { color: #fff; }
+  .ca-lead-sec :global(.form) { background: #f1ede6; color: #121010; --ink: #121010; --muted: #5d564f; --line: rgb(18 16 16 / 0.25); --card: #fff; border-radius: 0; }
+  .ca-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 28px var(--gut) 40px; font-weight: 600; }
+  @media (prefers-reduced-motion: reduce) { .flip :global(span) { animation: none !important; opacity: 1 !important; transform: none !important; } }
+</style>

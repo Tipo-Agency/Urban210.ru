@@ -1,0 +1,239 @@
+---
+// Концепция C «Импульс»: оранжевый бренд во весь экран, шевроны как графическая система, Russo One.
+// Тренер в вырезке на первом экране, фото в рамке-шевроне, полосы шевронов едут при прокрутке.
+import '@fontsource/russo-one/400.css';
+import { Image } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import LeadForm from '../../../components/LeadForm.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site, whatsappLink } from '../../../data/site';
+import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { reviews, trainers, zones, promos, faqGeneral } from '../../../data/content';
+import coach from '../../../assets/images/trainers/lazko-cutout.webp';
+
+const stripe = Array.from({ length: 14 });
+---
+<Layout title="Концепция C «Импульс»" description="Концепция дизайна сайта Urban210: яркая, на шевроне бренда." noindex bare>
+  <div class="cc">
+    <header class="cc-top">
+      <a class="cc-logo" href="/concepts/c/">URBAN210<Icon name="chev" /></a>
+      <nav aria-label="Меню"><a href="#zones">Зоны</a><a href="#price">Тарифы</a><a href="#promo">Акции</a><a href="#lead">Контакты</a></nav>
+      <a class="cc-tel" href={site.phone.href}>{site.phone.display}</a>
+    </header>
+
+    <section class="cc-hero" aria-labelledby="cc-h">
+      <div class="cc-hero-text">
+        <h1 id="cc-h">Включайся<br />в 6:30</h1>
+        <p>Фитнес-клуб в Железнодорожном районе. {site.facts.machines} {site.facts.brands}, групповые, сауна и хаммам. Без вступительного взноса.</p>
+        <div class="cc-cta">
+          <a class="cc-btn" href="#lead" data-lead={trial.title} data-block="c_hero">Пробный день за 1 ₽ <Icon name="chev" /></a>
+          <a class="cc-link" href="#price">от {rub(plans[0].month)} в месяц</a>
+        </div>
+      </div>
+      <div class="cc-hero-art" aria-hidden="true">
+        <div class="cc-chevs"><Icon name="chev1" /><Icon name="chev1" /><Icon name="chev1" /></div>
+        <Image class="cc-coach" src={coach} alt="" widths={[420, 700, 900]} sizes="(min-width: 980px) 40vw, 80vw" loading="eager" fetchpriority="high" format="webp" quality={60} />
+        <span class="cc-sticker"><b>1 ₽</b>первый<br />день</span>
+      </div>
+    </section>
+
+    <div class="cc-stripe" aria-hidden="true"><div>{stripe.map(() => <Icon name="chev" />)}</div></div>
+
+    <section class="cc-facts" aria-label="Факты">
+      <div><b>0 ₽</b><span>вступительный взнос</span></div>
+      <div><b>{site.rating.value.toString().replace('.', ',')}</b><span>Яндекс Карты, {site.rating.text}</span></div>
+      <div><b>50</b><span>мест бесплатной парковки</span></div>
+      <div><b>{perDay(plans[0].month, 30)} ₽</b><span>в день за безлимит</span></div>
+    </section>
+
+    <section class="cc-sec" id="zones" aria-labelledby="cc-z">
+      <h2 id="cc-z" class="cc-h2">Где тренироваться</h2>
+      <div class="cc-zones">
+        {zones.map((z, i) => (
+          <a class:list={['cc-zone', i % 2 && 'rev']} href={z.href}>
+            <div class="cc-zone-ph">
+              {z.image ? <Image src={img(z.image)} alt="" widths={[480, 800, 1100]} sizes="(min-width: 980px) 55vw, 100vw" format="avif" quality={45} /> : <span class="cc-spa">SPA</span>}
+            </div>
+            <div class="cc-zone-tx">
+              <h3>{z.title}</h3>
+              <p>{z.text}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="cc-sec cc-dark" id="price" aria-labelledby="cc-p">
+      <h2 id="cc-p" class="cc-h2">Тарифы</h2>
+      <div class="cc-plans">
+        {plans.map((p) => (
+          <article class:list={['cc-plan', p.id === 'all' && 'hot']}>
+            {p.tag && <span class="cc-tag">{p.tag}</span>}
+            <h3>{p.name}</h3>
+            <p class="cc-hrs">{p.hours}</p>
+            <p class="cc-big">{perDay(p.month, 30)}<small> ₽/день</small></p>
+            <p class="cc-sub">{rub(p.month)} в месяц · {rub(p.year)} за год</p>
+            <ul>{p.features.map((f) => <li><Icon name="chev1" />{f}</li>)}</ul>
+            <a class="cc-btn wide" href="#lead" data-lead={p.name} data-block={`c_${p.id}`}>Хочу этот</a>
+          </article>
+        ))}
+      </div>
+      <p class="cc-note">Персональные: {personal.pack} тренировок за {rub(personal.price)}. {personal.firstFree}.</p>
+    </section>
+
+    <section class="cc-sec" id="promo" aria-labelledby="cc-a">
+      <h2 id="cc-a" class="cc-h2">Акции</h2>
+      <div class="cc-promos">
+        {promos.map((p) => (
+          <a class="cc-promo" href={`/promo/${p.slug}/`}><h3>{p.title}</h3><p>{p.short}</p><Icon name="chev" /></a>
+        ))}
+      </div>
+    </section>
+
+    <section class="cc-sec" aria-labelledby="cc-r">
+      <h2 id="cc-r" class="cc-h2">Говорят гости</h2>
+      <div class="cc-reviews">
+        {reviews.slice(0, 4).map((r) => (
+          <figure><blockquote>{r.text.split('. ').slice(0, 2).join('. ')}.</blockquote><figcaption><b>{r.name}</b> · {r.source}</figcaption></figure>
+        ))}
+      </div>
+    </section>
+
+    <section class="cc-sec" aria-labelledby="cc-t">
+      <h2 id="cc-t" class="cc-h2">Команда</h2>
+      <ul class="cc-team">
+        {trainers.map((t) => (
+          <li><div class="cc-team-ph"><Image src={img(t.photo)} alt={t.name} widths={[360, 560]} sizes="(min-width: 980px) 30vw, 85vw" format="avif" quality={50} /></div><b>{t.name}</b><span>{t.role}</span></li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="cc-lead" id="lead" aria-labelledby="cc-l">
+      <div>
+        <h2 id="cc-l">Жми на старт</h2>
+        <p>{faqGeneral[0].a}</p>
+        <p class="cc-contact"><a href={site.phone.href}>{site.phone.display}</a> · <a href={whatsappLink('Здравствуйте! Хочу на пробный день')} target="_blank" rel="noopener">WhatsApp</a> · {site.address.short}</p>
+      </div>
+      <LeadForm block="c_final" id="c" />
+    </section>
+
+    <footer class="cc-foot"><span>URBAN210 · {site.legal.name}</span><span><a href="/concepts/b/">← B</a> · <a href="/concepts/a/">A →</a></span></footer>
+  </div>
+</Layout>
+
+<style is:global>
+  body:has(.cc) { background: #111; }
+</style>
+
+<style>
+  .cc { --acc: #ff5722; --ink: #111; --paper: #f6f1ea; color: var(--ink); font-family: var(--font-body); }
+  .cc :global(h1), .cc :global(h2), .cc :global(h3) { font-family: 'Russo One', var(--font-display); font-weight: 400; letter-spacing: -0.01em; }
+  .cc-top { position: absolute; inset: 0 0 auto; z-index: 20; display: flex; align-items: center; gap: 24px; padding: 18px var(--gut); }
+  .cc-logo { font-family: 'Russo One'; font-size: 1.35rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
+  .cc-logo :global(svg) { width: 22px; height: 18px; }
+  .cc-top nav { display: none; gap: 20px; margin-left: auto; }
+  .cc-top nav a { text-decoration: none; font-weight: 700; }
+  .cc-top nav a:hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 3px; }
+  .cc-tel { display: none; margin-left: auto; font-weight: 800; text-decoration: none; background: var(--ink); color: #fff; padding: 10px 14px; }
+  @media (min-width: 980px) { .cc-top nav { display: flex; } .cc-tel { display: inline-block; margin-left: 0; } }
+
+  .cc-hero { background: var(--acc); position: relative; overflow: hidden; display: grid; min-height: 100svh; padding: calc(80px + 3vw) var(--gut) 0; }
+  @media (min-width: 980px) { .cc-hero { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); align-items: end; } }
+  .cc-hero-text { position: relative; z-index: 2; padding-bottom: clamp(32px, 6vw, 80px); align-self: center; }
+  .cc-hero h1 { font-size: clamp(2.6rem, 0.5rem + 6.6vw, 8rem); hyphens: manual; line-height: 0.86; text-transform: uppercase; }
+  .cc-hero p { margin-top: 24px; max-width: 36ch; font-size: clamp(1.1rem, 1rem + 0.4vw, 1.3rem); line-height: 1.45; font-weight: 500; }
+  .cc-cta { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; }
+  .cc-btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 60px; padding: 0 26px; background: var(--ink); color: #fff; font-weight: 800; font-size: 1.05rem; text-decoration: none; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%); padding-right: 36px; transition: background-color 0.3s var(--ease), transform 0.3s var(--ease); }
+  .cc-btn:hover { background: #fff; color: var(--ink); }
+  .cc-btn:active { transform: scale(0.98); }
+  .cc-btn :global(svg) { width: 20px; height: 14px; }
+  .cc-btn.wide { width: 100%; margin-top: auto; }
+  .cc-link { font-weight: 800; text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; }
+  .cc-hero-art { position: relative; align-self: end; min-height: 52svh; }
+  .cc-chevs { position: absolute; inset: 8% -10% 0 0; display: flex; justify-content: flex-end; align-items: center; gap: 0; color: var(--ink); }
+  .cc-chevs :global(svg) { height: 78%; width: auto; margin-left: -9%; }
+  .cc-chevs :global(svg:nth-child(2)) { color: #2a1309; }
+  .cc-chevs :global(svg:nth-child(3)) { color: #fff; opacity: 0.9; }
+  .cc-hero-art :global(.cc-coach) { position: relative; z-index: 1; display: block; width: min(100%, 640px); margin-left: auto; height: auto; filter: grayscale(1) contrast(1.1); }
+  .cc-sticker { position: absolute; z-index: 2; left: 2%; top: 14%; width: 132px; height: 132px; border-radius: 50%; background: #fff; display: grid; place-content: center; text-align: center; font-weight: 800; line-height: 1.1; transform: rotate(-12deg); animation: wobble 5s var(--ease) infinite; box-shadow: 0 10px 30px rgb(0 0 0 / 0.2); }
+  .cc-sticker b { font-family: 'Russo One'; font-size: 2.2rem; color: var(--acc); font-weight: 400; }
+  @keyframes wobble { 50% { transform: rotate(-4deg) scale(1.04); } }
+  @media (prefers-reduced-motion: no-preference) { .cc-chevs :global(svg) { animation: push 2.6s var(--ease) infinite; } .cc-chevs :global(svg:nth-child(2)) { animation-delay: 0.15s; } .cc-chevs :global(svg:nth-child(3)) { animation-delay: 0.3s; } }
+  @keyframes push { 0%, 70%, 100% { transform: none; } 35% { transform: translateX(18px); } }
+
+  .cc-stripe { background: var(--ink); color: var(--acc); overflow: hidden; padding: 14px 0; }
+  .cc-stripe div { display: flex; gap: 28px; width: max-content; }
+  .cc-stripe :global(svg) { width: 64px; height: 56px; flex: none; }
+  @supports (animation-timeline: scroll()) { @media (prefers-reduced-motion: no-preference) { .cc-stripe div { animation: slide linear both; animation-timeline: scroll(root); } } }
+  @keyframes slide { to { transform: translateX(-40%); } }
+
+  .cc-facts { background: var(--ink); color: #fff; display: grid; grid-template-columns: repeat(2, 1fr); padding: 0 var(--gut) 40px; gap: 1px; }
+  @media (min-width: 900px) { .cc-facts { grid-template-columns: repeat(4, 1fr); } }
+  .cc-facts div { padding: 20px 0; display: grid; gap: 6px; border-top: 1px solid rgb(255 255 255 / 0.2); }
+  .cc-facts b { font-family: 'Russo One'; font-weight: 400; font-size: clamp(2rem, 1.4rem + 2.4vw, 3.6rem); color: var(--acc); line-height: 1; }
+  .cc-facts span { color: #cfc8c1; }
+
+  .cc-sec { background: var(--paper); padding: clamp(64px, 9vw, 128px) var(--gut); }
+  .cc-h2 { font-size: clamp(2.6rem, 1rem + 6vw, 7rem); line-height: 0.88; text-transform: uppercase; margin-bottom: clamp(28px, 4vw, 56px); }
+  .cc-zones { display: grid; gap: clamp(28px, 5vw, 64px); }
+  .cc-zone { display: grid; gap: 20px; text-decoration: none; align-items: center; }
+  @media (min-width: 980px) { .cc-zone { grid-template-columns: 1.3fr 1fr; gap: 56px; } .cc-zone.rev .cc-zone-ph { order: 2; } }
+  .cc-zone-ph { aspect-ratio: 16 / 10; overflow: hidden; background: var(--ink); clip-path: polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%, 12% 50%); transition: clip-path 0.6s var(--ease); }
+  .cc-zone:hover .cc-zone-ph { clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0 100%, 0 50%); }
+  .cc-zone-ph :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.1); }
+  .cc-spa { display: grid; place-items: center; height: 100%; background: var(--acc); font-family: 'Russo One'; font-size: 6rem; color: var(--ink); }
+  .cc-n { font-family: 'Russo One'; color: var(--acc); font-size: 1.3rem; }
+  .cc-zone h3 { font-size: clamp(2rem, 1.2rem + 3vw, 3.6rem); margin-top: 6px; }
+  .cc-zone p { margin-top: 14px; font-size: 1.1rem; color: #4a433d; max-width: 42ch; }
+
+  .cc-dark { background: var(--ink); color: #fff; }
+  .cc-plans { display: grid; gap: 16px; }
+  @media (min-width: 900px) { .cc-plans { grid-template-columns: repeat(3, 1fr); } }
+  .cc-plan { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 28px; background: #1d1a18; }
+  .cc-plan.hot { background: var(--acc); color: var(--ink); }
+  .cc-plan.hot .cc-btn { background: var(--ink); color: #fff; }
+  .cc-plan .cc-btn { background: var(--acc); color: var(--ink); }
+  .cc-tag { position: absolute; top: 18px; right: 18px; background: #fff; color: var(--ink); font-weight: 800; padding: 4px 10px; font-size: 0.85rem; }
+  .cc-plan h3 { font-size: 1.6rem; }
+  .cc-hrs, .cc-sub { opacity: 0.75; }
+  .cc-big { font-family: 'Russo One'; font-size: clamp(4rem, 3rem + 3vw, 6rem); line-height: 0.9; }
+  .cc-big small { font-size: 1.2rem; }
+  .cc-plan ul { list-style: none; display: grid; gap: 8px; margin-bottom: 12px; }
+  .cc-plan li { display: grid; grid-template-columns: 14px 1fr; gap: 10px; align-items: baseline; }
+  .cc-plan li :global(svg) { width: 10px; height: 14px; color: var(--acc); }
+  .cc-plan.hot li :global(svg) { color: var(--ink); }
+  .cc-note { margin-top: 24px; color: #cfc8c1; }
+
+  .cc-promos { display: grid; gap: 14px; }
+  @media (min-width: 900px) { .cc-promos { grid-template-columns: repeat(3, 1fr); } }
+  .cc-promo { position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 220px; padding: 26px; background: var(--ink); color: #fff; text-decoration: none; overflow: hidden; transition: transform 0.4s var(--ease); }
+  .cc-promo:first-child { background: var(--acc); color: var(--ink); }
+  .cc-promo:hover { transform: translateY(-6px); }
+  .cc-promo h3 { font-size: 1.8rem; }
+  .cc-promo :global(svg) { position: absolute; right: -20px; bottom: -20px; width: 140px; height: 130px; opacity: 0.18; transition: transform 0.5s var(--ease); }
+  .cc-promo:hover :global(svg) { transform: translateX(14px); }
+
+  .cc-reviews { display: grid; gap: 14px; }
+  @media (min-width: 900px) { .cc-reviews { grid-template-columns: repeat(2, 1fr); } }
+  .cc-reviews figure { margin: 0; padding: 28px; background: #fff; border-left: 0; position: relative; }
+  .cc-reviews figure::before { content: '»'; font-family: 'Russo One'; font-size: 4rem; color: var(--acc); line-height: 0.6; display: block; margin-bottom: 14px; }
+  .cc-reviews blockquote { margin: 0; font-size: 1.15rem; line-height: 1.5; }
+  .cc-reviews figcaption { margin-top: 14px; color: #6b625b; }
+
+  .cc-team { list-style: none; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+  .cc-team li { display: grid; gap: 4px; }
+  .cc-team-ph { aspect-ratio: 1; overflow: hidden; background: var(--acc); }
+  .cc-team :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); mix-blend-mode: multiply; transition: transform 0.8s var(--ease); }
+  .cc-team li:hover :global(img) { transform: scale(1.05); }
+  .cc-team b { font-family: 'Russo One'; font-weight: 400; font-size: 1.3rem; margin-top: 10px; }
+  .cc-team span { color: #6b625b; }
+
+  .cc-lead { background: var(--acc); padding: clamp(64px, 9vw, 128px) var(--gut); display: grid; gap: 36px; }
+  @media (min-width: 980px) { .cc-lead { grid-template-columns: 1fr 440px; align-items: center; } }
+  .cc-lead h2 { font-size: clamp(3rem, 1rem + 8vw, 8.4rem); line-height: 0.86; text-transform: uppercase; }
+  .cc-lead p { margin-top: 18px; max-width: 46ch; font-size: 1.1rem; }
+  .cc-contact a { font-weight: 800; }
+  .cc-lead :global(.form) { border-radius: 0; background: var(--ink); }
+  .cc-foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 28px var(--gut) 40px; color: #cfc8c1; background: var(--ink); }
+</style>

@@ -186,10 +186,17 @@ function initDialog() {
 /* ---------- Шапка и меню ---------- */
 let closeMenu = () => {};
 function initHeader() {
-  const header = document.querySelector<HTMLElement>('[data-header]')!;
-  const burger = document.querySelector<HTMLButtonElement>('[data-burger]')!;
-  const menu = document.querySelector<HTMLElement>('[data-menu]')!;
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const burger = document.querySelector<HTMLButtonElement>('[data-burger]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
   const mbar = document.querySelector<HTMLElement>('[data-mbar]');
+  if (!header || !burger || !menu) {
+    // страница со своей шапкой: оставляем только липкую панель на телефоне
+    const tick = () => mbar?.classList.toggle('is-on', scrollY > innerHeight * 0.6);
+    addEventListener('scroll', tick, { passive: true });
+    tick();
+    return;
+  }
   let last = scrollY;
   let ticking = false;
 
