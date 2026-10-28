@@ -1,0 +1,905 @@
+---
+// Концепция 14 «Эфир»: клуб как спортивная трансляция. Шапка-табло с живыми часами Хабаровска
+// и статусом «открыто», плашки нижней трети, бегущая строка фактов, мультикамера по зонам со шторкой,
+// тарифы как табло статистики, тренеры как карточки игроков, логотип канала в углу.
+// Только реальные факты из src/data. Без GSAP: шторки на CSS clip-path и IntersectionObserver.
+// Шрифты только кириллица и латиница: полные пакеты раздували HTML до 140 КБ
+import exoCyrI from '@fontsource-variable/exo-2/files/exo-2-cyrillic-wght-italic.woff2?url';
+import exoLatI from '@fontsource-variable/exo-2/files/exo-2-latin-wght-italic.woff2?url';
+import exoCyr from '@fontsource-variable/exo-2/files/exo-2-cyrillic-wght-normal.woff2?url';
+import exoLat from '@fontsource-variable/exo-2/files/exo-2-latin-wght-normal.woff2?url';
+import tekCyr from '@fontsource-variable/tektur/files/tektur-cyrillic-wght-normal.woff2?url';
+import tekLat from '@fontsource-variable/tektur/files/tektur-latin-wght-normal.woff2?url';
+import { Image, getImage } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import LeadForm from '../../../components/LeadForm.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site, whatsappLink, telegramLink } from '../../../data/site';
+import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { reviews, trainers, zones, promos, programs } from '../../../data/content';
+import hero from '../../../assets/images/hero.jpg';
+import hall from '../../../assets/images/zal.jpg';
+
+const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
+const UL = 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
+const ff = (fam: string, style: string, url: string, range: string) => `@font-face{font-family:'${fam}';font-style:${style};font-display:swap;font-weight:100 900;src:url(${url}) format('woff2');unicode-range:${range}}`;
+const fonts = [
+  ff('Exo 2 Variable', 'italic', exoCyrI, UR), ff('Exo 2 Variable', 'italic', exoLatI, UL),
+  ff('Exo 2 Variable', 'normal', exoCyr, UR), ff('Exo 2 Variable', 'normal', exoLat, UL),
+  ff('Tektur Variable', 'normal', tekCyr, UR), ff('Tektur Variable', 'normal', tekLat, UL),
+].join('');
+
+const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
+const rating = site.rating.value.toString().replace('.', ',');
+const z = (id: string) => zones.find((x) => x.id === id)!;
+const cams = [
+  { key: 'zal', title: z('zal').title, text: z('zal').text, image: '/images/zal.jpg', alt: 'Тренажёрный зал Urban210 с панорамными окнами', href: z('zal').href },
+  { key: 'weights', title: 'Свободные веса', text: `Гантели, грифы и блины, ${site.facts.freeWeights}.`, image: '/images/free-weights.jpg', alt: 'Ряд гантелей в зоне свободных весов', href: '/zal/' },
+  { key: 'cardio', title: z('cardio').title, text: z('cardio').text, image: '/images/cardio.jpg', alt: 'Беговые дорожки в кардиозоне', href: z('cardio').href },
+  { key: 'group', title: z('group').title, text: z('group').text, image: '/images/group.jpg', alt: 'Групповая тренировка в зале групповых программ', href: z('group').href, tags: programs.flatMap((p) => p.items) },
+  { key: 'spa', title: z('spa').title, text: z('spa').text, image: null, alt: '', href: z('spa').href },
+];
+const [day, full, all] = plans;
+const rows: [string, string, string, string][] = [
+  ['Время', 'с 6:30 до 16:00', 'Всё время работы', 'Всё время работы'],
+];
+const marks: [string, number, number, number][] = [
+  ['Тренажёрный зал и кардиозона', 1, 1, 1],
+  ['Фитнес-тестирование', 1, 1, 1],
+  ['Раздевалки, душевые, парковка', 1, 1, 1],
+  ['Пробная тренировка с тренером', 0, 1, 1],
+  ['Групповые программы', 0, 0, 1],
+  ['SPA: сауна, хаммам, релакс-зона', 0, 0, 1],
+  ['Приоритетное обслуживание', 0, 0, 1],
+];
+const tradein = promos.find((p) => p.slug === 'trade-in')!;
+const friend = promos.find((p) => p.slug === '1-plus-1')!;
+const ticker = [
+  `${trial.title} для новых гостей`,
+  'Вступительного взноса нет',
+  ...site.hours.map((h) => `${h.days} ${h.time}`),
+  site.parking,
+  `${rating} на Яндекс Картах, ${site.rating.text}`,
+  `${tradein.title} по карте другого клуба`,
+  `${friend.title} при покупке годовой подписки`,
+  `${site.facts.machines} ${site.facts.brands}`,
+  `SPA: финская сауна и хаммам в тарифе «${all.name}»`,
+  personal.firstFree,
+];
+const position = (role: string) => (/групп/i.test(role) ? 'Групповые' : 'Тренажёрный зал');
+const year = new Date().getFullYear();
+// На телефоне вертикальный кадр светлого зала, на десктопе тёмный общий план под видео
+const heroM = await getImage({ src: hall, widths: [480, 780, 1100], sizes: '100vw', format: 'webp', quality: 50 });
+---
+<Layout title="Концепция 14 «Эфир»" description="Концепция дизайна сайта Urban210: клуб как спортивная трансляция, табло, плашки и бегущая строка." noindex bare>
+  <Fragment slot="head">
+    <link rel="preload" href={exoCyrI} as="font" type="font/woff2" crossorigin />
+    <style set:html={fonts} />
+  </Fragment>
+  <div class="ef" data-ef>
+    <!-- Табло -->
+    <header class="sb">
+      <a class="sb-logo" href="/concepts/14/" aria-label="Urban210, на главную"><span>URBAN<b>210</b></span><Icon name="chev" /></a>
+      <p class="sb-live"><i class="dot" aria-hidden="true"></i><span class="sb-live-l">Прямой эфир</span><span class="sb-live-s">Эфир</span></p>
+      <p class="sb-hours" data-today>{site.hours[0].time}</p>
+      <p class="sb-clock" data-status><span class="sb-k">Хабаровск</span><b data-clock>--:--</b><span class="sb-st" data-open-label>Клуб</span></p>
+      <nav class="sb-nav" aria-label="Разделы">
+        <a href="#obzor">Обзор</a><a href="#tablo">Тарифы</a><a href="#sostav">Состав</a><a href="#intervyu">Отзывы</a>
+      </nav>
+      <a class="sb-tel" href={site.phone.href}>{site.phone.display}</a>
+      <a class="btn-p btn-p-s" href="#zayavka" data-lead={trial.title} data-block="14_header"><span class="cta-l">1 ₽ первый день</span><span class="cta-s">1 ₽ день</span><Icon name="chev" /></a>
+    </header>
+
+    <!-- Логотип канала в углу -->
+    <div class="bug" aria-hidden="true"><span>U<b>210</b></span><Icon name="chev" /><i>Эфир</i></div>
+
+    <main>
+      <!-- Первый экран -->
+      <section class="eh" aria-labelledby="ef-h1">
+        <div class="eh-media" aria-hidden="true">
+          <picture>
+            <source media="(max-width: 759px)" srcset={heroM.srcSet.attribute} sizes="100vw" type="image/webp" />
+            <Image src={hero} alt="" widths={[640, 1000, 1500, 2200]} sizes="100vw" loading="eager" fetchpriority="high" format="webp" quality={55} />
+          </picture>
+          <video data-hero-video data-src="/video/hero-bw.mp4" muted loop playsinline preload="none"></video>
+        </div>
+        <div class="eh-shade" aria-hidden="true"></div>
+        <p class="eh-cam" aria-hidden="true"><span class="rec"></span>Камера 1 · Зал Urban210</p>
+
+        <div class="eh-in">
+          <div class="lt3">
+            <p class="tags"><span class="tag tag-o">Эксклюзив</span><span class="tag tag-d">{site.city}</span></p>
+            <h1 id="ef-h1">
+              <span class="pl pl-w"><span>Ваш выход</span></span>
+              <span class="pl pl-o"><span>Пробный день за 1 ₽</span></span>
+            </h1>
+            <p class="pl pl-d eh-sub"><span>Фитнес-клуб Urban210, {site.address.short}. Полный доступ в зал на целый день, дальше от {num(day.month)}&nbsp;₽ в&nbsp;месяц без вступительного взноса.</span></p>
+            <div class="eh-cta">
+              <a class="btn-p" href="#zayavka" data-lead={trial.title} data-block="14_hero">Записаться за 1 ₽<Icon name="chev" /></a>
+              <a class="btn-g" href="#tablo">Табло тарифов</a>
+            </div>
+          </div>
+
+          <aside class="today" aria-label="Сегодня в клубе" data-status-card>
+            <p class="today-h"><span>Сегодня в эфире</span><b data-status-word>Клуб</b></p>
+            <ul>
+              {site.hours.map((h, i) => <li data-hours={i === 0 ? 'wd' : 'we'}><span>{h.days}</span><b>{h.time}</b></li>)}
+            </ul>
+            <p class="today-left" data-open-left>Часы работы клуба</p>
+            <a class="today-rate" href={site.maps.yandexReviews} target="_blank" rel="noopener"><b>{rating}</b><span><Icon name="star" />Яндекс Карты<br />{site.rating.text}</span></a>
+          </aside>
+        </div>
+
+        <div class="etk" aria-label="Коротко о клубе">
+          <p class="etk-k"><span class="tk-l">Новости клуба</span><span class="tk-s">Новости</span></p>
+          <div class="etk-vp">
+            <ul class="etk-row">
+              {ticker.map((t) => <li><Icon name="chev" />{t}</li>)}
+            </ul>
+            <ul class="etk-row" aria-hidden="true">
+              {ticker.map((t) => <li><Icon name="chev" />{t}</li>)}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Цифры перед трансляцией -->
+      <section class="facts" aria-label="Клуб в цифрах">
+        <div class="w facts-in">
+          {[
+            ['1300+', 'м²', 'площадь клуба'],
+            ['60+', '', `тренажёров ${site.facts.brands}`],
+            ['60', 'кг', 'свободные веса до'],
+            ['50', '', 'мест бесплатной парковки'],
+            ['0', '₽', 'вступительный взнос'],
+          ].map(([v, u, l], i) => (
+            <div class="fact" data-wipe style={`--d:${i * 70}ms`}><b>{v}<small>{u}</small></b><span>{l}</span></div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Мультикамера -->
+      <section class="es" id="obzor" aria-labelledby="ef-obzor">
+        <div class="w">
+          <div class="sh" data-wipe>
+            <span class="tag tag-o">Повтор</span>
+            <h2 class="pl pl-w" id="ef-obzor"><span>Обзор клуба</span></h2>
+            <p class="pl pl-d"><span>Пять камер. Переключайте зоны</span></p>
+          </div>
+
+          <div class="mc" data-mc>
+            <div class="mc-screen">
+              {cams.map((c, i) => (
+                <figure class:list={['mc-shot', { on: i === 0 }]} data-shot={i} id={`cam-${c.key}`} role="tabpanel" aria-label={`Камера ${i + 1}: ${c.title}`}>
+                  {c.image ? (
+                    <Image src={img(c.image)} alt={c.alt} widths={[640, 1000, 1400]} sizes="(min-width: 1200px) 1100px, 100vw" format="avif" quality={50} loading="lazy" />
+                  ) : (
+                    <div class="nosig" aria-hidden="true"><span>Нет сигнала</span><small>В SPA камер нет</small></div>
+                  )}
+                  <figcaption class="mc-lt">
+                    <span class="tag tag-o">Камера {i + 1}</span>
+                    <span class="pl pl-w mc-title"><span>{c.title}</span></span>
+                    <span class="pl pl-d mc-text"><span>{c.text}</span></span>
+                    {c.tags && <span class="mc-tags">{c.tags.map((t) => <i>{t}</i>)}</span>}
+                    <a class="mc-more" href={c.href}>Подробнее<Icon name="chev1" /></a>
+                  </figcaption>
+                </figure>
+              ))}
+              <span class="mc-replay" aria-hidden="true"><Icon name="chev" />Повтор</span>
+              <span class="mc-sting" aria-hidden="true" data-sting><i></i><i></i></span>
+            </div>
+            <div class="mc-thumbs" role="tablist" aria-label="Камеры">
+              {cams.map((c, i) => (
+                <button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} aria-controls={`cam-${c.key}`} data-cam={i}>
+                  {c.image ? <Image src={img(c.image)} alt="" widths={[240, 360]} sizes="220px" format="avif" quality={40} loading="lazy" /> : <span class="nosig nosig-s" aria-hidden="true"><span>Нет сигнала</span></span>}
+                  <span class="mc-th-l"><b>Кам {i + 1}</b>{c.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Табло тарифов -->
+      <section class="es es-board" id="tablo" aria-labelledby="ef-tablo">
+        <div class="w">
+          <div class="sh" data-wipe>
+            <span class="tag tag-o">Табло</span>
+            <h2 class="pl pl-w" id="ef-tablo"><span>Тарифы</span></h2>
+            <p class="pl pl-d"><span>Три карты, без вступительного взноса</span></p>
+          </div>
+
+          <div class="excl" data-wipe>
+            <span class="tag tag-w">Эксклюзив</span>
+            <p class="excl-n"><b>1</b><span>₽</span></p>
+            <div class="excl-t">
+              <h3>{trial.title}</h3>
+              <p>{trial.text}</p>
+            </div>
+            <a class="btn-p btn-p-dark" href="#zayavka" data-lead={trial.title} data-block="14_trial">Записаться<Icon name="chev" /></a>
+          </div>
+
+          <div class="board" role="table" data-wipe aria-label="Сравнение тарифов">
+            <div class="b-row b-head" role="row">
+              <span class="b-l" role="columnheader"><span class="sr">Показатель</span></span>
+              {plans.map((p) => (
+                <span class:list={['b-team', { hot: p.id === 'full' }]} role="columnheader">
+                  {p.tag ? <i>{p.tag}</i> : <i class="ghost">Базовый</i>}
+                  <b>{p.name}</b>
+                </span>
+              ))}
+            </div>
+            <div class="b-row b-big" role="row">
+              <span class="b-l" role="rowheader">В месяц</span>
+              {plans.map((p) => (
+                <span class="b-v" role="cell"><b class="dig">{num(p.month)}<small>₽</small></b><i class="bar" style={`--v:${(p.month / all.month).toFixed(3)}`}></i></span>
+              ))}
+            </div>
+            <div class="b-row" role="row">
+              <span class="b-l" role="rowheader">За год</span>
+              {plans.map((p) => <span class="b-v" role="cell"><b class="dig dig-s">{rub(p.year)}</b></span>)}
+            </div>
+            <div class="b-row" role="row">
+              <span class="b-l" role="rowheader">В день при оплате за год</span>
+              {plans.map((p) => <span class="b-v" role="cell"><b class="dig dig-s">{perDay(p.year, 365)} ₽</b></span>)}
+            </div>
+            {rows.map(([l, a, b, c]) => (
+              <div class="b-row" role="row">
+                <span class="b-l" role="rowheader">{l}</span>
+                {[a, b, c].map((v) => <span class="b-v b-txt" role="cell">{v}</span>)}
+              </div>
+            ))}
+            {marks.map(([l, a, b, c]) => (
+              <div class="b-row" role="row">
+                <span class="b-l" role="rowheader">{l}</span>
+                {[a, b, c].map((v) => (
+                  <span class:list={['b-v', 'b-m', { yes: v }]} role="cell">{v ? <Icon name="check" /> : <Icon name="minus" />}<span class="sr">{v ? 'есть' : 'нет'}</span></span>
+                ))}
+              </div>
+            ))}
+            <div class="b-row b-cta" role="row">
+              <span class="b-l" role="cell"></span>
+              {plans.map((p) => (
+                <span class="b-v" role="cell"><a class:list={[p.id === 'full' ? 'btn-p' : 'btn-g', 'btn-sm']} href="#zayavka" data-lead={`Тариф «${p.name}»`} data-block="14_board">Выбрать<Icon name="chev" /></a></span>
+              ))}
+            </div>
+          </div>
+
+          <div class="epromos">
+            {[tradein, friend].map((p) => (
+              <a class="promo-c" href={`/promo/${p.slug}/`} data-wipe>
+                <span class="tag tag-o">Анонс</span>
+                <b>{p.title}</b>
+                <span>{p.short}</span>
+                <Icon name="chev" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- Состав -->
+      <section class="es" id="sostav" aria-labelledby="ef-sostav">
+        <div class="w">
+          <div class="sh" data-wipe>
+            <span class="tag tag-o">Состав</span>
+            <h2 class="pl pl-w" id="ef-sostav"><span>Тренеры</span></h2>
+            <p class="pl pl-d"><span>Поставят технику и составят программу</span></p>
+          </div>
+          <div class="cards">
+            {trainers.map((t, i) => {
+              const [first, ...rest] = t.name.split(' ');
+              return (
+                <article class="card" data-wipe style={`--d:${i * 90}ms`}>
+                  <Image src={img(t.photo)} alt={`${t.name}, ${t.role.toLowerCase()}`} widths={[400, 600, 900]} sizes="(min-width: 1000px) 400px, (min-width: 700px) 45vw, 100vw" format="avif" quality={50} loading="lazy" />
+                  <span class="card-team" aria-hidden="true"><span>URBAN<b>210</b></span><Icon name="chev" /></span>
+                  <span class="card-pos">{position(t.role)}</span>
+                  <div class="card-lt">
+                    <span class="card-first">{first}</span>
+                    <h3 class="card-last">{rest.join(' ')}</h3>
+                    <p class="card-role">{t.role}</p>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+          <div class="pers" data-wipe>
+            <span class="tag tag-o">Персонально</span>
+            <p class="pers-t"><b>{personal.pack} тренировок за {rub(personal.price)}</b><span>{personal.firstFree}.</span></p>
+            <a class="btn-g" href="#zayavka" data-lead="Персональная тренировка" data-block="14_personal">Записаться к тренеру<Icon name="chev" /></a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Отзывы -->
+      <section class="es" id="intervyu" aria-labelledby="ef-int">
+        <div class="w">
+          <div class="sh" data-wipe>
+            <span class="tag tag-o">Интервью</span>
+            <h2 class="pl pl-w" id="ef-int"><span>Говорят гости</span></h2>
+            <p class="pl pl-d"><span>Отзывы с Яндекс Карт и 2ГИС</span></p>
+          </div>
+          <div class="int">
+            <a class="score" href={site.maps.yandexReviews} target="_blank" rel="noopener" data-wipe>
+              <span class="score-k">Рейтинг</span>
+              <b class="score-v">{rating}</b>
+              <span class="score-s">{[0, 1, 2, 3, 4].map(() => <Icon name="star" />)}</span>
+              <span class="score-l">Яндекс Карты · {site.rating.text}</span>
+              <span class="score-a">Читать отзывы<Icon name="chev1" /></span>
+            </a>
+            {reviews.map((r, i) => (
+              <figure class="iv" data-wipe style={`--d:${(i % 2) * 80}ms`}>
+                <span class="iv-k">Гость клуба</span>
+                <blockquote>{r.text}</blockquote>
+                <figcaption><span class="pl pl-w"><span>{r.name}</span></span><span class="tag tag-o">{r.source}</span></figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- Программа передач и заявка -->
+      <section class="es es-cta" id="zayavka" aria-labelledby="ef-cta">
+        <div class="w cta">
+          <div class="guide">
+            <div class="sh" data-wipe>
+              <span class="tag tag-o">Программа</span>
+              <h2 class="pl pl-w" id="ef-cta"><span>Выйти в эфир</span></h2>
+              <p class="pl pl-d"><span>Пробный день за 1 ₽, перезвоним и подберём время</span></p>
+            </div>
+            <ol class="tv">
+              <li><span class="tv-t">06:30</span><span><b>Начало эфира</b>По будням клуб открывается в 06:30, в выходные в 07:30</span></li>
+              <li><span class="tv-t">16:00</span><span><b>Конец дневной карты</b>«{day.name}» действует {day.hours}</span></li>
+              <li><span class="tv-t">22:30</span><span><b>Финал выходных</b>{site.hours[1].days} клуб работает до 22:30</span></li>
+              <li><span class="tv-t">23:30</span><span><b>Конец эфира</b>{site.hours[0].days} последние тренировки до 23:30</span></li>
+            </ol>
+            <ul class="links">
+              <li><a href={site.phone.href}><Icon name="phone" />{site.phone.display}</a></li>
+              <li><a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a></li>
+              <li><a href={telegramLink('concept14')} target="_blank" rel="noopener"><Icon name="tg" />Telegram</a></li>
+            </ul>
+          </div>
+          <div class="cta-form" data-wipe>
+            <span class="cta-bar" aria-hidden="true"><i class="dot"></i>В эфир</span>
+            <LeadForm id="ef" block="14_final" title="Записаться на пробный день" />
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="ft">
+      <div class="w">
+        <p class="ft-big" aria-hidden="true">URBAN<b>210</b><Icon name="chev" /></p>
+        <div class="ft-grid">
+          <div>
+            <p class="ft-k">Трансляция ведётся</p>
+            <p>{site.address.locality}, {site.address.street}<br />{site.district}</p>
+            <p class="ft-m">{site.parking}</p>
+          </div>
+          <div>
+            <p class="ft-k">Сетка вещания</p>
+            {site.hours.map((h) => <p>{h.days}: {h.time}</p>)}
+          </div>
+          <div>
+            <p class="ft-k">Связь с эфиром</p>
+            <p><a href={site.phone.href}>{site.phone.display}</a></p>
+            <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+            <p><a href={site.instagram} target="_blank" rel="noopener">Instagram</a> · <a href={site.maps.twoGis} target="_blank" rel="noopener">2ГИС</a> · <a href={site.maps.yandex} target="_blank" rel="noopener">Яндекс Карты</a></p>
+          </div>
+          <nav aria-label="Разделы сайта">
+            <p class="ft-k">Разделы</p>
+            <p><a href="/price/">Тарифы</a> · <a href="/zal/">Зал</a> · <a href="/group/">Групповые</a> · <a href="/spa/">SPA</a> · <a href="/trainers/">Тренеры</a> · <a href="/promo/">Акции</a></p>
+            <p><a href="/rules/">Правила клуба</a> · <a href="/oferta/">Договор-оферта</a> · <a href="/policy/">Политика конфиденциальности</a></p>
+          </nav>
+        </div>
+        <p class="ft-legal">© {year} {site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn}</p>
+      </div>
+    </footer>
+  </div>
+</Layout>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-ef]');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Часы и статус по времени Хабаровска (Asia/Vladivostok, UTC+10)
+  const hm = (x: number) => `${String(Math.floor(x / 60) % 24).padStart(2, '0')}:${String(x % 60).padStart(2, '0')}`;
+  const paint = () => {
+    if (!root) return;
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Vladivostok', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+    const get = (t: string) => parts.find((p) => p.type === t)?.value || '';
+    const wd = get('weekday');
+    const m = Number(get('hour')) * 60 + Number(get('minute'));
+    const weekend = wd === 'Sat' || wd === 'Sun';
+    const [o, c] = weekend ? [450, 1350] : [390, 1410];
+    const open = m >= o && m < c;
+    const nextWeekend = wd === 'Fri' || wd === 'Sat';
+    root.classList.toggle('is-open', open);
+    root.classList.toggle('is-closed', !open);
+    root.querySelectorAll<HTMLElement>('[data-clock]').forEach((el) => { el.textContent = hm(m); });
+    root.querySelectorAll<HTMLElement>('[data-open-label]').forEach((el) => { el.textContent = open ? 'Открыто' : 'Закрыто'; });
+    const word = root.querySelector<HTMLElement>('[data-status-word]');
+    if (word) word.textContent = open ? 'Открыто' : 'Закрыто';
+    const today = root.querySelector<HTMLElement>('[data-today]');
+    if (today) today.textContent = `${hm(o)}–${hm(c)}`;
+    const left = root.querySelector<HTMLElement>('[data-open-left]');
+    if (left) {
+      const l = c - m;
+      left.textContent = open
+        ? `Открыто до ${hm(c)}, ещё ${Math.floor(l / 60)} ч ${l % 60} мин`
+        : m < o ? `Откроемся сегодня в ${hm(o)}` : `Откроемся завтра в ${hm(nextWeekend ? 450 : 390)}`;
+    }
+    root.querySelectorAll<HTMLElement>('[data-hours]').forEach((li) => li.classList.toggle('is-today', (li.dataset.hours === 'we') === weekend));
+  };
+  paint();
+  setInterval(paint, 20000);
+
+  // Шторки: плашки въезжают, когда попадают в кадр
+  const wipes = root?.querySelectorAll<HTMLElement>('[data-wipe]') || [];
+  if (reduce || !('IntersectionObserver' in window)) wipes.forEach((w) => w.classList.add('in'));
+  else {
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    }), { rootMargin: '0px 0px -10% 0px' });
+    wipes.forEach((w) => io.observe(w));
+  }
+
+  // Мультикамера: переключение со шторкой
+  const mc = root?.querySelector<HTMLElement>('[data-mc]');
+  if (mc) {
+    const shots = [...mc.querySelectorAll<HTMLElement>('[data-shot]')];
+    const tabs = [...mc.querySelectorAll<HTMLButtonElement>('[data-cam]')];
+    const sting = mc.querySelector<HTMLElement>('[data-sting]')!;
+    let cur = 0;
+    const go = (i: number, focus = false) => {
+      if (i === cur) return;
+      shots[cur].classList.remove('on');
+      shots[cur].classList.add('out');
+      const prev = shots[cur];
+      setTimeout(() => prev.classList.remove('out'), 700);
+      shots[i].classList.add('on');
+      tabs.forEach((t, j) => { t.setAttribute('aria-selected', String(j === i)); t.tabIndex = j === i ? 0 : -1; });
+      if (focus) tabs[i].focus();
+      if (!reduce) {
+        sting.classList.remove('run');
+        void sting.offsetWidth;
+        sting.classList.add('run');
+      }
+      cur = i;
+    };
+    tabs.forEach((t, i) => {
+      t.tabIndex = i === 0 ? 0 : -1;
+      t.addEventListener('click', () => go(i));
+      t.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') { e.preventDefault(); go((cur + 1) % tabs.length, true); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go((cur - 1 + tabs.length) % tabs.length, true); }
+      });
+    });
+  }
+
+  if (!reduce) root?.classList.add('is-run');
+</script>
+
+<style>
+  .ef {
+    --bg: #0e0b09;
+    --panel: #17120f;
+    --panel-2: #221b17;
+    --white: #f7f4ef;
+    --ink: #120e0b;
+    --o: #ff5722;
+    --o-hi: #ff7a4d;
+    --dim: #b1a59a;
+    --line: rgb(247 244 239 / 0.12);
+    --cut: 14px;
+    --exo: 'Exo 2 Variable', 'Arial Narrow', sans-serif;
+    --dig: 'Tektur Variable', ui-monospace, monospace;
+    color: var(--white);
+  }
+  .w { width: 100%; max-width: 1320px; margin-inline: auto; padding-inline: clamp(16px, 4vw, 48px); }
+
+  /* ---------- Плашки ---------- */
+  .tag { display: inline-flex; align-items: center; height: 26px; padding: 0 12px 0 10px; font: italic 800 0.78rem/1 var(--exo); letter-spacing: 0.08em; text-transform: uppercase; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); white-space: nowrap; }
+  .tag-o { background: var(--o); color: #160d08; }
+  .tag-d { background: #000; color: var(--white); }
+  .tag-w { background: var(--white); color: var(--ink); }
+  .pl { display: block; width: fit-content; max-width: 100%; }
+  .pl > span { display: block; padding: 0.12em 0.6em 0.1em 0.42em; }
+  .pl-w { background: var(--white); color: var(--ink); }
+  .pl-o { background: var(--o); color: #160d08; }
+  .pl-d { background: rgb(14 11 9 / 0.88); color: var(--white); backdrop-filter: blur(6px); }
+
+  .btn-p, .btn-g {
+    display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 52px; padding: 0 26px 0 24px;
+    font: italic 800 1rem/1 var(--exo); letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; white-space: nowrap;
+    clip-path: polygon(var(--cut) 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+    transition: transform 0.16s ease, background-color 0.2s ease, color 0.2s ease;
+  }
+  .btn-p { background: var(--o); color: #160d08; }
+  .btn-p:hover { background: var(--o-hi); }
+  .btn-p-dark { background: var(--ink); color: var(--white); }
+  .btn-p-dark:hover { background: #000; }
+  .btn-g { background: rgb(247 244 239 / 0.1); color: var(--white); box-shadow: inset 0 0 0 1px rgb(247 244 239 / 0.3); }
+  .btn-g:hover { background: var(--white); color: var(--ink); }
+  .btn-p:active, .btn-g:active { transform: scale(0.97); }
+  .btn-p :global(svg), .btn-g :global(svg) { width: 17px; height: 13px; transition: transform 0.3s var(--ease); }
+  .btn-p:hover :global(svg), .btn-g:hover :global(svg) { transform: translateX(4px); }
+  .btn-sm { min-height: 44px; padding: 0 20px 0 18px; font-size: 0.86rem; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--o); box-shadow: 0 0 0 0 rgb(255 87 34 / 0.6); }
+  .is-run .dot { animation: pulse 1.8s ease-out infinite; }
+  @keyframes pulse { 70% { box-shadow: 0 0 0 7px rgb(255 87 34 / 0); } 100% { box-shadow: 0 0 0 0 rgb(255 87 34 / 0); } }
+
+  /* ---------- Табло-шапка ---------- */
+  .sb { position: fixed; z-index: 30; inset: 10px 10px auto; height: 48px; display: flex; align-items: stretch; gap: 0; background: rgb(14 11 9 / 0.9); backdrop-filter: blur(14px); box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.6), inset 0 -2px 0 var(--o); }
+  .sb-logo, .sb-live, .sb-clock, .sb .btn-p { display: flex; align-items: center; }
+  .sb-hours, .sb-nav, .sb-tel { align-items: center; }
+  .sb-logo { gap: 6px; padding: 0 16px 0 14px; background: var(--white); color: var(--ink); font: italic 900 1.15rem/1 var(--exo); letter-spacing: 0.02em; text-decoration: none; clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); padding-right: 26px; }
+  .sb-logo b { color: var(--o); font-weight: 900; }
+  .sb-logo :global(svg) { width: 15px; height: 14px; color: var(--o); }
+  .sb-live { gap: 8px; padding: 0 14px; font: italic 800 0.8rem/1 var(--exo); letter-spacing: 0.1em; text-transform: uppercase; }
+  .sb-live-l { display: none; }
+  .sb-hours, .sb-clock { padding: 0 14px; border-left: 1px solid var(--line); font: 600 0.92rem/1 var(--dig); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+  .sb-hours { display: none; color: var(--dim); }
+  .sb-clock { gap: 10px; }
+  .sb-k { display: none; font: italic 700 0.7rem/1 var(--exo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+  .sb-clock b { font-weight: 600; }
+  .sb-st { height: 22px; padding: 0 8px; display: inline-flex; align-items: center; font: italic 800 0.7rem/1 var(--exo); letter-spacing: 0.08em; text-transform: uppercase; background: var(--panel-2); color: var(--dim); }
+  .is-open .sb-st { background: #1f7a3a; color: #fff; }
+  .is-closed .sb-st { background: #3a302a; color: var(--white); }
+  .sb-nav { display: none; margin-left: auto; }
+  @media (max-width: 719px) { .sb .sb-st { display: none; } .sb-live { padding-right: 4px; } }
+  .sb-nav a { display: flex; align-items: center; height: 100%; padding: 0 14px; font: italic 800 0.86rem/1 var(--exo); letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; color: var(--white); position: relative; }
+  .sb-nav a::after { content: ''; position: absolute; left: 14px; right: 14px; bottom: 0; height: 2px; background: var(--white); transform: scaleX(0); transition: transform 0.25s var(--ease); }
+  .sb-nav a:hover::after { transform: none; }
+  .sb-tel { display: none; padding: 0 16px; font: 600 0.9rem/1 var(--dig); text-decoration: none; border-left: 1px solid var(--line); white-space: nowrap; }
+  .cta-s { display: none; }
+  @media (max-width: 719px) { .cta-l { display: none; } .cta-s { display: inline; } }
+  .sb .btn-p { margin-left: auto; min-height: 0; height: 100%; padding: 0 16px 0 22px; font-size: 0.82rem; clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%); }
+  @media (max-width: 400px) { .sb-live { padding: 0 10px; } .sb-clock { padding: 0 10px; } .sb .btn-p { padding: 0 12px 0 18px; font-size: 0.76rem; } .sb .btn-p :global(svg) { display: none; } }
+  @media (min-width: 720px) { .sb-live-l { display: inline; } .sb-live-s { display: none; } .sb-k { display: inline; } }
+  @media (min-width: 1100px) {
+    .sb { inset: 14px 16px auto; height: 52px; }
+    .sb-hours { display: flex; }
+    .sb-nav { display: flex; }
+    .sb .btn-p { margin-left: 0; }
+  }
+  @media (min-width: 1380px) { .sb-tel { display: flex; } }
+  @media (max-width: 400px) { .sb-logo { font-size: 1rem; padding-right: 22px; } .sb-logo :global(svg) { display: none; } }
+
+  /* Логотип канала */
+  .bug { position: fixed; z-index: 25; right: 26px; top: 84px; display: none; align-items: center; gap: 4px; padding: 8px 12px 8px 10px; font: italic 900 1.2rem/1 var(--exo); color: rgb(247 244 239 / 0.78); background: rgb(14 11 9 / 0.35); backdrop-filter: blur(6px); border: 1px solid rgb(247 244 239 / 0.18); pointer-events: none; }
+  .bug b { color: var(--o); font-weight: 900; }
+  .bug :global(svg) { width: 14px; height: 13px; color: var(--o); }
+  .bug i { margin-left: 6px; font: italic 800 0.6rem/1 var(--exo); letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+  @media (min-width: 1100px) { .bug { display: flex; } }
+
+  /* ---------- Первый экран ---------- */
+  .eh { position: relative; min-height: 100svh; display: flex; flex-direction: column; overflow: hidden; }
+  .eh-media { position: absolute; inset: 0; }
+  .eh-media picture { position: absolute; inset: 0; }
+  .eh-media :global(img), .eh-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); }
+  .eh-media video { opacity: 0; transition: opacity 1.2s ease; }
+  .eh-media video:global(.is-on) { opacity: 1; }
+  .eh-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(14 11 9 / 0.75), rgb(14 11 9 / 0.15) 60%, rgb(14 11 9 / 0.3)), linear-gradient(0deg, rgb(14 11 9 / 0.85), rgb(14 11 9 / 0) 50%); }
+  .eh-cam { position: absolute; top: 76px; left: clamp(16px, 4vw, 48px); display: flex; align-items: center; gap: 8px; font: italic 800 0.72rem/1 var(--exo); letter-spacing: 0.12em; text-transform: uppercase; color: rgb(247 244 239 / 0.8); }
+  .rec { width: 8px; height: 8px; border-radius: 50%; background: #e53935; }
+  .is-run .rec { animation: blink 1.2s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0.2; } }
+  .eh-in { position: relative; z-index: 2; flex: 1; width: 100%; max-width: 1320px; margin-inline: auto; padding: 120px clamp(16px, 4vw, 48px) 32px; display: flex; flex-direction: column; justify-content: flex-end; gap: 28px; }
+  .lt3 { display: grid; gap: 0; justify-items: start; }
+  .tags { display: flex; gap: 4px; margin-bottom: 8px; }
+  .eh h1 { display: grid; justify-items: start; font: italic 900 clamp(2.5rem, 12.4vw, 7.6rem)/0.95 var(--exo); letter-spacing: -0.01em; text-transform: uppercase; margin: 0; }
+  .eh h1 .pl-o { font-size: 0.42em; font-weight: 850; letter-spacing: 0.01em; }
+  .eh h1 .pl-o > span { padding: 0.2em 0.6em 0.18em 0.5em; }
+  .eh-sub { max-width: 640px; font-size: 1rem; line-height: 1.5; }
+  .eh-sub > span { padding: 12px 16px 12px 14px; }
+  .eh-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  /* шторки первого экрана */
+  .is-run .lt3 .tags, .is-run .lt3 .pl, .is-run .eh-cta { animation: wipe 0.7s var(--ease) both; }
+  .is-run .lt3 .tags { animation-delay: 0.1s; }
+  .is-run .eh h1 .pl-w { animation-delay: 0.22s; }
+  .is-run .eh h1 .pl-o { animation-delay: 0.38s; }
+  .is-run .eh-sub { animation-delay: 0.52s; }
+  .is-run .eh-cta { animation-delay: 0.66s; }
+  .is-run .eh h1 .pl > span { animation: slideIn 0.7s var(--ease) both; animation-delay: inherit; }
+  @keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes slideIn { from { transform: translateX(-30px); opacity: 0; } }
+
+  .today { display: none; }
+  @media (min-width: 1100px) {
+    .eh-in { flex-direction: row; align-items: flex-end; justify-content: space-between; padding-bottom: 40px; }
+    .today { display: grid; gap: 0; width: 300px; flex: none; background: rgb(14 11 9 / 0.86); backdrop-filter: blur(10px); box-shadow: inset 0 3px 0 var(--o); }
+    .is-run .today { animation: wipe 0.7s var(--ease) 0.8s both; }
+  }
+  .today-h { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; font: italic 800 0.74rem/1 var(--exo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+  .today-h b { font-weight: 800; color: var(--white); padding: 5px 8px; background: var(--panel-2); }
+  .is-open .today-h b { background: #1f7a3a; }
+  .today ul { list-style: none; }
+  .today li { display: flex; justify-content: space-between; padding: 10px 16px; border-top: 1px solid var(--line); font-size: 0.92rem; color: var(--dim); }
+  .today li b { font: 600 0.95rem/1.3 var(--dig); color: var(--white); }
+  .today li.is-today { background: rgb(255 87 34 / 0.12); color: var(--white); }
+  .today li.is-today b { color: var(--o-hi); }
+  .today-left { padding: 10px 16px 14px; font-size: 0.86rem; color: var(--dim); border-top: 1px solid var(--line); }
+  .today-rate { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--white); color: var(--ink); text-decoration: none; }
+  .today-rate b { font: 700 2.6rem/1 var(--dig); }
+  .today-rate span { font-size: 0.8rem; line-height: 1.3; color: #4f453e; }
+  .today-rate :global(svg) { display: inline-block; width: 12px; height: 12px; margin-right: 4px; color: var(--o); vertical-align: -1px; }
+
+  /* Бегущая строка */
+  .etk { position: relative; z-index: 3; display: flex; height: 46px; background: var(--white); color: var(--ink); }
+  .etk-k { flex: none; display: flex; align-items: center; padding: 0 22px 0 clamp(16px, 4vw, 48px); background: var(--o); color: #160d08; font: italic 900 0.82rem/1 var(--exo); letter-spacing: 0.08em; text-transform: uppercase; clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%); padding-right: 34px; }
+  .etk-vp { flex: 1; display: flex; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 40px); }
+  .etk-row { list-style: none; flex: none; display: flex; align-items: center; gap: 0; padding: 0; }
+  .etk-row li { display: flex; align-items: center; gap: 12px; padding: 0 22px 0 0; font: italic 700 0.95rem/1 var(--exo); letter-spacing: 0.02em; white-space: nowrap; }
+  .etk-row :global(svg) { width: 13px; height: 12px; color: var(--o); }
+  .is-run .etk-row { animation: tick 70s linear infinite; }
+  .etk:hover .etk-row { animation-play-state: paused; }
+  @keyframes tick { to { transform: translateX(-100%); } }
+  .tk-s { display: none; }
+  @media (max-width: 600px) { .etk-k { padding-right: 26px; font-size: 0.76rem; } .tk-l { display: none; } .tk-s { display: inline; } }
+
+  /* ---------- Шторки при прокрутке ---------- */
+  :global(.js) [data-wipe] { clip-path: inset(0 100% 0 0); transition: clip-path 0.75s var(--ease) var(--d, 0ms); }
+  :global(.js) [data-wipe]:global(.in) { clip-path: inset(-60px -60px -60px -60px); }
+  :global(.js) .sh[data-wipe] > * { transform: translateX(-24px); opacity: 0; transition: transform 0.6s var(--ease), opacity 0.6s ease; }
+  :global(.js) .sh[data-wipe]:global(.in) > * { transform: none; opacity: 1; }
+  :global(.js) .sh[data-wipe] > :nth-child(2) { transition-delay: 0.1s; }
+  :global(.js) .sh[data-wipe] > :nth-child(3) { transition-delay: 0.2s; }
+  @media (prefers-reduced-motion: reduce) { :global(.js) [data-wipe], :global(.js) .sh[data-wipe] > * { clip-path: none; transform: none; opacity: 1; transition: none; } }
+
+  /* ---------- Цифры ---------- */
+  .facts { background: var(--panel); border-bottom: 1px solid var(--line); }
+  .facts-in { display: grid; grid-template-columns: repeat(2, 1fr); }
+  .fact { display: grid; gap: 6px; padding: 22px 16px 22px 0; border-top: 1px solid var(--line); }
+  .fact b { font: 700 clamp(2.2rem, 4vw, 3.4rem)/1 var(--dig); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .fact b small { font-size: 0.42em; margin-left: 4px; color: var(--o); letter-spacing: 0; }
+  .fact span { font-size: 0.9rem; color: var(--dim); line-height: 1.35; }
+  .fact:last-child b { color: var(--o); }
+  .fact:last-child { grid-column: 1 / -1; }
+  @media (min-width: 900px) {
+    .facts-in { grid-template-columns: repeat(5, 1fr); }
+    .fact { border-top: 0; border-left: 1px solid var(--line); padding: 30px 24px; }
+    .fact:first-child { border-left: 0; padding-left: 0; }
+    .fact:last-child { grid-column: auto; }
+  }
+
+  /* ---------- Секции ---------- */
+  .es { padding-block: clamp(64px, 7.5vw, 108px); position: relative; }
+  .sh { display: grid; justify-items: start; margin-bottom: clamp(28px, 4vw, 48px); }
+  .sh .tag { margin-bottom: 6px; }
+  .sh h2 { font: italic 900 clamp(2.4rem, 7vw, 5.4rem)/0.95 var(--exo); text-transform: uppercase; letter-spacing: -0.01em; }
+  .sh p.pl { font: italic 700 clamp(0.9rem, 1.4vw, 1.1rem)/1.3 var(--exo); letter-spacing: 0.04em; text-transform: uppercase; }
+  .sh p.pl > span { padding: 10px 16px 10px 14px; }
+
+  /* ---------- Мультикамера ---------- */
+  .mc { display: grid; gap: 10px; }
+  .mc-screen { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: #000; }
+  .mc-shot { position: absolute; inset: 0; margin: 0; clip-path: inset(0 0 0 100%); z-index: 1; }
+  .mc-shot.on { clip-path: inset(0 0 0 0); z-index: 2; transition: clip-path 0.6s cubic-bezier(0.7, 0, 0.2, 1) 0.12s; }
+  .mc-shot.out { clip-path: inset(0 0 0 0); z-index: 1; }
+  .mc-shot :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); }
+  .mc-shot::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgb(0 0 0 / 0.8), rgb(0 0 0 / 0) 55%); pointer-events: none; }
+  .nosig { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; text-align: center; background:
+      repeating-linear-gradient(0deg, rgb(255 255 255 / 0.03) 0 2px, transparent 2px 4px),
+      radial-gradient(70% 60% at 50% 40%, #2a221d, #0e0b09); }
+  .nosig span { font: italic 900 clamp(1.6rem, 5vw, 3.4rem)/1 var(--exo); letter-spacing: 0.06em; text-transform: uppercase; color: rgb(247 244 239 / 0.3); }
+  .nosig small { font: italic 700 0.8rem/1 var(--exo); letter-spacing: 0.12em; text-transform: uppercase; color: var(--o); }
+  .nosig-s span { font-size: 0.7rem; letter-spacing: 0.1em; }
+  .mc-lt { position: absolute; z-index: 2; left: 14px; right: 14px; bottom: 16px; display: grid; justify-items: start; }
+  .mc-lt .tag { margin-bottom: 4px; }
+  .mc-title { font: italic 900 clamp(1.7rem, 4vw, 3rem)/1 var(--exo); text-transform: uppercase; letter-spacing: -0.005em; }
+  .mc-text { max-width: 560px; font-size: 0.95rem; line-height: 1.45; }
+  .mc-text > span { padding: 10px 14px; }
+  .mc-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; max-width: 560px; }
+  .mc-tags i { font: italic 700 0.72rem/1 var(--exo); letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 8px; background: rgb(247 244 239 / 0.14); backdrop-filter: blur(4px); }
+  .mc-more { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; font: italic 800 0.8rem/1 var(--exo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 8px 0; }
+  .mc-more :global(svg) { width: 7px; height: 11px; color: var(--o); }
+  .mc-more:hover { color: var(--o-hi); }
+  .mc-replay { position: absolute; z-index: 4; top: 14px; left: 14px; display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 14px 0 10px; background: rgb(14 11 9 / 0.75); backdrop-filter: blur(6px); font: italic 900 0.8rem/1 var(--exo); letter-spacing: 0.14em; text-transform: uppercase; box-shadow: inset 3px 0 0 var(--o); }
+  .mc-replay :global(svg) { width: 14px; height: 13px; color: var(--o); }
+  .is-run .mc-replay :global(svg) { animation: spin 2.4s var(--ease) infinite; }
+  @keyframes spin { 0%, 60% { transform: none; } 80% { transform: translateX(4px); } 100% { transform: none; } }
+  .mc-sting { position: absolute; inset: 0; z-index: 5; pointer-events: none; overflow: hidden; }
+  .mc-sting i { position: absolute; top: -10%; bottom: -10%; width: 34%; left: -50%; transform: skewX(-18deg); background: var(--o); }
+  .mc-sting i + i { width: 12%; background: var(--white); }
+  .mc-sting:global(.run) i { animation: sting 0.75s cubic-bezier(0.7, 0, 0.3, 1) both; }
+  .mc-sting:global(.run) i + i { animation-delay: 0.06s; }
+  @keyframes sting { from { left: -50%; } to { left: 130%; } }
+  .mc-thumbs { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(132px, 1fr); gap: 6px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .mc-thumbs::-webkit-scrollbar { display: none; }
+  .mc-thumbs button { position: relative; scroll-snap-align: start; display: grid; padding: 0; border: 0; background: var(--panel); color: var(--white); cursor: pointer; text-align: left; overflow: hidden; }
+  .mc-thumbs button :global(img), .mc-thumbs .nosig-s { position: relative; width: 100%; aspect-ratio: 16 / 9; height: auto; object-fit: cover; filter: grayscale(1) brightness(0.7); transition: filter 0.25s ease; }
+  .mc-thumbs .nosig-s { position: relative; inset: auto; }
+  .mc-th-l { display: grid; gap: 3px; padding: 9px 10px 11px; font-size: 0.84rem; line-height: 1.25; border-top: 3px solid transparent; transition: border-color 0.2s ease, background-color 0.2s ease; }
+  .mc-th-l b { font: italic 800 0.68rem/1 var(--exo); letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); }
+  .mc-thumbs button:hover :global(img) { filter: grayscale(1) brightness(0.95); }
+  .mc-thumbs button[aria-selected='true'] .mc-th-l { border-color: var(--o); background: var(--panel-2); }
+  .mc-thumbs button[aria-selected='true'] .mc-th-l b { color: var(--o); }
+  .mc-thumbs button[aria-selected='true'] :global(img) { filter: grayscale(1) brightness(1); }
+  @media (min-width: 760px) {
+    .mc-screen { aspect-ratio: 16 / 9; }
+    .mc-lt { left: 28px; bottom: 28px; right: 28px; }
+    .mc-replay { top: 22px; left: 22px; }
+  }
+  @media (min-width: 1100px) {
+    .mc { grid-template-columns: 1fr 230px; }
+    .mc-thumbs { grid-auto-flow: row; grid-auto-columns: auto; grid-template-rows: repeat(5, 1fr); overflow: visible; }
+    .mc-thumbs button { grid-template-columns: 96px 1fr; align-items: stretch; }
+    .mc-thumbs button :global(img), .mc-thumbs .nosig-s { aspect-ratio: auto; height: 100%; }
+    .mc-th-l { border-top: 0; border-left: 3px solid transparent; align-content: center; }
+  }
+
+  /* ---------- Табло тарифов ---------- */
+  .es-board { background: linear-gradient(180deg, var(--panel) 0, var(--bg) 100%); }
+  .excl { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 6px 18px; padding: 22px 20px; background: var(--o); color: #160d08; margin-bottom: 12px; position: relative; }
+  .excl .tag { position: absolute; top: -13px; left: 18px; }
+  .excl-n { display: flex; align-items: flex-start; gap: 4px; font: 700 1.6rem/1 var(--dig); }
+  .excl-n b { font-weight: 700; font-size: clamp(4.4rem, 9vw, 7rem); line-height: 0.8; }
+  .excl-t h3 { font: italic 900 clamp(1.4rem, 2.6vw, 2.1rem)/1 var(--exo); text-transform: uppercase; }
+  .excl-t p { margin-top: 6px; font-size: 0.95rem; line-height: 1.45; max-width: 52ch; }
+  .excl .btn-p { grid-column: 1 / -1; justify-self: start; margin-top: 10px; }
+  @media (min-width: 900px) {
+    .excl { grid-template-columns: auto 1fr auto; padding: 26px 30px; gap: 28px; }
+    .excl .btn-p { grid-column: auto; margin: 0; }
+  }
+
+  .board { background: var(--panel); box-shadow: inset 0 3px 0 var(--white); }
+  .b-row { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+  .b-l { grid-column: 1 / -1; padding: 12px 12px 0; text-align: center; font: italic 800 0.74rem/1.2 var(--exo); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+  .b-head .b-l, .b-cta .b-l { display: none; }
+  .b-head { border-top: 0; }
+  .b-team { display: grid; align-content: end; gap: 6px; padding: 16px 10px 14px; text-align: center; font: italic 900 0.98rem/1.05 var(--exo); text-transform: uppercase; letter-spacing: 0.01em; border-left: 1px solid var(--line); }
+  .b-team:nth-child(2) { border-left: 0; }
+  .b-team i { justify-self: center; font: italic 800 0.6rem/1 var(--exo); letter-spacing: 0.1em; padding: 5px 7px; background: var(--panel-2); color: var(--dim); }
+  .b-team i.ghost { visibility: hidden; }
+  .b-team.hot { background: rgb(255 87 34 / 0.1); box-shadow: inset 0 3px 0 var(--o); }
+  .b-team.hot i { background: var(--o); color: #160d08; }
+  .b-v { display: grid; justify-items: center; align-content: center; gap: 8px; padding: 10px 8px 14px; text-align: center; }
+  .dig { font: 700 clamp(1.6rem, 6.6vw, 3.6rem)/1 var(--dig); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; white-space: nowrap; }
+  .dig small { font-size: 0.45em; margin-left: 3px; color: var(--o); }
+  .dig-s { font-size: clamp(0.95rem, 3.4vw, 1.5rem); font-weight: 600; letter-spacing: 0; }
+  .bar { display: block; width: 90%; height: 6px; background: rgb(247 244 239 / 0.1); position: relative; overflow: hidden; }
+  .bar::before { content: ''; position: absolute; inset: 0; background: var(--o); transform: scaleX(var(--v)); transform-origin: 0 50%; transition: transform 1.2s var(--ease) 0.2s; }
+  :global(.js) .board:not(:global(.in)) .bar::before { transform: scaleX(0); }
+  .b-txt { font-size: 0.86rem; line-height: 1.3; }
+  .b-m :global(svg) { width: 20px; height: 20px; color: rgb(247 244 239 / 0.25); }
+  .b-m.yes :global(svg) { color: var(--o); }
+  .b-cta .b-v { padding: 14px 6px 18px; }
+  .b-cta .btn-sm { padding: 0 14px; font-size: 0.78rem; gap: 6px; }
+  .b-cta .btn-sm :global(svg) { display: none; }
+  .b-row > .b-v:nth-of-type(3) { background: rgb(255 87 34 / 0.05); }
+  @media (min-width: 900px) {
+    .b-row { grid-template-columns: 1.25fr repeat(3, 1fr); }
+    .b-l { grid-column: auto; padding: 18px 24px; text-align: left; align-self: center; font-size: 0.82rem; }
+    .b-head .b-l, .b-cta .b-l { display: block; }
+    .b-team { padding: 26px 18px 20px; font-size: 1.5rem; }
+    .b-team:nth-child(2) { border-left: 1px solid var(--line); }
+    .b-v { padding: 16px 18px; border-left: 1px solid var(--line); }
+    .b-big .b-v { padding: 24px 18px; }
+    .b-txt { font-size: 0.95rem; }
+    .b-cta .btn-sm { padding: 0 22px; font-size: 0.86rem; }
+    .b-cta .btn-sm :global(svg) { display: block; }
+  }
+  /* Табло тоже въезжает шторкой: класс in ставит тот же наблюдатель */
+  .board { --d: 0ms; }
+
+  .epromos { display: grid; gap: 10px; margin-top: 12px; }
+  .promo-c { position: relative; display: grid; gap: 6px; padding: 20px 56px 20px 20px; background: var(--panel-2); text-decoration: none; color: var(--white); transition: background-color 0.2s ease; }
+  .promo-c .tag { justify-self: start; margin-bottom: 4px; }
+  .promo-c b { font: italic 900 clamp(1.2rem, 2.2vw, 1.6rem)/1.05 var(--exo); text-transform: uppercase; }
+  .promo-c span:not(.tag) { color: var(--dim); font-size: 0.92rem; }
+  .promo-c > :global(svg) { position: absolute; right: 20px; top: 50%; width: 20px; height: 18px; margin-top: -9px; color: var(--o); transition: transform 0.3s var(--ease); }
+  .promo-c:hover { background: #2c231e; }
+  .promo-c:hover > :global(svg) { transform: translateX(5px); }
+  @media (min-width: 760px) { .epromos { grid-template-columns: 1fr 1fr; } }
+
+  /* ---------- Состав ---------- */
+  .cards { display: grid; gap: 12px; }
+  .card { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: #1c1714; isolation: isolate; }
+  .card :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; filter: grayscale(1) contrast(1.06); transition: transform 0.8s var(--ease); }
+  .card::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, rgb(14 11 9 / 0.92) 0%, rgb(14 11 9 / 0) 48%), linear-gradient(115deg, rgb(255 87 34 / 0.0) 60%, rgb(255 87 34 / 0.35) 60.2%, rgb(255 87 34 / 0) 75%); }
+  .card::after { content: ''; position: absolute; inset: 0; z-index: 2; background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / 0.18) 50%, transparent 60%); transform: translateX(-100%); transition: transform 0.9s var(--ease); pointer-events: none; }
+  .card:hover::after { transform: translateX(100%); }
+  .card:hover :global(img) { transform: scale(1.03); }
+  .card-team { position: absolute; z-index: 3; top: 14px; left: 14px; display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; background: var(--white); color: var(--ink); font: italic 900 0.8rem/1 var(--exo); }
+  .card-team b { color: var(--o); font-weight: 900; }
+  .card-team :global(svg) { width: 10px; height: 10px; color: var(--o); }
+  .card-pos { position: absolute; z-index: 3; top: 14px; right: 14px; font: italic 800 0.68rem/1 var(--exo); letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 8px; background: rgb(14 11 9 / 0.7); backdrop-filter: blur(4px); }
+  .card-lt { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; padding: 0 0 18px; display: grid; justify-items: start; }
+  .card-first { padding: 6px 12px 5px 16px; background: var(--o); color: #160d08; font: italic 800 0.9rem/1 var(--exo); letter-spacing: 0.08em; text-transform: uppercase; }
+  .card-last { padding: 6px 18px 6px 16px; background: var(--white); color: var(--ink); font: italic 900 clamp(1.8rem, 3vw, 2.4rem)/1 var(--exo); text-transform: uppercase; letter-spacing: -0.005em; }
+  .card-role { margin: 10px 16px 0; font-size: 0.9rem; line-height: 1.35; color: rgb(247 244 239 / 0.85); max-width: 30ch; }
+  @media (min-width: 700px) { .cards { grid-template-columns: repeat(3, 1fr); } .card { aspect-ratio: 3 / 4; } }
+  .pers { display: grid; gap: 14px; align-items: center; margin-top: 12px; padding: 22px 20px; background: var(--panel-2); position: relative; box-shadow: inset 3px 0 0 var(--o); }
+  .pers .tag { justify-self: start; }
+  .pers-t { display: grid; gap: 4px; }
+  .pers-t b { font: italic 900 clamp(1.3rem, 2.4vw, 1.8rem)/1.05 var(--exo); text-transform: uppercase; }
+  .pers-t span { color: var(--dim); font-size: 0.95rem; }
+  .pers .btn-g { justify-self: start; }
+  @media (min-width: 900px) { .pers { grid-template-columns: auto 1fr auto; gap: 26px; padding: 24px 28px; } }
+
+  /* ---------- Интервью ---------- */
+  .int { display: grid; gap: 12px; }
+  .score { display: grid; justify-items: start; align-content: start; gap: 10px; padding: 24px; background: var(--white); color: var(--ink); text-decoration: none; }
+  .score-k { font: italic 800 0.78rem/1 var(--exo); letter-spacing: 0.14em; text-transform: uppercase; color: #6a5f56; }
+  .score-v { font: 700 clamp(5rem, 12vw, 8rem)/0.85 var(--dig); letter-spacing: -0.03em; }
+  .score-s { display: flex; gap: 3px; color: var(--o); }
+  .score-s :global(svg) { width: 18px; height: 18px; }
+  .score-l { font-size: 0.95rem; color: #4f453e; }
+  .score-a { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 10px; font: italic 800 0.82rem/1 var(--exo); letter-spacing: 0.1em; text-transform: uppercase; }
+  .score-a :global(svg) { width: 7px; height: 11px; color: var(--o); transition: transform 0.3s var(--ease); }
+  .score:hover .score-a :global(svg) { transform: translateX(4px); }
+  .iv { margin: 0; display: grid; align-content: start; gap: 14px; padding: 22px 0 0; background: var(--panel); position: relative; }
+  .iv-k { margin-left: 22px; justify-self: start; display: inline-flex; align-items: center; gap: 8px; font: italic 800 0.68rem/1 var(--exo); letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+  .iv-k::before { content: ''; width: 8px; height: 8px; background: var(--o); transform: skewX(-18deg); }
+  .iv blockquote { margin: 0; padding: 0 22px; font-size: 1rem; line-height: 1.55; color: rgb(247 244 239 / 0.92); }
+  .iv figcaption { display: flex; align-items: stretch; margin-top: auto; padding-bottom: 22px; }
+  .iv figcaption .pl { font: italic 900 1.05rem/1 var(--exo); text-transform: uppercase; }
+  .iv figcaption .pl > span { padding: 9px 14px 8px 22px; }
+  .iv figcaption .tag { height: auto; margin-left: -2px; }
+  @media (min-width: 760px) {
+    .int { grid-template-columns: 1fr 1fr; }
+    .score { grid-column: 1 / -1; grid-template-columns: auto auto 1fr auto; align-items: center; gap: 8px 28px; padding: 22px 30px; }
+    .score-k { grid-column: 1 / -1; }
+    .score-v { grid-row: 2; }
+    .score-s { grid-row: 2; }
+    .score-l { grid-row: 2; }
+    .score-a { grid-row: 2; margin: 0; padding: 0; }
+  }
+
+  /* ---------- Заявка ---------- */
+  .es-cta { background: radial-gradient(70% 60% at 85% 30%, rgb(255 87 34 / 0.16), transparent 70%), var(--bg); border-top: 1px solid var(--line); }
+  .cta { display: grid; gap: 40px; align-items: start; }
+  .guide .sh h2 { font-size: clamp(2.4rem, 5.4vw, 4.4rem); }
+  .tv { list-style: none; padding: 0; margin: 0; display: grid; }
+  .tv li { display: grid; grid-template-columns: 84px 1fr; gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); }
+  .tv li:last-child { border-bottom: 1px solid var(--line); }
+  .tv-t { font: 700 1.4rem/1 var(--dig); color: var(--o); font-variant-numeric: tabular-nums; }
+  .tv b { display: block; margin-bottom: 4px; font: italic 900 1.05rem/1.1 var(--exo); text-transform: uppercase; letter-spacing: 0.02em; }
+  .tv li > span:last-child { color: var(--dim); font-size: 0.95rem; line-height: 1.45; }
+  .links { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .links a { display: inline-flex; align-items: center; gap: 10px; min-height: 46px; padding: 0 16px; background: var(--panel-2); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: background-color 0.2s ease; }
+  .links a:hover { background: #2f2620; }
+  .links :global(svg) { width: 18px; height: 18px; color: var(--o); }
+  .cta-form { position: relative; background: var(--white); }
+  .cta-bar { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 22px; background: var(--ink); color: var(--white); font: italic 900 0.8rem/1 var(--exo); letter-spacing: 0.14em; text-transform: uppercase; box-shadow: inset 0 -3px 0 var(--o); }
+  @media (min-width: 980px) { .cta { grid-template-columns: 1.1fr 0.9fr; gap: 64px; } .cta-form { margin-top: 96px; } }
+
+  /* ---------- Подвал ---------- */
+  .ft { background: #080605; padding: clamp(56px, 7vw, 96px) 0 calc(28px + env(safe-area-inset-bottom)); border-top: 3px solid var(--o); }
+  .ft-big { display: flex; align-items: center; gap: 0.12em; font: italic 900 clamp(3.4rem, 15vw, 13rem)/0.82 var(--exo); letter-spacing: -0.03em; color: var(--white); }
+  .ft-big b { color: var(--o); font-weight: 900; }
+  .ft-big :global(svg) { width: 0.5em; height: 0.47em; color: var(--o); }
+  .ft-grid { display: grid; gap: 28px; margin-top: 48px; }
+  .ft-grid p { font-size: 0.95rem; line-height: 1.6; color: rgb(247 244 239 / 0.86); }
+  .ft-grid a { text-underline-offset: 3px; text-decoration-color: rgb(247 244 239 / 0.3); }
+  .ft-grid a:hover { color: var(--o-hi); }
+  .ft-k { margin-bottom: 8px; font: italic 800 0.72rem/1 var(--exo) !important; letter-spacing: 0.14em; text-transform: uppercase; color: var(--o) !important; }
+  .ft-m { color: var(--dim) !important; margin-top: 6px; }
+  .ft-legal { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 0.82rem; color: var(--dim); }
+  @media (min-width: 900px) { .ft-grid { grid-template-columns: 1fr 0.8fr 1fr 1.3fr; } }
+  @media (max-width: 1099px) { .ft { padding-bottom: calc(100px + env(safe-area-inset-bottom)); } }
+</style>
+
+<style is:global>
+  body:has(.ef) { background: #0e0b09; color: #f7f4ef; padding-bottom: 0; }
+  body:has(.ef) ::selection { background: #ff5722; color: #160d08; }
+  body:has(.ef) :focus-visible { outline: 3px solid #ff5722; outline-offset: 3px; }
+  body:has(.ef) .form { background: #f7f4ef; color: #120e0b; --ink: #120e0b; --muted: #5d534b; --line: rgb(18 14 11 / 0.16); border-radius: 0; }
+  body:has(.ef) .form h3 { font-family: 'Exo 2 Variable', sans-serif; font-style: italic; font-weight: 900; font-size: 1.7rem; line-height: 1; text-transform: uppercase; letter-spacing: -0.005em; }
+  body:has(.ef) .form .field input { border-radius: 0; background: #fff; border-color: rgb(18 14 11 / 0.2); color: #120e0b; }
+  body:has(.ef) .form .field input:focus { border-color: #ff5722; box-shadow: 0 0 0 3px rgb(255 87 34 / 0.18); }
+  body:has(.ef) .form .field .err, body:has(.ef) .form .consent.bad { color: #c62f00; }
+  body:has(.ef) .form .form-msg.is-err { background: #ffe8de; color: #8a2200; border-radius: 0; }
+  body:has(.ef) .form .btn { border-radius: 0; clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%); font-family: 'Exo 2 Variable', sans-serif; font-style: italic; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #160d08; min-height: 56px; }
+  body:has(.ef) .form .form-note a { color: #120e0b; }
+  body:has(.ef) dialog.lead::backdrop { background: rgb(8 6 5 / 0.8); backdrop-filter: blur(6px); }
+  body:has(.ef) dialog.lead .form { border: 0; box-shadow: inset 0 4px 0 #ff5722, 0 30px 80px -20px rgb(0 0 0 / 0.7); }
+  body:has(.ef) dialog.lead .x { color: #120e0b; }
+  body:has(.ef) .mbar { background: rgb(14 11 9 / 0.94); border-top: 0; box-shadow: inset 0 2px 0 #ff5722; }
+  body:has(.ef) .mbar a.ic { border-radius: 0; border-color: rgb(247 244 239 / 0.18); color: #f7f4ef; }
+  body:has(.ef) .mbar .btn { border-radius: 0; clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%); font-family: 'Exo 2 Variable', sans-serif; font-style: italic; font-weight: 800; font-size: 0.86rem; letter-spacing: 0.04em; text-transform: uppercase; color: #160d08; }
+</style>
