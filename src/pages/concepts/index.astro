@@ -39,30 +39,58 @@ const list = [
   ['29', 'Жидкий свет', 'Спокойный премиум: медленно текущий тёплый свет, стеклянные рамки, «Сила в спокойном ритме».'],
   ['30', 'Манга', 'Страница как комикс: панели, «ЖМИ!», «БАХ!», отзывы в облачках.'],
 ];
+const minimal = [
+  ['31', 'Шеврон', 'Белая страница и один оранжевый шеврон: он едет по полю, обрезает фото, служит кнопкой и курсором.'],
+  ['32', 'Цифры крупно', 'Страницу держат огромные точные цифры, при прокрутке они докручиваются до своего значения.'],
+  ['33', 'Красная линия', 'Почти чёрная страница, одна тонкая линия рисуется при прокрутке и соединяет блоки до кнопки формы.'],
+  ['34', 'Рамс', 'Минимализм техники Braun: тёплый серый, одна оранжевая точка, тумблер и регулятор тарифов.'],
+  ['35', 'Ма', 'Японская пустота: много воздуха, одно фото на экран, огромная цифра против мелкого текста.'],
+];
 ---
 <Layout title="Концепции главной" description="Тридцать концепций главной страницы Urban210." noindex>
   <section class="page-hero">
     <div class="wrap">
-      <h1>Тридцать концепций</h1>
+      <h1>Концепции главной</h1>
       <p class="lead">Живые главные страницы на фото, видео и ценах Urban210. Откройте каждую на телефоне и компьютере и назовите номер, который ближе. Можно смешать: шрифт из одной, цвет из другой.</p>
+      <section id="minimal" aria-labelledby="min-t" class="cl-group">
+        <h2 id="min-t" class="cl-gh">Минимализм</h2>
+        <p class="cl-gp">Пять вариантов чёткого минимализма: одна сильная идея, мало элементов, точная типографика.</p>
+        <ul class="cl">
+          {minimal.map(([n, t, d]) => (
+            <li>
+            <a href={`/concepts/${n}/`}>
+              <div class="cl-ph"><Image src={shot(n)} alt={`Первый экран концепции ${n}`} widths={[480, 720]} sizes="(min-width: 900px) 45vw, 100vw" format="webp" quality={60} loading={n === '31' || n === '32' ? 'eager' : 'lazy'} /></div>
+              <h2><span>{n}</span> {t}</h2>
+              <p>{d}</p>
+            </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+      <section aria-labelledby="all-t" class="cl-group">
+        <h2 id="all-t" class="cl-gh">Все концепции</h2>
       <ul class="cl">
         {list.map(([n, t, d]) => (
           <li>
             <a href={`/concepts/${n}/`}>
-              <div class="cl-ph"><Image src={shot(n)} alt={`Первый экран концепции ${n}`} widths={[480, 720]} sizes="(min-width: 900px) 45vw, 100vw" format="webp" quality={60} loading={n === '01' || n === '02' ? 'eager' : 'lazy'} /></div>
+              <div class="cl-ph"><Image src={shot(n)} alt={`Первый экран концепции ${n}`} widths={[480, 720]} sizes="(min-width: 900px) 45vw, 100vw" format="webp" quality={60} loading="lazy" /></div>
               <h2><span>{n}</span> {t}</h2>
               <p>{d}</p>
             </a>
           </li>
         ))}
       </ul>
+      </section>
       <p class="muted" style="margin-top:48px">Ранние варианты: <a href="/concepts/a/">A</a>, <a href="/concepts/b/">B</a>, <a href="/concepts/c/">C</a>. Текущий сайт: <a href="/">главная</a>.</p>
     </div>
   </section>
 </Layout>
 
 <style>
-  .cl { list-style: none; margin-top: 48px; display: grid; gap: 40px 24px; }
+  .cl-group { margin-top: 72px; }
+  .cl-gh { font-size: clamp(2rem, 1.4rem + 2vw, 3rem); }
+  .cl-gp { color: var(--muted); margin-top: 10px; max-width: 56ch; }
+  .cl { list-style: none; margin-top: 32px; display: grid; gap: 40px 24px; }
   @media (min-width: 900px) { .cl { grid-template-columns: repeat(2, 1fr); } }
   .cl a { text-decoration: none; display: grid; gap: 12px; }
   .cl-ph { aspect-ratio: 16 / 10; overflow: hidden; background: var(--card); border-radius: 6px; }

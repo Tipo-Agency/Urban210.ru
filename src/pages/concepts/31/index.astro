@@ -1,0 +1,591 @@
+---
+// Концепция 31 «Шеврон»: одна графическая единица на всю страницу.
+// Белый лист, чёрный Onest, и только оранжевый шеврон » из логотипа: он едет по полю вместе с прокруткой
+// и показывает на следующий блок, вырезает фото, служит кнопкой и курсором на десктопе.
+import onCyr from '@fontsource-variable/onest/files/onest-cyrillic-wght-normal.woff2?url';
+import onLat from '@fontsource-variable/onest/files/onest-latin-wght-normal.woff2?url';
+import onExt from '@fontsource-variable/onest/files/onest-latin-ext-wght-normal.woff2?url';
+import { Image } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import LeadForm from '../../../components/LeadForm.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site, whatsappLink, telegramLink } from '../../../data/site';
+import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { reviews, trainers, zones, promos, personalText } from '../../../data/content';
+
+const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
+const UL = 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
+const ff = (url: string, range: string) => `@font-face{font-family:'Onest 31';font-style:normal;font-display:swap;font-weight:100 900;src:url(${url}) format('woff2');unicode-range:${range}}`;
+const fonts = ff(onCyr, UR) + ff(onLat, UL) + ff(onExt, 'U+20BD');
+
+const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
+const rating = site.rating.value.toString().replace('.', ',');
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const z = Object.fromEntries(zones.map((x) => [x.id, x]));
+const photoZones = [
+  { ...z.zal, pic: '/images/zal.jpg', alt: 'Тренажёрный зал Urban210' },
+  { ...z.cardio, pic: '/images/cardio.jpg', alt: 'Беговые дорожки в кардиозоне' },
+  { ...z.group, pic: '/images/group.jpg', alt: 'Групповая тренировка в зале' },
+];
+const tradein = promos.find((p) => p.slug === 'trade-in')!;
+const friend = promos.find((p) => p.slug === '1-plus-1')!;
+const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
+const weekday = site.hours[0];
+const weekend = site.hours[1];
+---
+<Layout title="Концепция 31 «Шеврон»" description="Концепция дизайна сайта Urban210: белый лист, чёрный шрифт и один оранжевый шеврон, который ведёт по странице." noindex bare>
+  <Fragment slot="head">
+    <link rel="preload" href={onCyr} as="font" type="font/woff2" crossorigin />
+    <style set:html={fonts} />
+  </Fragment>
+
+  <div class="sv">
+    <!-- Маска «двойной шеврон» в долях блока: пропорции знака из логотипа 17 × 16 -->
+    <svg class="sv-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <clipPath id="sv-mask2" clipPathUnits="objectBoundingBox">
+        <polygon points="0 0, .2118 0, .5882 .5, .2118 1, 0 1, .3765 .5" />
+        <polygon points=".4118 0, .6235 0, 1 .5, .6235 1, .4118 1, .7882 .5" />
+      </clipPath>
+    </svg>
+
+    <!-- Единственная графика: шеврон на поле. Едет вместе с прокруткой и смотрит на следующий блок -->
+    <div class="sv-rail" aria-hidden="true" data-rail>
+      <span class="sv-rail-c"><Icon name="chev" /></span>
+      <span class="sv-rail-t" data-rail-t>зоны</span>
+    </div>
+    <div class="sv-cur" aria-hidden="true" data-cur><Icon name="chev" /></div>
+
+    <header class="sv-top">
+      <div class="sv-w sv-top-in">
+        <a class="sv-logo" href="/concepts/31/" aria-label="Urban210, на главную">URBAN210<Icon name="chev" /></a>
+        <nav class="sv-nav" aria-label="Разделы">
+          <a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#trenery">Тренеры</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Контакты</a>
+        </nav>
+        <a class="sv-tel" href={site.phone.href}>{site.phone.display}</a>
+        <a class="sv-go sv-go-s" href="#zayavka" data-lead={trial.title} data-block="31_header"><span>1 ₽ пробный<span class="sv-hide-s">&nbsp;день</span></span></a>
+      </div>
+    </header>
+
+    <div class="sv-main">
+      <!-- Первый экран -->
+      <section class="sv-first" aria-labelledby="sv-h1" data-sec="первый экран">
+        <div class="sv-w sv-first-in">
+          <div class="sv-first-tx">
+            <p class="sv-kick">Фитнес-клуб в Хабаровске</p>
+            <h1 id="sv-h1" class="sv-h1"><span>Первый</span><span>день</span><span>за 1 ₽</span></h1>
+            <p class="sv-intro">Тренажёрный зал, кардио, групповые и SPA на {site.address.short}. Вступительного взноса нет.</p>
+            <div class="sv-acts">
+              <a class="sv-go" href="#zayavka" data-lead={trial.title} data-block="31_hero"><span>Записаться за 1 ₽</span></a>
+              <a class="sv-link" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+            </div>
+          </div>
+          <div class="sv-mark" aria-hidden="true">
+            <div class="sv-mark-in">
+              <Image src={img('/images/group-strength.jpg')} alt="" widths={[480, 720, 960, 1200]} sizes="(min-width: 900px) 40vw, 90vw" loading="eager" fetchpriority="high" format="webp" quality={55} />
+            </div>
+          </div>
+        </div>
+        <dl class="sv-w sv-facts">
+          <div><dt>{weekday.days}</dt><dd>{weekday.time}</dd></div>
+          <div><dt>{weekend.days}</dt><dd>{weekend.time}</dd></div>
+          <div><dt>Парковка</dt><dd>50 мест</dd></div>
+          <div><dt>Яндекс Карты</dt><dd>{rating} из 5</dd></div>
+        </dl>
+      </section>
+
+      <!-- Зоны: три фото сцеплены в один длинный шеврон -->
+      <section class="sv-blk" id="zony" aria-labelledby="sv-zh" data-sec="зоны">
+        <div class="sv-w">
+          <div class="sv-head">
+            <h2 id="sv-zh" class="sv-h2">Четыре зоны</h2>
+            <p class="sv-note">{cap(site.facts.area)}, {site.facts.machines} {site.facts.brands}.</p>
+          </div>
+          <div class="sv-chain">
+            {photoZones.map((p, i) => (
+              <a class="sv-zone" href={p.href} style={`--i:${i}`}>
+                <div class="sv-cut">
+                  <Image src={img(p.pic)} alt={p.alt} widths={[480, 720, 960]} sizes="(min-width: 900px) 36vw, 90vw" loading="lazy" format="avif" quality={45} />
+                </div>
+                <div class="sv-zone-tx">
+                  <span class="sv-n">0{i + 1}</span>
+                  <h3>{p.title}</h3>
+                  <p>{cap(p.text)}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+          <a class="sv-spa" href={z.spa.href}>
+            <span class="sv-n">04</span>
+            <h3>{z.spa.title}</h3>
+            <p>{z.spa.text} В тарифе «{plans[2].name}».</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- Тарифы -->
+      <section class="sv-blk sv-blk-line" id="tarify" aria-labelledby="sv-ph" data-sec="тарифы">
+        <div class="sv-w">
+          <div class="sv-head">
+            <h2 id="sv-ph" class="sv-h2">Три абонемента</h2>
+            <p class="sv-note">Помесячно или за год. Вступительного взноса нет ни в одном.</p>
+          </div>
+          <div class="sv-plans">
+            {plans.map((p, i) => (
+              <article class={`sv-plan${i === 1 ? ' is-main' : ''}`}>
+                <div class="sv-plan-h">
+                  <h3>{p.name}</h3>
+                  {p.tag && <span>{p.tag}</span>}
+                </div>
+                <p class="sv-plan-hours">{cap(p.hours)}</p>
+                <p class="sv-price"><b>{num(p.month)}</b><span>₽ в месяц</span></p>
+                <p class="sv-year">За год {rub(p.year)}, {perDay(p.year, 365)} ₽ в день</p>
+                <ul>{p.features.map((f) => <li>{f}</li>)}</ul>
+                {p.excluded && <p class="sv-no">Не входит: {p.excluded.map((x) => x.toLowerCase()).join(', ')}</p>}
+                <a class={`sv-go sv-go-w${i === 1 ? '' : ' sv-go-k'}`} href="#zayavka" data-lead={`Тариф «${p.name}»`} data-block={`31_plan_${p.id}`}><span>Выбрать</span></a>
+              </article>
+            ))}
+          </div>
+
+          <div class="sv-trial">
+            <p class="sv-one" aria-hidden="true">1 ₽</p>
+            <div class="sv-trial-tx">
+              <h3>{trial.title}</h3>
+              <p>{trial.text}</p>
+              <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
+              <a class="sv-go" href="#zayavka" data-lead={trial.title} data-block="31_trial"><span>{trialPromo.cta}</span></a>
+            </div>
+          </div>
+
+          <div class="sv-offers">
+            {[tradein, friend].map((pr) => (
+              <div class="sv-offer">
+                <h3>{pr.title}</h3>
+                <p>{pr.text}</p>
+                <a class="sv-link" href="#zayavka" data-lead={pr.goal} data-block={`31_promo_${pr.slug}`}>{pr.cta}</a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- Тренеры -->
+      <section class="sv-blk sv-blk-line" id="trenery" aria-labelledby="sv-th" data-sec="тренеры">
+        <div class="sv-w">
+          <div class="sv-head">
+            <h2 id="sv-th" class="sv-h2">Тренеры</h2>
+            <p class="sv-note">{personalText.lead}</p>
+          </div>
+          <div class="sv-team">
+            {trainers.map((t) => (
+              <figure class="sv-coach">
+                <div class="sv-cut sv-cut-t">
+                  <Image src={img(t.photo)} alt={t.name} widths={[360, 540, 720]} sizes="(min-width: 900px) 28vw, 80vw" loading="lazy" format="avif" quality={50} />
+                </div>
+                <figcaption><b>{t.name}</b><span>{t.role}</span></figcaption>
+              </figure>
+            ))}
+          </div>
+          <div class="sv-pt">
+            <p><b>{personalLine}</b>{personal.firstFree}.</p>
+            <a class="sv-link" href="#zayavka" data-lead="Персональная тренировка" data-block="31_personal">Записаться к тренеру</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Отзывы -->
+      <section class="sv-blk sv-blk-line" id="otzyvy" aria-labelledby="sv-rh" data-sec="отзывы">
+        <div class="sv-w sv-rev">
+          <div class="sv-rate">
+            <h2 id="sv-rh" class="sv-h2">Отзывы</h2>
+            <p class="sv-rate-n">{rating}</p>
+            <p class="sv-note">{site.rating.text} на Яндекс Картах и в 2ГИС</p>
+            <a class="sv-link" href={site.maps.yandexReviews} target="_blank" rel="noopener">Читать на Яндекс Картах</a>
+          </div>
+          <div class="sv-quotes">
+            {reviews.map((r) => (
+              <blockquote class="sv-q">
+                <p>{r.text}</p>
+                <footer>{r.name}, {r.source}</footer>
+              </blockquote>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- Заявка -->
+      <section class="sv-blk sv-blk-line sv-end" id="zayavka" aria-labelledby="sv-eh" data-sec="заявка" data-aim>
+        <div class="sv-w sv-end-in">
+          <div class="sv-end-tx">
+            <h2 id="sv-eh" class="sv-h2">Приходите на&nbsp;пробный день</h2>
+            <dl class="sv-addr">
+              <div><dt>Адрес</dt><dd>{site.address.short}<br />{site.district}</dd></div>
+              <div><dt>Часы</dt><dd>{weekday.days} {weekday.time}<br />{weekend.days} {weekend.time}</dd></div>
+              <div><dt>Телефон</dt><dd><a href={site.phone.href}>{site.phone.display}</a></dd></div>
+              <div><dt>Парковка</dt><dd>{site.parking.replace('Бесплатная парковка', 'Бесплатно')}</dd></div>
+            </dl>
+            <p class="sv-msg">
+              <a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a>
+              <a href={telegramLink('site_31')} target="_blank" rel="noopener">Telegram</a>
+              <a href={site.maps.yandex} target="_blank" rel="noopener">Яндекс Карты</a>
+              <a href={site.maps.twoGis} target="_blank" rel="noopener">2ГИС</a>
+            </p>
+          </div>
+          <div class="sv-form">
+            <LeadForm id="sv" block="31_final" />
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="sv-foot">
+      <div class="sv-w">
+        <p class="sv-word" aria-hidden="true">URBAN210<Icon name="chev" /></p>
+        <div class="sv-foot-g">
+          <p>{site.fullName}<br />{site.address.locality}, {site.address.street}</p>
+          <nav aria-label="Страницы">
+            <a href="/price/">Тарифы</a><a href="/zal/">Тренажёрный зал</a><a href="/group/">Групповые</a><a href="/spa/">SPA</a><a href="/trainers/">Тренеры</a><a href="/promo/">Акции</a>
+          </nav>
+          <nav aria-label="Документы">
+            <a href="/rules/">Правила клуба</a><a href="/oferta/">Договор-оферта</a><a href="/policy/">Политика конфиденциальности</a><a href={site.instagram} target="_blank" rel="noopener">Instagram</a>
+          </nav>
+          <p><a href={site.phone.href}>{site.phone.display}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
+        </div>
+        <p class="sv-legal">© {new Date().getFullYear()} {site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn}</p>
+      </div>
+    </footer>
+  </div>
+</Layout>
+
+<script>
+  // Шеврон на поле: высота = доля прокрутки, поворот вниз на следующий блок, вправо на форму.
+  // Курсор-шеврон только для мыши. Всё отключается при prefers-reduced-motion.
+  const rail = document.querySelector<HTMLElement>('[data-rail]');
+  const label = document.querySelector<HTMLElement>('[data-rail-t]');
+  const cur = document.querySelector<HTMLElement>('[data-cur]');
+  const secs = [...document.querySelectorAll<HTMLElement>('.sv [data-sec]')];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (rail && label) {
+    let raf = 0;
+    const paint = () => {
+      raf = 0;
+      const max = document.documentElement.scrollHeight - innerHeight;
+      const p = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+      const mid = innerHeight * 0.5;
+      let i = secs.findIndex((s) => s.getBoundingClientRect().top > mid);
+      const aim = secs.find((s) => s.hasAttribute('data-aim'));
+      const r = aim?.getBoundingClientRect();
+      const atForm = !!r && r.top < mid && r.bottom > mid * 0.6;
+      if (i === -1) i = secs.length - 1;
+      label.textContent = atForm ? 'заявка' : secs[i].dataset.sec || '';
+      rail.style.setProperty('--p', p.toFixed(4));
+      rail.classList.toggle('is-aim', atForm);
+    };
+    const on = () => { if (!raf) raf = requestAnimationFrame(paint); };
+    addEventListener('scroll', on, { passive: true });
+    addEventListener('resize', on);
+    paint();
+    requestAnimationFrame(() => rail.classList.add('is-on'));
+  }
+
+  if (cur && !reduce && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.documentElement.classList.add('sv-has-cur');
+    let x = -100, y = -100, raf = 0;
+    const move = () => { raf = 0; cur.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
+    addEventListener('pointermove', (e) => {
+      x = e.clientX; y = e.clientY;
+      const t = e.target as HTMLElement;
+      cur.classList.toggle('is-link', !!t.closest('a, button, label, summary'));
+      cur.classList.toggle('is-text', !!t.closest('input, textarea'));
+      cur.classList.add('is-on');
+      if (!raf) raf = requestAnimationFrame(move);
+    }, { passive: true });
+    document.addEventListener('pointerleave', () => cur.classList.remove('is-on'));
+  }
+</script>
+
+<style is:global>
+  body:has(.sv) { padding-bottom: 0; background: #fff; color: #0b0b0b; color-scheme: light; font-family: 'Onest 31', 'Helvetica Neue', Arial, sans-serif; }
+  body:has(.sv) ::selection { background: #ff5722; color: #0b0b0b; }
+  body:has(.sv) :focus-visible { outline: 2px solid #0b0b0b; outline-offset: 4px; border-radius: 0; }
+  html.sv-has-cur body:has(.sv) .sv, html.sv-has-cur body:has(.sv) .sv * { cursor: none; }
+  html.sv-has-cur body:has(.sv) .sv input { cursor: text; }
+  body:has(.sv dialog[open]) .sv-cur, body:has(dialog.lead[open]) .sv-cur { display: none; }
+
+  body:has(.sv) .form { background: #fff; color: #0b0b0b; --ink: #0b0b0b; --muted: #5c5c5c; --card: #fff; --line: #0b0b0b; border-radius: 0; padding: 0; gap: 24px; font-family: 'Onest 31', Arial, sans-serif; }
+  body:has(.sv) .form h3 { font-family: inherit; font-weight: 650; font-size: 1.75rem; line-height: 1.1; letter-spacing: -0.03em; }
+  body:has(.sv) .form .muted { color: #5c5c5c; font-size: 1rem !important; margin-top: -16px; }
+  body:has(.sv) .form .field { color: #0b0b0b; font-size: 0.875rem; font-weight: 500; gap: 4px; }
+  body:has(.sv) .form .field input { border: 0; border-bottom: 1px solid #0b0b0b; border-radius: 0; padding: 0; min-height: 48px; background: transparent; font-size: 1.25rem; }
+  body:has(.sv) .form .field input::placeholder { color: #9a9a9a; }
+  body:has(.sv) .form .field input:focus { border-bottom-color: #ff5722; box-shadow: inset 0 -1px 0 #ff5722; }
+  body:has(.sv) .form .field .err, body:has(.sv) .form .consent.bad { color: #c2300a; }
+  body:has(.sv) .form .field.bad input { border-bottom-color: #c2300a; }
+  body:has(.sv) .form .consent { color: #5c5c5c; font-size: 0.875rem; }
+  body:has(.sv) .form .consent input { accent-color: #0b0b0b; }
+  body:has(.sv) .form .btn {
+    border-radius: 0; background: #ff5722; color: #0b0b0b; font-family: inherit; font-weight: 600; font-size: 1.125rem; min-height: 64px;
+    clip-path: polygon(0 0, calc(100% - 32px) 0, 100% 50%, calc(100% - 32px) 100%, 0 100%, 32px 50%); padding: 0 56px; justify-content: flex-start;
+  }
+  body:has(.sv) .form .btn .chev { display: none; }
+  body:has(.sv) .form .btn:hover { background: #0b0b0b; color: #fff; }
+  body:has(.sv) .form .form-note { text-align: left; color: #5c5c5c; margin-top: -8px; }
+  body:has(.sv) .form .form-note a { color: #0b0b0b; }
+  body:has(.sv) .form .form-msg.is-err { border-radius: 0; background: #fff0eb; color: #9c2607; }
+  body:has(.sv) .form .form-done { text-align: left; padding: 0; }
+  body:has(.sv) .form .form-done .ok { margin: 0; background: #ff5722; color: #0b0b0b; border-radius: 0; clip-path: polygon(0 0, 50% 0, 100% 50%, 50% 100%, 0 100%, 50% 50%); }
+  body:has(.sv) dialog.lead::backdrop { background: rgb(255 255 255 / 0.9); backdrop-filter: none; }
+  body:has(.sv) dialog.lead .form { border: 1px solid #0b0b0b; padding: 40px 32px 32px; box-shadow: none; }
+  body:has(.sv) dialog.lead .x { color: #0b0b0b; top: 12px; right: 12px; }
+  body:has(.sv) .mbar { background: #fff; border-top: 1px solid #0b0b0b; backdrop-filter: none; }
+  body:has(.sv) .mbar a.ic { border-radius: 0; border: 1px solid #0b0b0b; color: #0b0b0b; }
+  body:has(.sv) .mbar .btn {
+    border-radius: 0; background: #ff5722; color: #0b0b0b; font-family: inherit; font-weight: 600; font-size: 1rem; justify-content: flex-start;
+    clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%, 22px 50%); padding: 0 30px 0 34px; white-space: nowrap; font-size: 0.9375rem;
+  }
+  body:has(.sv) .mbar .btn .chev { display: none; }
+</style>
+
+<style>
+  .sv {
+    --ink: #0b0b0b; --mute: #5c5c5c; --line: #0b0b0b; --or: #ff5722; --bg: #fff;
+    --f: 'Onest 31', 'Helvetica Neue', Arial, sans-serif;
+    --ez: cubic-bezier(0.2, 0.8, 0.2, 1);
+    /* шкала отступов 8 */
+    --s1: 8px; --s2: 16px; --s3: 24px; --s4: 32px; --s5: 48px; --s6: 64px; --s7: 96px; --s8: 128px;
+    --gut: clamp(24px, 5.56vw, 80px);
+    --blk: clamp(96px, 8.9vw, 128px);
+    /* шкала размеров */
+    --t-xs: 0.875rem; --t-s: 1.0625rem; --t-m: clamp(1.1875rem, 1rem + 0.45vw, 1.5rem);
+    --t-l: clamp(2rem, 1.4rem + 1.9vw, 3.5rem); --t-xl: clamp(3rem, 1.8rem + 4.6vw, 6.5rem); --t-xxl: clamp(4.75rem, 1.2rem + 12vw, 11.5rem);
+    background: var(--bg); color: var(--ink); font-family: var(--f); font-size: var(--t-s); line-height: 1.5;
+    position: relative; overflow-x: clip;
+  }
+  .sv :global(h1), .sv :global(h2), .sv :global(h3) { font-family: var(--f); hyphens: manual; -webkit-hyphens: manual; overflow-wrap: normal; }
+  .sv-defs { position: absolute; }
+  .sv-w { width: 100%; max-width: 1440px; margin-inline: auto; padding-inline: var(--gut); }
+  .sv a { text-decoration: none; }
+
+  /* Кнопка: сам шеврон. Текст внутри стрелки, наведение толкает её вперёд */
+  .sv-go {
+    --d: 28px; display: inline-flex; align-items: center; min-height: 64px; padding: 0 calc(var(--d) + 24px) 0 calc(var(--d) + 20px);
+    background: var(--or); color: var(--ink); font-weight: 600; font-size: 1.125rem; line-height: 1; white-space: nowrap;
+    clip-path: polygon(0 0, calc(100% - var(--d)) 0, 100% 50%, calc(100% - var(--d)) 100%, 0 100%, var(--d) 50%);
+    transition: transform 0.35s var(--ez), background-color 0.25s ease, color 0.25s ease;
+  }
+  .sv-go:hover { transform: translateX(8px); background: var(--ink); color: #fff; }
+  .sv-go:active { transform: translateX(12px) scale(0.98); }
+  .sv-go-s { --d: 18px; min-height: 44px; font-size: 1rem; padding: 0 calc(var(--d) + 14px) 0 calc(var(--d) + 12px); }
+  .sv-go-w { width: 100%; }
+  .sv-go-k { background: var(--ink); color: #fff; }
+  .sv-go-k:hover { background: var(--or); color: var(--ink); }
+  .sv-link { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; font-size: 1.0625rem; box-shadow: inset 0 -2px 0 var(--ink); line-height: 1.2; padding-top: 2px; transition: box-shadow 0.25s ease; }
+  .sv-link:hover { box-shadow: inset 0 -2px 0 var(--or); }
+
+  /* Шеврон на поле */
+  .sv-rail {
+    --p: 0; --top: 120px; --bot: 96px; --size: 28px;
+    position: fixed; z-index: 20; left: calc((var(--gut) - var(--size)) / 2); top: 0;
+    width: var(--size); pointer-events: none; opacity: 0;
+    transform: translateY(calc(var(--top) + var(--p) * (100svh - var(--top) - var(--bot) - 140px)));
+    transition: opacity 0.6s ease;
+  }
+  .sv-rail.is-on { opacity: 1; }
+  .sv-rail-c { display: block; color: var(--or); transform: rotate(90deg); transition: transform 0.5s var(--ez); }
+  .sv-rail-c :global(svg) { width: var(--size); height: calc(var(--size) * 16 / 17); }
+  .sv-rail.is-aim .sv-rail-c { transform: rotate(0deg) translateX(4px); }
+  .sv-rail-t { display: block; margin: var(--s2) auto 0; writing-mode: vertical-rl; font-size: var(--t-xs); font-weight: 500; letter-spacing: 0.02em; line-height: 1; white-space: nowrap; color: var(--ink); }
+
+  /* Курсор */
+  .sv-cur { position: fixed; z-index: 60; left: 0; top: 0; pointer-events: none; display: none; }
+  :global(html.sv-has-cur) .sv-cur { display: block; opacity: 0; }
+  .sv-cur.is-on { opacity: 1; }
+  .sv-cur :global(svg) { width: 22px; height: 21px; color: var(--or); margin: -10px 0 0 -4px; transition: transform 0.3s var(--ez); transform-origin: 30% 50%; }
+  .sv-cur.is-link :global(svg) { transform: scale(1.9); }
+  .sv-cur.is-text { opacity: 0; }
+
+  /* Шапка */
+  .sv-top { position: sticky; top: 0; z-index: 30; background: #fff; border-bottom: 1px solid var(--line); }
+  .sv-top-in { display: flex; align-items: center; gap: var(--s4); height: 80px; }
+  .sv-logo { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1.375rem; letter-spacing: -0.02em; line-height: 1; white-space: nowrap; }
+  .sv-logo :global(svg) { width: 21px; height: 20px; color: var(--or); }
+  .sv-nav { display: flex; gap: var(--s4); margin-left: auto; }
+  .sv-nav a, .sv-tel { font-weight: 500; font-size: 1rem; line-height: 44px; white-space: nowrap; transition: color 0.2s ease; }
+  .sv-nav a:hover, .sv-tel:hover { color: var(--mute); }
+  .sv-tel { font-variant-numeric: tabular-nums; }
+
+  /* Первый экран */
+  .sv-first { padding-top: var(--s6); }
+  .sv-first-in { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s6); align-items: center; }
+  .sv-kick { font-size: var(--t-xs); font-weight: 500; letter-spacing: 0.02em; }
+  .sv-h1 { margin: var(--s3) 0 0; font-size: var(--t-xxl); font-weight: 700; line-height: 0.88; letter-spacing: -0.055em; }
+  .sv-h1 span { display: block; white-space: nowrap; height: 0.88em; }
+  .sv-intro { margin-top: var(--s5); max-width: 30em; font-size: var(--t-m); line-height: 1.4; }
+  .sv-acts { display: flex; align-items: center; gap: var(--s4); margin-top: var(--s4); flex-wrap: wrap; }
+  .sv-mark { aspect-ratio: 17 / 16; width: 100%; }
+  .sv-mark-in { position: relative; width: 100%; height: 100%; clip-path: url(#sv-mask2); background: #d9d9d9; }
+  .sv-mark-in :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.08); }
+  .sv-mark-in :global(img) { object-position: 62% 50%; }
+  .sv-facts { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); margin: var(--s7) auto 0; }
+  .sv-facts::before { content: ''; position: absolute; top: 0; left: var(--gut); right: var(--gut); border-top: 1px solid var(--line); }
+  .sv-facts div { padding: var(--s3) 0 var(--s3); }
+  .sv-facts div + div { padding-left: var(--s3); border-left: 1px solid var(--line); }
+  .sv-facts dt { font-size: var(--t-xs); color: var(--mute); }
+  .sv-facts dd { margin: var(--s1) 0 0; font-size: var(--t-m); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+  /* Блоки */
+  .sv-blk { padding-block: var(--blk); }
+  .sv-blk-line { padding-top: 0; }
+  .sv-blk-line > .sv-w { position: relative; padding-top: var(--s5); }
+  .sv-blk-line > .sv-w::before { content: ''; position: absolute; top: 0; left: var(--gut); right: var(--gut); border-top: 1px solid var(--line); }
+  .sv-head { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s6); align-items: end; margin-bottom: var(--s7); }
+  .sv-h2 { font-size: var(--t-xl); font-weight: 700; line-height: 0.95; letter-spacing: -0.05em; }
+  .sv-note { font-size: var(--t-m); line-height: 1.4; max-width: 26em; }
+  .sv-n { display: block; font-size: var(--t-xs); font-weight: 500; font-variant-numeric: tabular-nums; color: var(--mute); }
+
+  /* Зоны: фото-шевроны сцеплены друг с другом */
+  .sv-chain { --d: clamp(48px, 6.7vw, 96px); --gap: 16px; display: flex; }
+  .sv-zone { flex: 1 1 0; min-width: 0; display: block; }
+  .sv-zone + .sv-zone { margin-left: calc(var(--gap) - var(--d)); }
+  .sv-cut { --d: clamp(48px, 6.7vw, 96px); position: relative; overflow: hidden; aspect-ratio: 5 / 4; background: #d9d9d9; clip-path: polygon(0 0, calc(100% - var(--d)) 0, 100% 50%, calc(100% - var(--d)) 100%, 0 100%, var(--d) 50%); }
+  .sv-cut :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); transition: transform 0.8s var(--ez); }
+  .sv-zone:hover .sv-cut :global(img) { transform: scale(1.05) translateX(8px); }
+  .sv-zone-tx { padding: var(--s4) var(--s3) 0 var(--d); }
+  .sv-zone-tx h3, .sv-spa h3 { margin-top: var(--s2); font-size: clamp(1.5rem, 1.2rem + 0.9vw, 2rem); font-weight: 650; line-height: 1.1; letter-spacing: -0.03em; }
+  .sv-zone-tx p, .sv-spa p { margin-top: var(--s2); color: var(--mute); max-width: 32em; }
+  .sv-spa { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 3fr); gap: var(--s4); align-items: baseline; margin-top: var(--s7); padding-top: var(--s4); border-top: 1px solid var(--line); }
+  .sv-spa h3, .sv-spa p { margin-top: 0; }
+
+  /* Тарифы */
+  .sv-plans { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .sv-plan { display: flex; flex-direction: column; padding: var(--s4) var(--s4) var(--s5); }
+  .sv-plan:first-child { padding-left: 0; }
+  .sv-plan:last-child { padding-right: 0; }
+  .sv-plan + .sv-plan { border-left: 1px solid var(--line); }
+  .sv-plan-h { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s2); min-height: 32px; }
+  .sv-plan-h h3 { font-size: var(--t-m); font-weight: 650; letter-spacing: -0.02em; line-height: 1.2; }
+  .sv-plan-h span { font-size: var(--t-xs); font-weight: 500; color: var(--mute); }
+  .is-main .sv-plan-h span { color: var(--ink); }
+  .sv-plan-hours { margin-top: var(--s1); font-size: var(--t-xs); color: var(--mute); }
+  .sv-price { display: flex; align-items: baseline; gap: var(--s2); margin-top: var(--s5); }
+  .sv-price b { font-size: var(--t-xl); font-weight: 700; line-height: 0.9; letter-spacing: -0.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sv-price span { font-size: var(--t-xs); font-weight: 500; white-space: nowrap; }
+  .sv-year { margin-top: var(--s2); font-size: var(--t-xs); color: var(--mute); font-variant-numeric: tabular-nums; }
+  .sv-plan ul { list-style: none; margin: var(--s4) 0 0; border-top: 1px solid #e3e3e3; }
+  .sv-plan li { padding: 12px 0; border-bottom: 1px solid #e3e3e3; font-size: 1rem; line-height: 1.35; }
+  .sv-no { margin-top: var(--s2); font-size: var(--t-xs); color: var(--mute); }
+  .sv-plan > .sv-go { margin-top: auto; }
+  .sv-plan > :nth-last-child(2) { margin-bottom: var(--s5); }
+
+  .sv-trial { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s6); align-items: end; margin-top: var(--s8); }
+  .sv-one { font-size: clamp(9rem, 2rem + 24vw, 23rem); font-weight: 700; line-height: 0.76; letter-spacing: -0.07em; white-space: nowrap; margin-left: -0.04em; }
+  .sv-trial-tx h3 { font-size: var(--t-l); font-weight: 700; line-height: 1; letter-spacing: -0.04em; }
+  .sv-trial-tx p { margin-top: var(--s3); font-size: var(--t-m); line-height: 1.4; }
+  .sv-trial-tx ul { list-style: none; margin: var(--s3) 0 var(--s4); color: var(--mute); }
+  .sv-trial-tx li { font-size: 1rem; line-height: 1.6; }
+  .sv-offers { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s6); margin-top: var(--s8); padding-top: var(--s4); border-top: 1px solid var(--line); }
+  .sv-offer h3 { font-size: var(--t-m); font-weight: 650; letter-spacing: -0.02em; line-height: 1.2; }
+  .sv-offer p { margin: var(--s2) 0 var(--s2); color: var(--mute); max-width: 34em; }
+
+  /* Тренеры */
+  .sv-team { --d: clamp(40px, 4.4vw, 64px); display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
+  .sv-cut-t { --d: clamp(40px, 4.4vw, 64px); aspect-ratio: 4 / 5; }
+  .sv-cut-t :global(img) { object-position: 50% 20%; }
+  .sv-coach { margin: 0; }
+  .sv-coach:hover .sv-cut :global(img) { transform: scale(1.04); }
+  .sv-coach figcaption { display: grid; gap: 4px; padding: var(--s3) var(--d) 0; }
+  .sv-coach b { font-size: var(--t-m); font-weight: 650; letter-spacing: -0.02em; line-height: 1.2; }
+  .sv-coach span { font-size: var(--t-xs); color: var(--mute); }
+  .sv-pt { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); margin-top: var(--s7); padding-top: var(--s4); border-top: 1px solid var(--line); }
+  .sv-pt p { font-size: var(--t-m); line-height: 1.4; }
+  .sv-pt b { font-weight: 650; margin-right: 0.5em; font-variant-numeric: tabular-nums; }
+
+  /* Отзывы */
+  .sv-rev { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--s6); }
+  .sv-rate { align-self: start; position: sticky; top: 128px; }
+  .sv-rate-n { margin: var(--s5) 0 var(--s2); font-size: clamp(8rem, 3rem + 14vw, 16rem); font-weight: 700; line-height: 0.8; letter-spacing: -0.07em; font-variant-numeric: tabular-nums; margin-left: -0.05em; }
+  .sv-rate .sv-note { margin-bottom: var(--s2); }
+  .sv-quotes { display: grid; }
+  .sv-q { margin: 0; padding: var(--s4) 0; border-bottom: 1px solid #e3e3e3; }
+  .sv-q:first-child { padding-top: 0; }
+  .sv-q p { font-size: var(--t-m); line-height: 1.45; letter-spacing: -0.01em; }
+  .sv-q footer { margin-top: var(--s2); font-size: var(--t-xs); color: var(--mute); }
+
+  /* Заявка */
+  .sv-end-in { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s6); }
+  .sv-addr { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4) var(--s4); margin: var(--s6) 0 0; max-width: 640px; }
+  .sv-addr dt { font-size: var(--t-xs); color: var(--mute); }
+  .sv-addr dd { margin: var(--s1) 0 0; font-size: 1.0625rem; line-height: 1.45; font-variant-numeric: tabular-nums; }
+  .sv-addr a { box-shadow: inset 0 -1px 0 var(--ink); }
+  .sv-msg { display: flex; flex-wrap: wrap; gap: 0 var(--s4); margin-top: var(--s5); }
+  .sv-msg a { min-height: 44px; display: inline-flex; align-items: center; font-weight: 600; box-shadow: inset 0 -2px 0 var(--ink); line-height: 1.2; }
+  .sv-msg a:hover { box-shadow: inset 0 -2px 0 var(--or); }
+  .sv-form { padding-top: var(--s2); }
+
+  /* Подвал */
+  .sv-foot { padding-bottom: var(--s5); }
+  .sv-word { display: flex; align-items: center; gap: 0.04em; font-size: clamp(3.75rem, 0.5rem + 15vw, 15.5rem); font-weight: 800; line-height: 0.8; letter-spacing: -0.06em; white-space: nowrap; margin-left: -0.04em; padding-bottom: var(--s5); border-bottom: 1px solid var(--line); }
+  .sv-word :global(svg) { width: 0.62em; height: 0.58em; color: var(--or); margin-left: 0.04em; flex: none; }
+  .sv-foot-g { display: grid; grid-template-columns: 2fr 1fr 1fr 1.4fr; gap: var(--s4); padding-top: var(--s4); font-size: 1rem; line-height: 1.6; }
+  .sv-foot-g nav { display: grid; align-content: start; }
+  .sv-foot-g a:hover { color: var(--mute); }
+  .sv-foot-g p:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .sv-legal { margin-top: var(--s5); font-size: var(--t-xs); color: var(--mute); font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 1180px) {
+    .sv-nav { display: none; }
+    .sv-tel { margin-left: auto; }
+  }
+  @media (max-width: 900px) {
+    .sv-first-in, .sv-head, .sv-trial, .sv-rev, .sv-end-in { grid-template-columns: 1fr; }
+    .sv-head { gap: var(--s3); margin-bottom: var(--s6); }
+    .sv-chain { flex-direction: column; gap: var(--s6); }
+    .sv-zone + .sv-zone { margin-left: 0; }
+    .sv-zone-tx { padding: var(--s3) 0 0; }
+    .sv-plans { grid-template-columns: 1fr; border-bottom: 0; }
+    .sv-plan, .sv-plan:first-child, .sv-plan:last-child { padding: var(--s4) 0 var(--s5); }
+    .sv-plan + .sv-plan { border-left: 0; border-top: 1px solid var(--line); }
+    .sv-spa { grid-template-columns: 1fr; gap: var(--s2); }
+    .sv-team { grid-template-columns: 1fr; gap: var(--s6); }
+    .sv-coach figcaption { padding: var(--s3) 0 0; }
+    .sv-rate { position: static; }
+    .sv-foot-g { grid-template-columns: 1fr 1fr; }
+    .sv-foot-g p:last-child { text-align: left; }
+  }
+  @media (max-width: 640px) {
+    .sv { --gut: 20px; --blk: 96px; }
+    .sv-top-in { height: 64px; gap: var(--s2); }
+    .sv-logo { font-size: 1.25rem; }
+    .sv-tel { display: none; }
+    .sv-go-s { margin-left: auto; }
+    .sv-hide-s { display: none; }
+    .sv-first { padding-top: var(--s5); }
+    .sv-first-in { gap: var(--s5); }
+    .sv-h1 { font-size: 5.25rem; }
+    .sv-intro { margin-top: var(--s4); font-size: 1.125rem; }
+    .sv-acts { gap: var(--s3); }
+    .sv-mark { width: calc(100% + 0px); }
+    .sv-facts { grid-template-columns: 1fr 1fr; margin-top: var(--s6); }
+    .sv-facts > div, .sv-facts > div + div { padding: var(--s3) 0; border-left: 0; }
+    .sv-facts > div + div:nth-child(2n) { padding-left: var(--s3); border-left: 1px solid var(--line); }
+    .sv-facts > div:nth-child(n + 3) { border-top: 1px solid var(--line); }
+    .sv-cut { --d: 48px; }
+    .sv-price b { font-size: 4.5rem; }
+    .sv-cut-t { --d: 48px; aspect-ratio: 1; }
+    .sv-trial { margin-top: var(--s7); gap: var(--s4); }
+    .sv-offers { grid-template-columns: 1fr; gap: var(--s5); margin-top: var(--s7); }
+    .sv-pt { flex-direction: column; align-items: flex-start; gap: var(--s2); margin-top: var(--s6); }
+    .sv-addr { grid-template-columns: 1fr; gap: var(--s3); margin-top: var(--s5); }
+    .sv-foot-g { grid-template-columns: 1fr; }
+    .sv-word { font-size: 3.5rem; }
+    .sv-foot { padding-bottom: calc(var(--s5) + 84px); }
+    .sv-rail { --size: 14px; left: auto; right: 3px; --top: 96px; }
+    .sv-rail-t { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sv-go, .sv-cut :global(img), .sv-rail, .sv-rail-c { transition: none; }
+    .sv-go:hover { transform: none; }
+  }
+</style>

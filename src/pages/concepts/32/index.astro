@@ -1,0 +1,523 @@
+---
+// Концепция 32 «Цифры крупно»: страницу держат только цифры клуба.
+// Чёрный лист, светлые табличные цифры Manrope и одна оранжевая цифра на экран.
+// Движение: цифры прокручиваются, как барабан счётчика, и встают на своё значение, когда попадают в экран.
+import mnCyr from '@fontsource-variable/manrope/files/manrope-cyrillic-wght-normal.woff2?url';
+import mnLat from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
+import mnExt from '@fontsource-variable/manrope/files/manrope-latin-ext-wght-normal.woff2?url';
+import { Image } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import LeadForm from '../../../components/LeadForm.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site, whatsappLink, telegramLink } from '../../../data/site';
+import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { reviews, zones, promos } from '../../../data/content';
+
+const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
+const UL = 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
+const ff = (url: string, range: string) => `@font-face{font-family:'Manrope 32';font-style:normal;font-display:swap;font-weight:200 800;src:url(${url}) format('woff2');unicode-range:${range}}`;
+const fonts = ff(mnCyr, UR) + ff(mnLat, UL) + ff(mnExt, 'U+20BD');
+
+const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
+const rating = site.rating.value.toString().replace('.', ',');
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const z = Object.fromEntries(zones.map((x) => [x.id, x]));
+const [weekday, weekend] = site.hours;
+const tradein = promos.find((p) => p.slug === 'trade-in')!;
+const friend = promos.find((p) => p.slug === '1-plus-1')!;
+const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const stats = [
+  { n: '60+', t: `тренажёров ${site.facts.brands}` },
+  { n: '150 м²', t: 'зал групповых программ' },
+  { n: '60 кг', t: 'предел свободных весов' },
+  { n: '40–50 °C', t: 'хаммам в SPA-зоне' },
+  { n: '50', t: 'мест бесплатной парковки' },
+  { n: '0 ₽', t: 'вступительный взнос' },
+];
+const zoneRows = [z.zal, z.cardio, z.group, z.spa];
+---
+<Layout title="Концепция 32 «Цифры крупно»" description="Концепция дизайна сайта Urban210: страницу держат крупные цифры клуба, одна оранжевая на экран." noindex bare>
+  <Fragment slot="head">
+    <link rel="preload" href={mnLat} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={mnExt} as="font" type="font/woff2" crossorigin />
+    <style set:html={fonts} />
+  </Fragment>
+
+  <div class="cf">
+    <header class="cf-top">
+      <div class="cf-w cf-top-in">
+        <a class="cf-logo" href="/concepts/32/" aria-label="Urban210, на главную">URBAN210<Icon name="chev" /></a>
+        <nav class="cf-nav" aria-label="Разделы">
+          <a href="#chasy">Часы</a><a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Адрес</a>
+        </nav>
+        <a class="cf-tel" href={site.phone.href}>{site.phone.display}</a>
+        <a class="cf-btn cf-btn-s" href="#zayavka" data-lead={trial.title} data-block="32_header">Пробный день<span class="cf-hide-s">&nbsp;за 1 ₽</span></a>
+      </div>
+    </header>
+
+    <!-- 1 ₽ -->
+    <section class="cf-scr cf-first" aria-labelledby="cf-h1">
+      <div class="cf-w cf-first-in">
+        <div class="cf-first-tx">
+          <p class="cf-lbl">Фитнес-клуб в Хабаровске</p>
+          <h1 id="cf-h1" class="cf-h1">Первый день в&nbsp;Urban210 стоит <span class="cf-sr">1 ₽</span></h1>
+        </div>
+        <p class="cf-giant cf-or" aria-hidden="true" data-roll>1 ₽</p>
+        <div class="cf-first-side">
+          <p class="cf-p">Полный доступ в зал и к тренажёрам на один день. Без обязательств, для новых гостей.</p>
+          <div class="cf-acts">
+            <a class="cf-btn" href="#zayavka" data-lead={trial.title} data-block="32_hero">Записаться за 1 ₽</a>
+            <a class="cf-link" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Часы -->
+    <section class="cf-scr" id="chasy" aria-labelledby="cf-hh">
+      <div class="cf-w">
+        <div class="cf-row-h">
+          <h2 id="cf-hh" class="cf-h2">Открыто по будням</h2>
+          <span class="cf-lbl">{weekday.days}</span>
+        </div>
+        <p class="cf-wide cf-or cf-hours" aria-label={weekday.time}><span data-roll aria-hidden="true">{weekday.time.split('–')[0]}</span><span class="cf-dash" aria-hidden="true">–</span><br class="cf-br" /><span data-roll aria-hidden="true">{weekday.time.split('–')[1]}</span></p>
+        <div class="cf-sub">
+          <div>
+            <span class="cf-lbl">{weekend.days}</span>
+            <p class="cf-mid" data-roll>{weekend.time}</p>
+          </div>
+          <p class="cf-p">До работы, в обед или после. Дневная карта действует {plans[0].hours}, полный день и «Всё включено» на всё время работы клуба.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Площадь и зоны -->
+    <section class="cf-scr" id="zony" aria-labelledby="cf-zh">
+      <div class="cf-w">
+        <div class="cf-row-h">
+          <h2 id="cf-zh" class="cf-h2">Площадь клуба</h2>
+          <span class="cf-lbl">более</span>
+        </div>
+        <p class="cf-wide cf-or cf-area" data-roll>1300 м²</p>
+        <div class="cf-photo">
+          <Image src={img('/images/zal.jpg')} alt="Тренажёрный зал Urban210" widths={[480, 800, 1200, 1600]} sizes="(min-width: 1440px) 1312px, 92vw" loading="lazy" format="avif" quality={45} />
+        </div>
+        <ul class="cf-stats">
+          {stats.map((s) => (
+            <li><p class="cf-mid" data-roll>{s.n}</p><span>{s.t}</span></li>
+          ))}
+        </ul>
+        <ol class="cf-zones">
+          {zoneRows.map((x, i) => (
+            <li>
+              <a href={x.href}>
+                <span class="cf-ix">0{i + 1}</span>
+                <h3>{x.title}</h3>
+                <p>{cap(x.text)}</p>
+                <Icon name="chev" class="cf-go" />
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <!-- Тарифы -->
+    <section class="cf-scr" id="tarify" aria-labelledby="cf-ph">
+      <div class="cf-w">
+        <div class="cf-row-h">
+          <h2 id="cf-ph" class="cf-h2">Абонемент в месяц</h2>
+          <span class="cf-lbl">вступительного взноса нет</span>
+        </div>
+        <div class="cf-plans">
+          {plans.map((p, i) => (
+            <article class="cf-plan">
+              <p class={`cf-price${i === 1 ? ' cf-or' : ''}`}><span data-roll>{num(p.month)}</span><small>₽</small></p>
+              <div class="cf-plan-h">
+                <h3>{p.name}</h3>
+                {p.tag && <span class="cf-lbl">{p.tag}</span>}
+              </div>
+              <p class="cf-plan-hr">{cap(p.hours)}</p>
+              <dl class="cf-year">
+                <div><dt>за год</dt><dd>{rub(p.year)}</dd></div>
+                <div><dt>в день</dt><dd>{perDay(p.year, 365)} ₽</dd></div>
+              </dl>
+              <ul>{p.features.map((f) => <li>{f}</li>)}</ul>
+              {p.excluded && <p class="cf-no">Не входит: {p.excluded.map((x) => x.toLowerCase()).join(', ')}</p>}
+              <a class={`cf-btn cf-btn-w${i === 1 ? '' : ' cf-btn-o'}`} href="#zayavka" data-lead={`Тариф «${p.name}»`} data-block={`32_plan_${p.id}`}>Выбрать «{p.name}»</a>
+            </article>
+          ))}
+        </div>
+
+        <div class="cf-extra">
+          <div class="cf-ex">
+            <p class="cf-mid" data-roll>{trial.price} ₽</p>
+            <h3>{trial.title}</h3>
+            <p>{trialPromo.terms.join('. ')}.</p>
+            <a class="cf-link" href="#zayavka" data-lead={trial.title} data-block="32_trial">{trialPromo.cta}</a>
+          </div>
+          <div class="cf-ex">
+            <p class="cf-mid" data-roll>999 ₽</p>
+            <h3>{tradein.title}</h3>
+            <p>{tradein.text}</p>
+            <a class="cf-link" href="#zayavka" data-lead={tradein.goal} data-block="32_promo_trade-in">{tradein.cta}</a>
+          </div>
+          <div class="cf-ex">
+            <p class="cf-mid" data-roll>1+1</p>
+            <h3>{friend.short}</h3>
+            <p>{friend.text}</p>
+            <a class="cf-link" href="#zayavka" data-lead={friend.goal} data-block="32_promo_1-plus-1">{friend.cta}</a>
+          </div>
+          <div class="cf-ex">
+            <p class="cf-mid" data-roll>{num(personal.price)} ₽</p>
+            <h3>{personal.pack} персональных тренировок</h3>
+            <p>{personal.firstFree}.</p>
+            <a class="cf-link" href="#zayavka" data-lead="Персональная тренировка" data-block="32_personal">Записаться к тренеру</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Отзывы -->
+    <section class="cf-scr" id="otzyvy" aria-labelledby="cf-rh">
+      <div class="cf-w">
+        <div class="cf-row-h">
+          <h2 id="cf-rh" class="cf-h2">Оценка на Яндекс Картах</h2>
+          <span class="cf-lbl">из 5</span>
+        </div>
+        <div class="cf-rate">
+          <p class="cf-wide cf-or" data-roll>{rating}</p>
+          <div class="cf-rate-side">
+            <p class="cf-mid" data-roll>{site.rating.count}</p>
+            <span class="cf-lbl">отзывов на Яндекс Картах и в 2ГИС</span>
+            <a class="cf-link" href={site.maps.yandexReviews} target="_blank" rel="noopener">Читать все отзывы</a>
+          </div>
+        </div>
+        <div class="cf-quotes">
+          {reviews.map((r, i) => (
+            <blockquote class="cf-q">
+              <span class="cf-ix">0{i + 1}</span>
+              <p>{r.text}</p>
+              <footer>{r.name}, {r.source}</footer>
+            </blockquote>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Адрес и заявка -->
+    <section class="cf-scr cf-end" id="zayavka" aria-labelledby="cf-eh">
+      <div class="cf-w">
+        <div class="cf-row-h">
+          <h2 id="cf-eh" class="cf-h2">Проспект <span class="cf-nw">60-летия</span> Октября</h2>
+          <span class="cf-lbl">{site.district}</span>
+        </div>
+        <div class="cf-end-g">
+          <div>
+            <p class="cf-wide cf-or cf-house" data-roll>210</p>
+            <dl class="cf-addr">
+              <div><dt>Телефон</dt><dd><a href={site.phone.href}>{site.phone.display}</a></dd></div>
+              <div><dt>{weekday.days}</dt><dd>{weekday.time}</dd></div>
+              <div><dt>{weekend.days}</dt><dd>{weekend.time}</dd></div>
+              <div><dt>Индекс</dt><dd>{site.address.postalCode}, {site.address.locality}</dd></div>
+            </dl>
+            <p class="cf-msg">
+              <a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a>
+              <a href={telegramLink('site_32')} target="_blank" rel="noopener">Telegram</a>
+              <a href={site.maps.yandex} target="_blank" rel="noopener">Яндекс Карты</a>
+              <a href={site.maps.twoGis} target="_blank" rel="noopener">2ГИС</a>
+            </p>
+          </div>
+          <div class="cf-form">
+            <LeadForm id="cf" block="32_final" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="cf-foot">
+      <div class="cf-w cf-foot-g">
+        <a class="cf-logo" href="/concepts/32/" aria-label="Urban210, на главную">URBAN210<Icon name="chev" /></a>
+        <nav aria-label="Страницы">
+          <a href="/price/">Тарифы</a><a href="/zal/">Тренажёрный зал</a><a href="/group/">Групповые</a><a href="/spa/">SPA</a><a href="/trainers/">Тренеры</a><a href="/promo/">Акции</a>
+        </nav>
+        <nav aria-label="Документы">
+          <a href="/rules/">Правила клуба</a><a href="/oferta/">Договор-оферта</a><a href="/policy/">Политика конфиденциальности</a><a href={site.instagram} target="_blank" rel="noopener">Instagram</a>
+        </nav>
+        <p class="cf-foot-c"><a href={site.phone.href}>{site.phone.display}</a><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      </div>
+      <p class="cf-w cf-legal">© {new Date().getFullYear()} {site.legal.name} · ИНН {site.legal.inn} · ОГРН {site.legal.ogrn}</p>
+    </footer>
+  </div>
+</Layout>
+
+<script>
+  // Барабан счётчика: каждая цифра становится лентой 0–9 и прокручивается до своего значения,
+  // когда число попадает в экран. Цифры табличные, поэтому ширина числа не меняется.
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const els = [...document.querySelectorAll<HTMLElement>('.cf [data-roll]')];
+  if (!reduce && 'IntersectionObserver' in window) {
+    const strip = Array.from({ length: 20 }, (_, i) => `<i>${i % 10}</i>`).join('');
+    els.forEach((el) => {
+      const text = el.textContent || '';
+      if (!el.hasAttribute('aria-hidden')) el.setAttribute('aria-label', text);
+      let k = 0;
+      el.innerHTML = [...text].map((ch) => {
+        if (!/\d/.test(ch)) return `<span class="cf-c" aria-hidden="true">${ch === ' ' ? '&nbsp;' : ch}</span>`;
+        const d = `<span class="cf-d" aria-hidden="true" style="--v:${10 + Number(ch)};--k:${k}"><span class="cf-s">${strip}</span></span>`;
+        k++;
+        return d;
+      }).join('');
+      el.classList.add('cf-roll');
+    });
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('is-in');
+      io.unobserve(e.target);
+    }), { rootMargin: '0px 0px -12% 0px' });
+    els.forEach((el) => io.observe(el));
+  }
+</script>
+
+<style is:global>
+  body:has(.cf) { padding-bottom: 0; background: #0c0c0c; color: #f2efe9; color-scheme: dark; font-family: 'Manrope 32', 'Helvetica Neue', Arial, sans-serif; }
+  body:has(.cf) ::selection { background: #ff5722; color: #0c0c0c; }
+  body:has(.cf) :focus-visible { outline: 2px solid #f2efe9; outline-offset: 4px; border-radius: 0; }
+  body:has(.cf) .form { background: #0c0c0c; color: #f2efe9; --ink: #f2efe9; --muted: #8f8a83; --card: #0c0c0c; --line: rgb(242 239 233 / 0.32); border-radius: 0; padding: 0; gap: 24px; font-family: 'Manrope 32', Arial, sans-serif; }
+  body:has(.cf) .form h3 { font-family: inherit; font-weight: 700; font-size: 1.75rem; line-height: 1.1; letter-spacing: -0.03em; }
+  body:has(.cf) .form .muted { color: #8f8a83; font-size: 1rem !important; margin-top: -16px; }
+  body:has(.cf) .form .field { color: #f2efe9; font-size: 0.875rem; gap: 4px; }
+  body:has(.cf) .form .field input { border: 0; border-bottom: 1px solid rgb(242 239 233 / 0.5); border-radius: 0; padding: 0; min-height: 52px; background: transparent; font-size: 1.375rem; font-variant-numeric: tabular-nums; }
+  body:has(.cf) .form .field input::placeholder { color: #6d6964; }
+  body:has(.cf) .form .field input:focus { border-bottom-color: #ff5722; box-shadow: inset 0 -1px 0 #ff5722; }
+  body:has(.cf) .form .field .err, body:has(.cf) .form .consent.bad { color: #ff8a65; }
+  body:has(.cf) .form .consent { color: #8f8a83; font-size: 0.875rem; }
+  body:has(.cf) .form .consent input { accent-color: #f2efe9; }
+  body:has(.cf) .form .btn { border-radius: 0; background: #f2efe9; color: #0c0c0c; font-family: inherit; font-weight: 700; font-size: 1.0625rem; min-height: 64px; justify-content: space-between; padding: 0 24px; }
+  body:has(.cf) .form .btn:hover { background: #ff5722; }
+  body:has(.cf) .form .form-note { text-align: left; margin-top: -8px; }
+  body:has(.cf) .form .form-note, body:has(.cf) .form .form-note a { color: #8f8a83; font-variant-numeric: tabular-nums; }
+  body:has(.cf) .form .form-msg.is-err { border-radius: 0; }
+  body:has(.cf) .form .form-done { text-align: left; padding: 0; }
+  body:has(.cf) .form .form-done .ok { margin: 0; border-radius: 0; background: #f2efe9; color: #0c0c0c; }
+  body:has(.cf) dialog.lead::backdrop { background: rgb(12 12 12 / 0.92); backdrop-filter: none; }
+  body:has(.cf) dialog.lead .form { border: 1px solid rgb(242 239 233 / 0.32); padding: 40px 32px 32px; }
+  body:has(.cf) dialog.lead .x { color: #f2efe9; }
+  body:has(.cf) .mbar { background: #0c0c0c; border-top: 1px solid rgb(242 239 233 / 0.2); backdrop-filter: none; }
+  body:has(.cf) .mbar a.ic { border-radius: 0; border-color: rgb(242 239 233 / 0.32); }
+  body:has(.cf) .mbar .btn { border-radius: 0; background: #f2efe9; color: #0c0c0c; font-family: inherit; font-weight: 700; font-size: 1rem; }
+</style>
+
+<style>
+  .cf {
+    --bg: #0c0c0c; --ink: #f2efe9; --mute: #8f8a83; --line: rgb(242 239 233 / 0.2); --or: #ff5722;
+    --f: 'Manrope 32', 'Helvetica Neue', Arial, sans-serif;
+    --ez: cubic-bezier(0.16, 1, 0.3, 1);
+    --s1: 8px; --s2: 16px; --s3: 24px; --s4: 32px; --s5: 48px; --s6: 64px; --s7: 96px; --s8: 128px;
+    --gut: clamp(20px, 4.44vw, 64px);
+    --scr: clamp(96px, 11vw, 160px);
+    /* шкала: подписи, текст, крупный текст, заголовок; цифры: средние, широкие, гигантские */
+    --t-xs: 0.875rem; --t-s: 1.0625rem; --t-m: clamp(1.1875rem, 1.05rem + 0.4vw, 1.4375rem); --t-l: clamp(1.75rem, 1.2rem + 1.6vw, 3rem);
+    --n-m: clamp(3rem, 1.6rem + 3.6vw, 5rem); --n-l: clamp(3.25rem, 0.25rem + 14.4vw, 13.25rem); --n-xl: clamp(15rem, 4rem + 36vw, 38rem);
+    background: var(--bg); color: var(--ink); font-family: var(--f); font-size: var(--t-s); line-height: 1.5;
+    font-variant-numeric: tabular-nums; overflow-x: clip;
+  }
+  .cf :global(h1), .cf :global(h2), .cf :global(h3) { font-family: var(--f); hyphens: manual; -webkit-hyphens: manual; overflow-wrap: normal; }
+  .cf-w { width: 100%; max-width: 1440px; margin-inline: auto; padding-inline: var(--gut); }
+  .cf a { text-decoration: none; }
+  .cf-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .cf-or { color: var(--or); }
+  .cf-nw { white-space: nowrap; }
+  .cf-br { display: none; }
+  .cf-hours > span { display: inline-block; vertical-align: top; height: calc(var(--lh) * 1em); }
+  .cf-lbl { font-size: var(--t-xs); font-weight: 500; color: var(--mute); line-height: 1.4; letter-spacing: 0.01em; }
+  .cf-p { font-size: var(--t-m); line-height: 1.45; max-width: 28em; }
+
+  /* Кнопки: прямоугольник без декора */
+  .cf-btn { display: inline-flex; align-items: center; min-height: 64px; padding: 0 var(--s4); background: var(--ink); color: var(--bg); font-weight: 700; font-size: 1.0625rem; line-height: 1; white-space: nowrap; transition: background-color 0.25s ease, color 0.25s ease; }
+  .cf-btn:hover { background: var(--or); color: var(--bg); }
+  .cf-btn-s { min-height: 44px; padding: 0 var(--s3); font-size: 0.9375rem; }
+  .cf-btn-w { width: 100%; justify-content: center; }
+  .cf-btn-o { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px rgb(242 239 233 / 0.5); }
+  .cf-btn-o:hover { background: var(--ink); color: var(--bg); }
+  .cf-link { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; box-shadow: inset 0 -1px 0 var(--ink); line-height: 1.2; transition: color 0.2s ease, box-shadow 0.2s ease; }
+  .cf-link:hover { color: var(--or); box-shadow: inset 0 -1px 0 var(--or); }
+
+  /* Цифры */
+  .cf-giant, .cf-wide, .cf-mid, .cf-price { --lh: 0.8; font-weight: 700; line-height: var(--lh); letter-spacing: -0.055em; white-space: nowrap; font-variant-numeric: tabular-nums lining-nums; }
+  .cf-giant { font-size: var(--n-xl); margin-left: -0.06em; }
+  .cf-wide { font-size: var(--n-l); margin-left: -0.05em; }
+  .cf-mid { font-size: var(--n-m); letter-spacing: -0.05em; margin-left: -0.04em; }
+  .cf-roll :global(.cf-d) { display: inline-block; height: calc(var(--lh) * 1em); overflow: hidden; vertical-align: top; }
+  .cf-roll :global(.cf-s) { display: flex; flex-direction: column; transform: translateY(calc(var(--lh) * -1em * var(--v))); }
+  .cf-roll :global(.cf-s i) { display: block; font-style: normal; height: calc(var(--lh) * 1em); line-height: var(--lh); }
+  .cf-roll :global(.cf-c) { display: inline-block; vertical-align: top; height: calc(var(--lh) * 1em); }
+  :global(html.js) .cf-roll:not(.is-in) :global(.cf-s) { transform: translateY(0); }
+  .cf-roll.is-in :global(.cf-s) { transition: transform 1.6s var(--ez); transition-delay: calc(var(--k) * 90ms); }
+
+  /* Шапка */
+  .cf-top { position: sticky; top: 0; z-index: 30; background: #0c0c0c; border-bottom: 1px solid var(--line); }
+  .cf-top-in { display: flex; align-items: center; gap: var(--s4); height: 80px; }
+  .cf-logo { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1.3125rem; letter-spacing: -0.02em; line-height: 1; white-space: nowrap; }
+  .cf-logo :global(svg) { width: 20px; height: 19px; color: var(--or); }
+  .cf-nav { display: flex; gap: var(--s4); margin-left: auto; }
+  .cf-nav a, .cf-tel { font-weight: 500; font-size: 0.9375rem; line-height: 44px; white-space: nowrap; transition: color 0.2s ease; }
+  .cf-nav a:hover, .cf-tel:hover { color: var(--or); }
+
+  /* Экраны */
+  .cf-scr { padding-block: var(--scr); border-bottom: 1px solid var(--line); }
+  .cf-row-h { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s4); padding-bottom: var(--s3); margin-bottom: var(--s6); border-bottom: 1px solid var(--line); }
+  .cf-h2 { font-size: var(--t-l); font-weight: 700; line-height: 1.05; letter-spacing: -0.035em; }
+
+  .cf-first { padding-block: var(--s6) var(--s7); }
+  .cf-first-in { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: 'tx tx' 'big side'; column-gap: var(--s6); align-items: end; }
+  .cf-first-tx { grid-area: tx; display: flex; justify-content: space-between; align-items: baseline; gap: var(--s4); padding-bottom: var(--s3); border-bottom: 1px solid var(--line); margin-bottom: var(--s6); }
+  .cf-h1 { font-size: var(--t-l); font-weight: 700; line-height: 1.05; letter-spacing: -0.035em; max-width: 16em; text-align: right; }
+  .cf-first .cf-giant { grid-area: big; }
+  .cf-first-side { grid-area: side; padding-bottom: 0.4%; }
+  .cf-acts { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s3) var(--s4); margin-top: var(--s4); }
+
+  .cf-sub { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s6); align-items: end; margin-top: var(--s7); padding-top: var(--s4); border-top: 1px solid var(--line); }
+  .cf-sub .cf-mid { margin-top: var(--s2); }
+
+  .cf-photo { margin-top: var(--s7); aspect-ratio: 21 / 8; overflow: hidden; background: #1a1a1a; }
+  .cf-photo :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.1) brightness(0.85); }
+  .cf-stats { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); margin-top: var(--s7); border-top: 1px solid var(--line); }
+  .cf-stats li { padding: var(--s4) var(--s4) var(--s5) 0; border-bottom: 1px solid var(--line); }
+  .cf-stats li:not(:nth-child(3n + 1)) { padding-left: var(--s4); border-left: 1px solid var(--line); }
+  .cf-stats span { display: block; margin-top: var(--s3); font-size: var(--t-s); color: var(--mute); }
+  .cf-zones { list-style: none; margin-top: var(--s7); }
+  .cf-zones a { display: grid; grid-template-columns: 96px minmax(0, 4fr) minmax(0, 6fr) 32px; gap: var(--s4); align-items: baseline; padding: var(--s4) 0; border-bottom: 1px solid var(--line); transition: color 0.2s ease; }
+  .cf-zones li:first-child a { border-top: 1px solid var(--line); }
+  .cf-zones h3 { font-size: var(--t-m); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+  .cf-zones p { color: var(--mute); }
+  .cf-zones a:hover h3 { color: var(--or); }
+  .cf-ix { font-size: var(--t-xs); font-weight: 600; color: var(--mute); }
+  .cf-zones :global(.cf-go) { width: 17px; height: 16px; justify-self: end; color: var(--mute); transition: transform 0.3s var(--ez), color 0.2s ease; align-self: center; }
+  .cf-zones a:hover :global(.cf-go) { transform: translateX(6px); color: var(--ink); }
+
+  /* Тарифы */
+  .cf-plans { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .cf-plan { display: flex; flex-direction: column; padding: 0 var(--s4); }
+  .cf-plan:first-child { padding-left: 0; }
+  .cf-plan:last-child { padding-right: 0; }
+  .cf-plan + .cf-plan { border-left: 1px solid var(--line); }
+  .cf-price { font-size: clamp(5.5rem, 2.2rem + 6.6vw, 8.5rem); display: flex; align-items: flex-start; gap: 0.06em; margin-left: -0.05em; }
+  .cf-price small { font-size: 0.3em; letter-spacing: 0; line-height: 1; margin-top: 0.02em; }
+  .cf-plan-h { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s2); margin-top: var(--s5); }
+  .cf-plan-h h3 { font-size: var(--t-m); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+  .cf-plan-hr { margin-top: var(--s1); font-size: var(--t-xs); color: var(--mute); }
+  .cf-year { display: grid; grid-template-columns: 1fr 1fr; margin: var(--s4) 0 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .cf-year div { padding: var(--s2) 0; }
+  .cf-year div + div { padding-left: var(--s3); border-left: 1px solid var(--line); }
+  .cf-year dt { font-size: var(--t-xs); color: var(--mute); }
+  .cf-year dd { margin: 4px 0 0; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+  .cf-plan ul { list-style: none; margin-top: var(--s3); }
+  .cf-plan li { font-size: 1rem; line-height: 1.7; }
+  .cf-no { margin-top: var(--s2); font-size: var(--t-xs); color: var(--mute); }
+  .cf-plan > :nth-last-child(2) { margin-bottom: var(--s5); }
+  .cf-plan > .cf-btn { margin-top: auto; }
+
+  .cf-extra { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: var(--s8); border-top: 1px solid var(--line); }
+  .cf-ex { display: flex; flex-direction: column; padding: var(--s4) var(--s4) 0; }
+  .cf-ex:first-child { padding-left: 0; }
+  .cf-ex:last-child { padding-right: 0; }
+  .cf-ex + .cf-ex { border-left: 1px solid var(--line); }
+  .cf-ex .cf-mid { font-size: clamp(2.5rem, 1.6rem + 2.2vw, 3.5rem); }
+  .cf-ex h3 { margin-top: var(--s4); font-size: var(--t-s); font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
+  .cf-ex p:not(.cf-mid) { margin-top: var(--s1); margin-bottom: var(--s2); font-size: 0.9375rem; color: var(--mute); }
+  .cf-ex .cf-link { margin-top: auto; align-self: flex-start; }
+
+  /* Отзывы */
+  .cf-rate { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--s6); }
+  .cf-rate .cf-wide { font-size: clamp(12rem, 4rem + 26vw, 28rem); }
+  .cf-rate-side { display: grid; justify-items: start; gap: var(--s2); padding-bottom: 0.5%; max-width: 360px; }
+  .cf-quotes { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--s6); margin-top: var(--s7); }
+  .cf-q { margin: 0; padding: var(--s4) 0 var(--s5); border-top: 1px solid var(--line); }
+  .cf-q p { margin-top: var(--s2); font-size: var(--t-m); line-height: 1.45; letter-spacing: -0.01em; }
+  .cf-q footer { margin-top: var(--s3); font-size: var(--t-xs); color: var(--mute); }
+
+  /* Адрес и заявка */
+  .cf-end { border-bottom: 0; }
+  .cf-end-g { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s6); align-items: start; }
+  .cf-house { font-size: clamp(11rem, 4rem + 24vw, 26rem); }
+  .cf-addr { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); margin: var(--s6) 0 0; max-width: 640px; padding-top: var(--s4); border-top: 1px solid var(--line); }
+  .cf-addr dt { font-size: var(--t-xs); color: var(--mute); }
+  .cf-addr dd { margin: 4px 0 0; font-size: 1.375rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; }
+  .cf-msg { display: flex; flex-wrap: wrap; gap: 0 var(--s4); margin-top: var(--s5); }
+  .cf-msg a { min-height: 44px; display: inline-flex; align-items: center; font-weight: 600; box-shadow: inset 0 -1px 0 var(--ink); line-height: 1.2; }
+  .cf-msg a:hover { color: var(--or); box-shadow: inset 0 -1px 0 var(--or); }
+  .cf-form { padding-top: var(--s2); }
+
+  .cf-foot { padding: var(--s6) 0 var(--s5); border-top: 1px solid var(--line); }
+  .cf-foot-g { display: grid; grid-template-columns: 2fr 1fr 1.2fr 1.3fr; gap: var(--s4); align-items: start; font-size: 0.9375rem; line-height: 1.7; }
+  .cf-foot-g nav, .cf-foot-c { display: grid; }
+  .cf-foot-c { justify-items: end; }
+  .cf-foot-g nav a:hover, .cf-foot-c a:hover { color: var(--or); }
+  .cf-legal { margin-top: var(--s6); font-size: var(--t-xs); color: var(--mute); }
+
+  @media (max-width: 1180px) {
+    .cf-nav { display: none; }
+    .cf-tel { margin-left: auto; }
+  }
+  @media (max-width: 900px) {
+    .cf-first-in { grid-template-columns: 1fr; grid-template-areas: 'tx' 'big' 'side'; }
+    .cf-first-side { margin-top: var(--s5); }
+    .cf-sub, .cf-end-g { grid-template-columns: 1fr; gap: var(--s4); }
+    .cf-plans { grid-template-columns: 1fr; }
+    .cf-plan, .cf-plan:first-child, .cf-plan:last-child { padding: var(--s5) 0; }
+    .cf-plan:first-child { padding-top: 0; }
+    .cf-plan + .cf-plan { border-left: 0; border-top: 1px solid var(--line); }
+    .cf-extra { grid-template-columns: 1fr 1fr; }
+    .cf-ex + .cf-ex:nth-child(3) { padding-left: 0; border-left: 0; }
+    .cf-ex:nth-child(n + 3) { border-top: 1px solid var(--line); margin-top: var(--s4); }
+    .cf-ex + .cf-ex:nth-child(2n) { padding-right: 0; }
+    .cf-ex { padding-bottom: var(--s4); }
+    .cf-quotes { grid-template-columns: 1fr; }
+    .cf-rate { flex-direction: column; align-items: flex-start; gap: var(--s5); }
+    .cf-foot-g { grid-template-columns: 1fr 1fr; }
+    .cf-foot-c { justify-items: start; }
+  }
+  @media (max-width: 640px) {
+    .cf { --gut: 20px; --scr: 96px; }
+    .cf-top-in { height: 64px; gap: var(--s2); }
+    .cf-logo { font-size: 1.1875rem; }
+    .cf-tel { display: none; }
+    .cf-btn-s { margin-left: auto; padding: 0 var(--s2); }
+    .cf-hide-s { display: none; }
+    .cf-first { padding-block: var(--s5) var(--s7); }
+    .cf-first-tx { flex-direction: column; gap: var(--s2); margin-bottom: var(--s5); }
+    .cf-h1 { text-align: left; font-size: 2rem; }
+    .cf-giant { font-size: 16.5rem; }
+    .cf-row-h { flex-direction: column; gap: var(--s1); margin-bottom: var(--s5); }
+    .cf-wide { font-size: 3.4rem; }
+    .cf-hours { font-size: 7.25rem; line-height: 0.8; }
+    .cf-br { display: inline; }
+    .cf-hours > span[data-roll]:last-child { margin-top: 0.12em; }
+    .cf-area { font-size: 6rem; }
+    .cf-house { font-size: 11.5rem; }
+    .cf-rate .cf-wide { font-size: 13rem; }
+    .cf-sub { margin-top: var(--s6); }
+    .cf-photo { margin-top: var(--s6); aspect-ratio: 4 / 3; }
+    .cf-stats { grid-template-columns: 1fr 1fr; margin-top: var(--s6); }
+    .cf-stats li, .cf-stats li:not(:nth-child(3n + 1)) { padding: var(--s3) var(--s2) var(--s4) 0; border-left: 0; }
+    .cf-stats li:nth-child(2n) { padding-left: var(--s2); border-left: 1px solid var(--line); }
+    .cf-stats .cf-mid { font-size: 2.5rem; }
+    .cf-stats span { margin-top: var(--s2); font-size: 0.9375rem; }
+    .cf-zones { margin-top: var(--s6); }
+    .cf-zones a { grid-template-columns: 40px minmax(0, 1fr) 20px; gap: var(--s1) var(--s2); }
+    .cf-zones p { grid-column: 2 / 3; }
+    .cf-zones :global(.cf-go) { grid-row: 1; grid-column: 3; }
+    .cf-price { font-size: 6.5rem; }
+    .cf-extra { grid-template-columns: 1fr; margin-top: var(--s7); }
+    .cf-ex, .cf-ex:first-child, .cf-ex + .cf-ex, .cf-ex + .cf-ex:nth-child(3), .cf-ex + .cf-ex:nth-child(2n) { padding: var(--s4) 0; border-left: 0; margin-top: 0; }
+    .cf-ex + .cf-ex { border-top: 1px solid var(--line); }
+    .cf-addr { grid-template-columns: 1fr; gap: var(--s3); }
+    .cf-foot-g { grid-template-columns: 1fr; }
+    .cf-foot { padding-bottom: calc(var(--s5) + 84px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cf-roll :global(.cf-s) { transition: none !important; }
+  }
+</style>
