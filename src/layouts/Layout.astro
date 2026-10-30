@@ -3,7 +3,7 @@ import '../styles/global.css';
 import Logo from '../components/Logo.astro';
 import Icon from '../components/Icon.astro';
 import LeadDialog from '../components/LeadDialog.astro';
-import { site, nav, SITE_URL, messengerLinks } from '../data/site';
+import { site, nav, SITE_URL, messengerLinks, socialLinks } from '../data/site';
 import { plans } from '../data/pricing';
 
 interface Props {
@@ -23,11 +23,14 @@ const canonical = SITE_URL + path;
 const fullTitle = path === '/' || `${title} | Urban210`.length > 60 ? title : `${title} | Urban210`;
 const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 const messengers = messengerLinks();
+const socials = socialLinks();
 const year = new Date().getFullYear();
 
 const YM_ID = import.meta.env.PUBLIC_YM_ID || '108422317';
 const CT_ID = import.meta.env.PUBLIC_CALLTOUCH_ID || '';
 const CT_SITE = import.meta.env.PUBLIC_CALLTOUCH_SITE_ID || '';
+// Пиксель VK Рекламы (Top.Mail.Ru): включается, когда задан номер счётчика
+const VK_PIXEL = import.meta.env.PUBLIC_VK_PIXEL_ID || '';
 
 // schema.org: клуб как HealthClub и SportsActivityLocation. Только факты из src/data/site.ts.
 const gym = {
@@ -52,7 +55,7 @@ const gym = {
   },
   geo: { '@type': 'GeoCoordinates', latitude: site.address.lat, longitude: site.address.lng },
   openingHoursSpecification: site.hours.map((h) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: h.schema.days, opens: h.schema.opens, closes: h.schema.closes })),
-  ...(messengers.length ? { sameAs: messengers.map((m) => m.href) } : {}),
+  ...(messengers.length + socials.length ? { sameAs: [...socials, ...messengers].map((m) => m.href) } : {}),
   parentOrganization: { '@type': 'Organization', name: site.legal.name, taxID: site.legal.inn },
 };
 ---
@@ -90,7 +93,7 @@ const gym = {
     </script>
     <slot name="head" />
   </head>
-  <body data-ym={YM_ID} data-ct-site={CT_SITE}>
+  <body data-ym={YM_ID} data-ct-site={CT_SITE} data-vk={VK_PIXEL || undefined}>
     <a class="skip" href="#main">К содержанию</a>
 
     {bare ? (
@@ -118,6 +121,7 @@ const gym = {
           <div class="f5-menu-foot">
             <a class="f5-foot-tel" href={site.phone.href}>{site.phone.display}</a>
             <p>{site.address.short} · {site.hours.map((h) => `${h.days} ${h.time}`).join(', ')}</p>
+            {socials.length > 0 && <p class="f5-menu-soc">{socials.map((m) => <a href={m.href} target="_blank" rel="noopener">{m.label}</a>)}</p>}
             <a class="f5-pill f5-pill-org" href="#zayavka" data-lead="Заявка с сайта" data-block="menu">Оставить заявку</a>
           </div>
         </div>
@@ -152,6 +156,7 @@ const gym = {
                 <ul>
                   <li><a href={site.phone.href}>{site.phone.display}</a></li>
                   {messengers.map((m) => <li><a href={m.href} target="_blank" rel="noopener">{m.label}</a></li>)}
+                  {socials.map((m) => <li><a href={m.href} target="_blank" rel="noopener">{m.label}</a></li>)}
                   <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
                   <li><a href="/contacts/">Как добраться</a></li>
                 </ul>
@@ -172,6 +177,11 @@ const gym = {
       <a class="btn" href="#zayavka" data-lead="Заявка с сайта" data-block="mobile_bar">Оставить заявку</a>
     </div>
 
+    <div class="cookie" data-cookie hidden>
+      <p>Сайт использует cookie и сервисы аналитики. <a href="/policy/">Подробнее</a></p>
+      <button class="cookie-ok" type="button" data-cookie-ok>ОК</button>
+    </div>
+
     <LeadDialog />
 
     <script>
@@ -180,13 +190,19 @@ const gym = {
     </script>
 
     {YM_ID && (
-      <script is:inline define:vars={{ YM_ID, CT_ID }}>
+      <script is:inline define:vars={{ YM_ID, CT_ID, VK_PIXEL }}>
         // Метрика и Calltouch грузятся после load, чтобы не мешать первому экрану
         // на localhost и тестовых адресах счётчики не включаем, чтобы не портить статистику
         if (/(^|\.)urban210\.ru$/.test(location.hostname)) addEventListener('load', function () {
           setTimeout(function () {
             (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
             ym(Number(YM_ID), 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: true });
+            if (VK_PIXEL) {
+              var _tmr = window._tmr || (window._tmr = []);
+              _tmr.push({ id: VK_PIXEL, type: 'pageView', start: Date.now() });
+              var t = document.createElement('script'); t.async = true; t.id = 'tmr-code'; t.src = 'https://top-fwz1.mail.ru/js/code.js';
+              document.head.appendChild(t);
+            }
             if (CT_ID) {
               (function(w,d,n,c){w.CalltouchDataObject=n;w[n]=function(){w[n]['callbacks'].push(arguments)};if(!w[n]['callbacks']){w[n]['callbacks']=[]}w[n]['loaded']=false;if(typeof c!=='object'){c=[c]}w[n]['counters']=c;for(var i=0;i<c.length;i+=1){p(c[i])}function p(cId){var a=d.getElementsByTagName('script')[0],s=d.createElement('script'),i=function(){a.parentNode.insertBefore(s,a)},m=typeof Array.prototype.find==='function',n=m?'init-min.js':'init.js';s.async=true;s.src='https://mod.calltouch.ru/'+n+'?id='+cId;i()}})(window,document,'ct',CT_ID);
             }

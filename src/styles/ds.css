@@ -364,6 +364,7 @@
   .f5-menu nav a[aria-current='page'] { background: var(--org); color: #fff; }
   .f5-menu-foot { display: grid; gap: 10px; margin-top: auto; color: var(--mut); }
   .f5-menu-foot .f5-foot-tel { color: var(--ink); margin: 0; }
+  .f5-menu-soc a { color: var(--ink); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
   /* Первый экран внутренних страниц */
   .f5-page-hero { padding-top: 22px; }

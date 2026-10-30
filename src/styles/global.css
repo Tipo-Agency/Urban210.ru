@@ -102,6 +102,14 @@ body.is-locked .mbar { transform: translateY(110%); }
 @media (min-width: 1000px) { .mbar { display: none; } }
 @media (max-width: 999px) { body { padding-bottom: 76px; } }
 
+/* ---------- Уведомление о cookie ---------- */
+.cookie { position: fixed; z-index: 45; left: 12px; bottom: 12px; display: flex; align-items: center; gap: 12px; max-width: 420px; padding: 12px 12px 12px 18px; border-radius: 20px; background: #161616; color: var(--muted); box-shadow: 0 0 0 1px var(--line), 0 20px 40px -20px #000; font-size: 0.86rem; line-height: 1.4; }
+.cookie[hidden] { display: none; }
+.cookie a { color: var(--ink); }
+.cookie-ok { flex: none; min-height: 40px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--ink); color: #000; font-weight: 700; cursor: pointer; }
+@media (max-width: 999px) { .cookie { left: 10px; right: 10px; max-width: none; bottom: calc(84px + env(safe-area-inset-bottom)); } }
+body.is-locked .cookie { display: none; }
+
 /* ---------- Появление без библиотек ---------- */
 .js [data-rise] { opacity: 0; transform: translateY(28px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
 .js [data-rise].in { opacity: 1; transform: none; }

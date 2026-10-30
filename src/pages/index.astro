@@ -13,6 +13,7 @@ import Promos from '../components/Promos.astro';
 import PostCard from '../components/PostCard.astro';
 import Faq from '../components/Faq.astro';
 import AppBlock from '../components/AppBlock.astro';
+import MapBlock from '../components/MapBlock.astro';
 import { img } from '../data/images';
 import { site } from '../data/site';
 import { plans, perDay, rub } from '../data/pricing';
@@ -159,6 +160,8 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf()
     </div>
     <ul class="f5-posts">{posts.map((p) => <li><PostCard post={p} /></li>)}</ul>
   </section>
+
+  <MapBlock />
 
   <Faq items={faqGeneral} />
 </Layout>

@@ -1,0 +1,57 @@
+---
+// Карта «Как добраться»: статичная тёмная картинка (OpenStreetMap, собрана один раз) и метка-логомарк поверх.
+// Без iframe и скриптов карт, чтобы не тормозить страницу. Маршрут открывается в Яндекс Картах или 2ГИС.
+import { Image } from 'astro:assets';
+import LogoMark from './LogoMark.astro';
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+import { img } from '../data/images';
+interface Props { title?: string; headingId?: string }
+const { title = 'Как добраться', headingId = 'map-t' } = Astro.props;
+const { lat, lng } = site.address;
+const yandex = `https://yandex.ru/maps/?rtext=~${lat},${lng}&rtt=auto`;
+const gis = `https://2gis.ru/khabarovsk/directions/points/%7C${lng}%2C${lat}`;
+---
+<section class="f5-sec" aria-labelledby={headingId}>
+  <div class="mp">
+    <div class="mp-txt">
+      <h2 id={headingId}>{title}</h2>
+      <p class="mp-addr">{site.address.locality}, {site.address.street}<br />{site.district}</p>
+      <ul class="mp-list">
+        <li><Icon name="clock" /><span>{site.hours.map((h) => `${h.days} ${h.time}`).join(', ')}</span></li>
+        <li><span class="mp-p">P</span><span>{site.parking}</span></li>
+        <li><Icon name="phone" /><span><a class="tel" href={site.phone.href}>{site.phone.display}</a></span></li>
+      </ul>
+      <div class="mp-btns">
+        <a class="f5-pill f5-pill-org" href={yandex} target="_blank" rel="noopener">Маршрут в Яндекс Картах</a>
+        <a class="f5-pill f5-pill-ink" href={gis} target="_blank" rel="noopener">Маршрут в 2ГИС</a>
+      </div>
+    </div>
+    <a class="mp-map" href={yandex} target="_blank" rel="noopener" aria-label="Открыть маршрут до Urban210 в Яндекс Картах">
+      <Image src={img('/images/map.png')} alt="Карта: Urban210 на проспекте 60-летия Октября, 210 в Хабаровске" widths={[480, 760, 1000]} sizes="(min-width: 980px) 55vw, 100vw" format="webp" quality={60} loading="lazy" />
+      <span class="mp-pin"><LogoMark size={52} /><b>Urban210</b></span>
+      <small>© участники OpenStreetMap</small>
+    </a>
+  </div>
+</section>
+
+<style>
+  .mp { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .mp-txt { display: grid; gap: 18px; align-content: center; padding: clamp(24px, 3.4vw, 48px); border-radius: var(--r-xl); background: var(--card); }
+  .mp h2 { font-size: clamp(2.1rem, 1.3rem + 3.4vw, 4rem); line-height: 0.98; letter-spacing: -0.045em; }
+  .mp-addr { font-size: 1.15rem; font-weight: 700; }
+  .mp-list { list-style: none; display: grid; gap: 12px; color: var(--mut); }
+  .mp-list li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; }
+  .mp-list li > :global(svg) { width: 22px; height: 22px; color: var(--org); margin-top: 1px; }
+  .mp-list a { color: var(--ink); font-weight: 700; }
+  .mp-p { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--org); color: #000; font-weight: 800; font-size: 0.8rem; }
+  .mp-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+  .mp-map { position: relative; display: block; overflow: hidden; border-radius: var(--r-xl); background: #111; width: 100%; aspect-ratio: 4 / 3; }
+  .mp-map :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease); }
+  .mp-map:hover :global(img) { transform: scale(1.03); }
+  .mp-pin { position: absolute; left: 50%; top: 50%; display: grid; justify-items: center; gap: 6px; transform: translate(-50%, -70%); filter: drop-shadow(0 10px 20px rgb(0 0 0 / 0.6)); }
+  .mp-pin :global(svg) { box-shadow: 0 0 0 4px var(--org); border-radius: 50%; }
+  .mp-pin b { padding: 4px 10px; border-radius: 999px; background: var(--org); color: #000; font-size: 0.85rem; letter-spacing: -0.02em; }
+  .mp-map small { position: absolute; right: 12px; bottom: 10px; font-size: 0.7rem; color: #77748a; }
+  @media (min-width: 980px) { .mp { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); } .mp-map { aspect-ratio: auto; min-height: 100%; } }
+</style>

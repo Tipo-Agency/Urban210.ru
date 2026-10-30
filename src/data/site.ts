@@ -23,6 +23,10 @@ export const site = {
     max: "", // ЗАГЛУШКА: ссылка на Макс клуба
     telegram: "", // ЗАГЛУШКА: ссылка на Telegram клуба (бота нет)
   },
+  // Соцсети клуба (не мессенджеры): ссылки в подвале, контактах, меню и в разметке sameAs
+  socials: {
+    vk: "https://vk.com/fc.urban",
+  },
   // Мобильное приложение клуба работает на платформе «Мобифитнес» (так в политике конфиденциальности).
   // Функции взяты из политики и отзывов гостей. Ссылок на магазины на старом сайте нет.
   app: {
@@ -76,6 +80,10 @@ export function telegramLink(start: string) {
 }
 
 // Мессенджеры, у которых уже есть ссылка. Пустые заглушки на сайт не выводятся.
+export function socialLinks() {
+  return [{ id: "vk", label: "ВКонтакте", href: site.socials.vk }].filter((m) => m.href);
+}
+
 export function messengerLinks() {
   return [
     { id: "max", label: "Макс", href: site.messengers.max },

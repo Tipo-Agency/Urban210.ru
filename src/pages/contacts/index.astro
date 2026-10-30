@@ -1,5 +1,6 @@
 ---
 import AppBlock from '../../components/AppBlock.astro';
+import MapBlock from '../../components/MapBlock.astro';
 // Контакты: адрес, часы, телефон, почта, парковка, как добраться, юрлицо. Без виджетов и ссылок на карты.
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
@@ -7,10 +8,10 @@ import PageHero from '../../components/PageHero.astro';
 import Final from '../../components/Final.astro';
 import Cta from '../../components/Cta.astro';
 import Icon from '../../components/Icon.astro';
-import { site, messengerLinks } from '../../data/site';
+import { site, messengerLinks, socialLinks } from '../../data/site';
 import { img } from '../../data/images';
 
-const messengers = messengerLinks();
+const messengers = [...messengerLinks(), ...socialLinks()];
 ---
 <Layout
   title="Контакты фитнес-клуба Urban210 в Хабаровске"
@@ -60,20 +61,7 @@ const messengers = messengerLinks();
     </div>
   </section>
 
-  <section class="f5-sec" aria-labelledby="way-t">
-    <div class="f5-split">
-      <div>
-        <h2 id="way-t">Как добраться</h2>
-        <p>Клуб находится в Железнодорожном районе Хабаровска, на проспекте 60-летия Октября, дом 210.</p>
-        <ul>
-          <li><Icon name="check" /><span>На машине: у клуба бесплатная парковка на 50 мест, искать место во дворах не придётся.</span></li>
-          <li><Icon name="check" /><span>На общественном транспорте: ищите остановки на проспекте 60-летия Октября рядом с домом 210.</span></li>
-          <li><Icon name="check" /><span>Если не нашли вход, позвоните администратору: <a class="tel" href={site.phone.href}>{site.phone.display}</a></span></li>
-        </ul>
-      </div>
-      <div class="f5-split-ph"><Image src={img('/images/zal.jpg')} alt="Тренажёрный зал Urban210 с панорамными окнами" widths={[640, 1000]} sizes="(min-width: 980px) 46vw, 100vw" format="avif" quality={50} /></div>
-    </div>
-  </section>
+  <MapBlock />
 
   <section class="f5-sec" aria-labelledby="legal-t">
     <div class="f5-card ct-legal">

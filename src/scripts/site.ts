@@ -15,6 +15,8 @@ function goal(name: string, params: Record<string, string> = {}) {
   try {
     const id = Number(document.body.dataset.ym || 0);
     if (id && window.ym) window.ym(id, 'reachGoal', name, { page: location.pathname, ...params });
+    const vk = document.body.dataset.vk;
+    if (vk) ((window as any)._tmr ||= []).push({ type: 'reachGoal', id: vk, goal: name });
   } catch {
     /* аналитика не должна ломать страницу */
   }
@@ -136,6 +138,26 @@ function initForm(form: HTMLFormElement) {
       msg.classList.add('is-err');
     } finally {
       btn.disabled = false;
+    }
+  });
+}
+
+/* ---------- Уведомление о cookie: один раз, ответ помним ---------- */
+function initCookie() {
+  const box = document.querySelector<HTMLElement>('[data-cookie]');
+  if (!box) return;
+  try {
+    if (localStorage.getItem('u210_cookie_ok')) return;
+  } catch {
+    /* хранилище недоступно: просто покажем */
+  }
+  box.hidden = false;
+  box.querySelector('[data-cookie-ok]')?.addEventListener('click', () => {
+    box.hidden = true;
+    try {
+      localStorage.setItem('u210_cookie_ok', '1');
+    } catch {
+      /* ничего */
     }
   });
 }
@@ -332,6 +354,7 @@ export function boot() {
   initHeader();
   initDialog();
   document.querySelectorAll<HTMLFormElement>('[data-form]').forEach(initForm);
+  initCookie();
   initReveal();
   initHeroVideo();
   initDeferredFrames();
