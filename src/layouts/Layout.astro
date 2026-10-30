@@ -81,6 +81,7 @@ const gym = {
     <meta property="og:image:alt" content={title} />
     <meta name="twitter:card" content="summary_large_image" />
     {!bare && <link rel="preload" href="/fonts/geologica-cyrillic.woff2" as="font" type="font/woff2" crossorigin />}
+    {!bare && <link rel="preload" href="/fonts/geologica-latin.woff2" as="font" type="font/woff2" crossorigin />}
     <script type="application/ld+json" set:html={JSON.stringify(gym)} />
     {jsonld.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
     <script is:inline>
