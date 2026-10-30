@@ -4,7 +4,7 @@
 import Icon from './Icon.astro';
 import { site, whatsappLink } from '../data/site';
 interface Props { title?: string; goal?: string; block?: string; id?: string; button?: string }
-const { title = 'Записаться на пробный день', goal = 'Пробный день за 1 ₽', block = 'final', id = 'form', button = 'Записаться за 1 ₽' } = Astro.props;
+const { title = 'Оставить заявку', goal = 'Заявка с сайта', block = 'final', id = 'form', button = 'Отправить заявку' } = Astro.props;
 ---
 <form class="form" data-form novalidate action="/api/lead/" method="post">
   <h3 data-form-title>{title}</h3>

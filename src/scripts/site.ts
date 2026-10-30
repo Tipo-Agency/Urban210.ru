@@ -167,10 +167,10 @@ function initDialog() {
     const a = (e.target as HTMLElement).closest<HTMLElement>('[data-lead]');
     if (!a) return;
     e.preventDefault();
-    const g = a.dataset.lead || 'Пробный день за 1 ₽';
+    const g = a.dataset.lead || 'Заявка с сайта';
     goalInput.value = g;
     blockInput.value = a.dataset.block || 'dialog';
-    title.textContent = g === 'Пробный день за 1 ₽' ? 'Записаться на пробный день' : g;
+    title.textContent = g === 'Заявка с сайта' ? 'Оставить заявку' : g;
     form.classList.remove('is-done');
     closeMenu();
     dlg.showModal();
