@@ -32,7 +32,7 @@ Node.js 20.9 или новее.
 
 Одна форма на сайт (`src/components/LeadForm.astro`): имя, телефон, согласие. Любая кнопка с `data-lead="<цель>"` открывает форму в окне, без JavaScript ведёт на блок `#zayavka`. Сервер `src/pages/api/lead.ts` проверяет поля, отсекает ботов (скрытое поле, отправка быстрее 3 с, не больше 5 заявок с IP за 10 минут) и шлёт заявку в Telegram и webhook CRM. Ключи только в переменных окружения сервера. После успеха заявка дублируется в Calltouch.
 
-Метрика 113934981 (создана 30.10.2026 в аккаунте клуба porg-pkai2llx), пиксель VK Рекламы 3810570 и Calltouch грузятся после `load` и только на urban210.ru. Цели (JS-события в Метрике и в пикселе VK): `lead`, `plan_choice`, `cta_click`, `call_click`, `max_click`, `telegram_click`.
+Метрика 103720803 (аккаунт Donskikhas, там же счётчики других клиентов), пиксель VK Рекламы 3810570 и Calltouch грузятся после `load` и только на urban210.ru. Цели (JS-события в Метрике и в пикселе VK): `lead`, `plan_choice`, `cta_click`, `call_click`, `max_click`, `telegram_click`.
 
 ## Выкладка
 
