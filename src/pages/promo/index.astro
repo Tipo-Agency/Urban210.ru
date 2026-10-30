@@ -1,11 +1,42 @@
 ---
+// Акции клуба (без пробного дня за 1 ₽: его больше нет, старая страница ведёт на /price/).
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
 import Promos from '../../components/Promos.astro';
 import Final from '../../components/Final.astro';
+import Cta from '../../components/Cta.astro';
+import { plans, perDay } from '../../data/pricing';
+
+const dayPrice = perDay(plans[0].month, 30);
 ---
-<Layout title="Акции фитнес-клуба в Хабаровске" description="Акции фитнес-клуба Urban210 в Хабаровске: trade-in карты другого клуба за 999 ₽, месяц в подарок другу при покупке годовой подписки.">
-  <PageHero title="Акции" lead="Попробовать клуб за рубль, перейти из другого клуба или привести друга." crumbs={[{ href: '/promo/', label: 'Акции' }]} />
-  <Promos />
-  <Final />
+<Layout
+  title="Акции фитнес-клуба Urban210 в Хабаровске"
+  description="Акции фитнес-клуба Urban210 в Хабаровске: обмен карты другого клуба на месяц за 999 ₽ и месяц тренировок другу при покупке годовой подписки. Условия акций."
+>
+  <PageHero
+    title="Акции фитнес-клуба Urban210"
+    lead="Перейти к нам из другого клуба или тренироваться вместе с другом выгоднее. Сроки и детали подскажет администратор."
+    crumbs={[{ href: '/promo/', label: 'Акции' }]}
+  >
+    <Cta goal="Вопрос об акциях" block="promo_hero">Узнать подробности</Cta>
+  </PageHero>
+
+  <section class="f5-sec" aria-labelledby="pr-t">
+    <div class="f5-head">
+      <h2 id="pr-t">Действующие акции</h2>
+    </div>
+    <Promos />
+  </section>
+
+  <section class="f5-sec" aria-labelledby="pr-price">
+    <div class="f5-head f5-head-row">
+      <div>
+        <h2 id="pr-price">И без акций недорого</h2>
+        <p>Безлимит в зал от {dayPrice} ₽ в день. При оплате за год выходит ещё дешевле.</p>
+      </div>
+      <a class="f5-pill f5-pill-wht" href="/price/">Цены на карты</a>
+    </div>
+  </section>
+
+  <Final block="promo_final" />
 </Layout>

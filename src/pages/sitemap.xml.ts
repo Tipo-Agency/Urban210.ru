@@ -1,8 +1,8 @@
 import { getCollection } from 'astro:content';
 import { SITE_URL } from '../data/site';
-import { promos } from '../data/content';
+import { promos, trainers } from '../data/content';
 
-const pages = ['/', '/price/', '/zal/', '/group/', '/spa/', '/trainers/', '/personal/', '/promo/', '/contacts/', '/virtual-tour/', '/blog/', '/policy/', '/rules/', '/oferta/'];
+const pages = ['/', '/price/', '/zones/', '/zones/cardio/', '/zones/free-weights/', '/zones/functional/', '/zal/', '/group/', '/spa/', '/trainers/', '/personal/', '/promo/', '/contacts/', '/virtual-tour/', '/blog/', '/policy/', '/rules/', '/oferta/', ...trainers.map((t) => `/trainers/${t.photo.split('/').pop()!.replace(/\.[a-z]+$/, '')}/`)];
 
 export async function GET() {
   const posts = await getCollection('blog');

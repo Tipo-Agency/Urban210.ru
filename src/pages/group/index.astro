@@ -1,46 +1,132 @@
 ---
+// Групповые тренировки: направления из content.ts, зал 150 м², запись в приложении, тариф «Всё включено», соседние зоны.
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
 import Faq from '../../components/Faq.astro';
 import Final from '../../components/Final.astro';
-import Cta from '../../components/Cta.astro';
+import Icon from '../../components/Icon.astro';
 import { img } from '../../data/images';
 import { site } from '../../data/site';
-import { plans, rub } from '../../data/pricing';
+import { plans, perDay, rub } from '../../data/pricing';
 import { programs } from '../../data/content';
 
-const faq = [
-  { q: 'Сколько стоят групповые?', a: `Групповые программы входят в тариф «Всё включено»: ${rub(plans[2].month)} в месяц или ${rub(plans[2].year)} за год. Отдельно платить за каждое занятие не нужно.` },
-  { q: 'Как записаться на занятие?', a: 'Через приложение клуба: там расписание и онлайн-запись. Доступ в приложение вы получите после оформления абонемента.' },
-  { q: 'Я никогда не занимался в группе. С чего начать?', a: 'С мягкого фитнеса или силовых программ: тренер подскажет вес и технику. Через пару недель можно переходить на функциональные тренировки.' },
-  { q: 'Что взять на групповое занятие?', a: 'Удобную одежду, кроссовки, полотенце и воду. Коврики, гантели и петли TRX есть в зале.' },
-];
+const all = plans[2];
 const hall = site.facts.groupHall[0].toUpperCase() + site.facts.groupHall.slice(1);
+const list = programs.flatMap((p) => p.items);
+
+const photos = [
+  { src: '/images/group-strength.jpg', alt: 'Силовая групповая тренировка с гантелями', pos: '55% 30%' },
+  { src: '/images/stretching.jpg', alt: 'Занятие растяжкой на ковриках', pos: '60% 55%' },
+  { src: '/images/functional.jpg', alt: 'Функциональная тренировка с медболами', pos: '40% 20%' },
+];
+
+const related = [
+  { href: '/zones/functional/', title: 'Функциональная зона', text: 'TRX, медболы, октагон' },
+  { href: '/spa/', title: 'Сауна и хаммам', text: `Тоже в тарифе «${all.name}»` },
+  { href: '/zal/', title: 'Тренажёрный зал', text: `${site.facts.machines} ${site.facts.brands}` },
+];
+
+const faq = [
+  { q: 'Сколько стоят групповые тренировки?', a: `Групповые программы входят в тариф «${all.name}»: ${rub(all.month)} в месяц, около ${perDay(all.month, 30)}\u00a0₽ в день, или ${rub(all.year)} за год. Платить за каждое занятие отдельно не нужно.` },
+  { q: 'Какие направления есть?', a: `${list.join(', ')}. Силовые, функциональные, танцевальные и мягкий фитнес.` },
+  { q: 'Как записаться на занятие?', a: 'Через приложение клуба: там расписание и онлайн-запись. Доступ в приложение откроется после оформления карты.' },
+  { q: 'Я никогда не занимался в группе. С чего начать?', a: 'С мягкого фитнеса или силовых программ: инструктор подскажет вес и технику. Через пару недель можно переходить на функциональные тренировки.' },
+  { q: 'Что взять на групповое занятие?', a: 'Удобную одежду, чистые кроссовки, полотенце и воду. Коврики, гантели и петли TRX есть в зале.' },
+];
 ---
-<Layout title="Групповые тренировки в Хабаровске: пилатес, зумба, кроссфит" description={`Групповые программы в фитнес-клубе Urban210: Body, Pump, ABS, кроссфит, TRX, зумба, стрип, пилатес, растяжка. ${hall}. Входят в тариф «Всё включено» за ${rub(plans[2].month)} в месяц.`}>
-  <PageHero title="Групповые тренировки" lead={`От пилатеса до кроссфита. ${hall}, запись в приложении клуба, все занятия входят в тариф «Всё включено».`} crumbs={[{ href: '/group/', label: 'Групповые программы' }]} image="/images/group.jpg" alt="Групповая тренировка в Urban210">
-    <Cta goal="Всё включено" block="group_hero">Попробовать групповые</Cta>
+<Layout
+  title="Групповые тренировки в Хабаровске: пилатес, зумба, TRX"
+  description={`Групповые тренировки в Хабаровске: Body, Pump, ABS, кроссфит, TRX, зумба, пилатес, растяжка. Зал 150 м², входят в тариф «${all.name}» за ${rub(all.month)} в месяц.`}
+>
+  <PageHero
+    title="Групповые тренировки"
+    lead={`${list.length} направлений от пилатеса до кроссфита. ${hall}, запись в приложении клуба, все занятия входят в тариф «${all.name}».`}
+    crumbs={[{ href: '/zones/', label: 'Зоны клуба' }, { href: '/group/', label: 'Групповые тренировки' }]}
+    image="/images/group.jpg"
+    alt="Групповая тренировка в зале 150 м² в Urban210"
+    position="50% 35%"
+  >
+    <a class="f5-go" href="#napravleniya"><span>Направления</span><i><Icon name="chev" /></i></a>
+    <a class="f5-pill f5-pill-org" href="#zayavka" data-lead="Тариф «Всё включено»" data-block="group_hero">Оставить заявку</a>
   </PageHero>
-  <section class="sec" style="padding-top:0" data-block="group_programs" aria-labelledby="dir-t">
-    <div class="wrap">
-      <div class="head head-split"><h2 id="dir-t">Направления</h2><p>Четыре направления под разные цели: сила, выносливость, настроение и гибкость.</p></div>
-      <div class="grid-4">
-        {programs.map((p) => (
-          <article class="tile" data-rise>
-            <h3>{p.group}</h3>
-            <div class="chips">{p.items.map((i) => <span class="chip">{i}</span>)}</div>
-            <p>{p.text}</p>
-          </article>
-        ))}
-      </div>
-      <ul class="gallery" style="margin-top:18px">
-        {[['/images/group-strength.jpg', 'Силовая групповая тренировка с гантелями'], ['/images/stretching.jpg', 'Занятие растяжкой в Urban210'], ['/images/functional.jpg', 'Функциональная тренировка с медболами']].map(([src, alt]) => (
-          <li><Image src={img(src)} alt={alt} widths={[480, 800]} sizes="(min-width: 900px) 33vw, 50vw" format="avif" quality={50} /></li>
-        ))}
-      </ul>
+
+  <section class="f5-sec" id="napravleniya" aria-labelledby="gr-dir-t">
+    <div class="f5-head">
+      <h2 id="gr-dir-t">Направления</h2>
+      <p>Четыре группы под разные цели: сила, выносливость, настроение и гибкость.</p>
+    </div>
+    <div class="f5-grid f5-grid-4">
+      {programs.map((p, i) => (
+        <article class:list={['f5-card', i === 0 && 'is-org', i === 2 && 'is-cob']} data-rise>
+          <h3>{p.group}</h3>
+          <ul class="z-chips">{p.items.map((it) => <li>{it}</li>)}</ul>
+          <p>{p.text}</p>
+        </article>
+      ))}
     </div>
   </section>
+
+  <section class="f5-sec" aria-labelledby="gr-hall-t">
+    <div class="f5-split rev">
+      <div class="f5-split-ph"><Image src={img('/images/group.jpg')} alt="Танцевальная тренировка в зале групповых программ" widths={[480, 800, 1100]} sizes="(min-width: 980px) 46vw, 92vw" format="avif" quality={50} style="object-position:60% 35%" /></div>
+      <div>
+        <h2 id="gr-hall-t">{hall}</h2>
+        <p>Отдельный зал с зеркалами: места хватает и на зумбу, и на круговую тренировку. Коврики, гантели и петли TRX есть в зале.</p>
+        <ul>
+          <li><Icon name="check" /><span>Расписание и запись в приложении клуба</span></li>
+          <li><Icon name="check" /><span>Занятия ведут инструкторы групповых программ</span></li>
+          <li><Icon name="check" /><span>После тренировки сауна и хаммам в том же тарифе</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-label="Фото с групповых тренировок">
+    <div class="f5-grid f5-grid-3">
+      {photos.map((ph) => (
+        <div class="f5-split-ph" data-rise><Image src={img(ph.src)} alt={ph.alt} widths={[400, 640, 900]} sizes="(min-width: 1100px) 31vw, (min-width: 760px) 46vw, 92vw" format="avif" quality={50} style={`object-position:${ph.pos}`} /></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="gr-price-t">
+    <div class="f5-card is-cob z-teaser">
+      <div>
+        <h2 id="gr-price-t">Все групповые в тарифе «{all.name}»</h2>
+        <p>{rub(all.month)} в месяц или {rub(all.year)} за год. В тариф также входят тренажёрный зал в любое время, сауна и хаммам.</p>
+      </div>
+      <a class="f5-pill f5-pill-wht" href="/price/">Сравнить тарифы</a>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="gr-rel-t">
+    <div class="f5-head f5-head-row">
+      <div><h2 id="gr-rel-t">Ещё в клубе</h2></div>
+      <a class="f5-pill f5-pill-wht" href="/zones/">Все зоны клуба</a>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {related.map((r) => (
+        <a class="f5-card" href={r.href}>
+          <h3>{r.title}</h3>
+          <p>{r.text}</p>
+          <span class="f5-card-more">Подробнее <Icon name="chev" /></span>
+        </a>
+      ))}
+    </div>
+  </section>
+
   <Faq items={faq} title="Вопросы о групповых" />
-  <Final title="Подберём направление" goal="Всё включено" block="final_group" text="Оставьте номер: администратор подберёт направление и время и расскажет про тариф «Всё включено»." />
+
+  <Final block="final_group" title="Подберём направление и время" goal="Тариф «Всё включено»" />
 </Layout>
+
+<style>
+  .z-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .z-chips li { padding: 6px 14px; border-radius: 999px; background: var(--bg); color: var(--ink); font-weight: 600; font-size: 0.92rem; }
+  .z-teaser { gap: 24px; padding: clamp(28px, 4vw, 56px); border-radius: var(--r-xl); }
+  .z-teaser h2 { font-size: clamp(1.9rem, 1.3rem + 2.4vw, 3.2rem); letter-spacing: -0.045em; line-height: 1; }
+  .z-teaser p { margin-top: 14px; max-width: 56ch; font-size: 1.08rem; }
+  .z-teaser .f5-pill { width: fit-content; }
+  @media (min-width: 980px) { .z-teaser { flex-direction: row; align-items: center; justify-content: space-between; } }
+</style>

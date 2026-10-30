@@ -1,40 +1,102 @@
 ---
+// Тренажёрный зал: свободные веса, тренажёры Technogym и Matrix, сводка зон со ссылками на их страницы, выбор карты.
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
+import Plans from '../../components/Plans.astro';
 import Faq from '../../components/Faq.astro';
 import Final from '../../components/Final.astro';
-import Cta from '../../components/Cta.astro';
+import Icon from '../../components/Icon.astro';
 import { img } from '../../data/images';
 import { site } from '../../data/site';
+import { plans, perDay, rub } from '../../data/pricing';
 
-const blocks = [
-  { id: 'free-weights', title: 'Свободные веса', text: `Гантели до 60 кг, штанги, грифы и блины в достатке. Скамьи для жима, стойки для приседа и помосты для становой: очередь не собирается даже вечером.`, image: '/images/free-weights.jpg', alt: 'Ряды гантелей в тренажёрном зале Urban210' },
-  { id: 'machines', title: `Тренажёры ${site.facts.brands}`, text: 'Блочные и рычажные тренажёры на все группы мышц с правильной биомеханикой. Подходят и новичку, и тому, кто тренируется годами.', image: '/images/machines.jpg', alt: 'Силовой тренажёр в зале Urban210' },
-  { id: 'cardio', title: 'Кардиозона', text: 'Большая зона на втором этаже: беговые дорожки Technogym Skillrun для ходьбы в наклоне, бега и интервалов, эллипсы. Свободная дорожка находится почти всегда.', image: '/images/cardio.jpg', alt: 'Беговые дорожки Technogym в кардиозоне Urban210' },
-  { id: 'functional', title: 'Функциональная зона и октагон', text: 'Медболы, петли TRX и октагон для единоборств. Здесь проходят функциональные тренировки и работа с тренером.', image: '/images/functional.jpg', alt: 'Функциональная тренировка в октагоне Urban210' },
+const dayPrice = perDay(plans[0].month, 30);
+const area = site.facts.area[0].toUpperCase() + site.facts.area.slice(1);
+
+const zones = [
+  { href: '/zones/free-weights/', title: 'Свободные веса', text: 'Гантели до 60 кг, штанги, скамьи, стойки для приседа и помосты.', image: '/images/free-weights.jpg', alt: 'Ряды гантелей на стойке', pos: '50% 60%' },
+  { href: '/zones/cardio/', title: 'Кардиозона', text: 'Беговые дорожки Technogym Skillrun на втором этаже.', image: '/images/cardio.jpg', alt: 'Беговые дорожки Technogym в кардиозоне', pos: '50% 50%' },
+  { href: '/zones/functional/', title: 'Функциональная зона и октагон', text: 'TRX, медболы и октагон для круговых тренировок и единоборств.', image: '/images/functional.jpg', alt: 'Тренировка с медболами у октагона', pos: '50% 20%' },
 ];
+
 const faq = [
-  { q: 'Сколько людей в зале вечером?', a: `Зал занимает ${site.facts.area}, поэтому даже в час пик очередей к тренажёрам почти не бывает.` },
-  { q: 'Кто поможет, если я новичок?', a: 'Инструкторы в зале покажут, как настроить тренажёр и выполнить упражнение. На тарифах «Полный день» и «Всё включено» есть пробная тренировка с тренером, а при покупке подписки первая персональная тренировка бесплатно.' },
-  { q: 'Есть ли шкафчики и душ?', a: 'Да. Просторные раздевалки, шкафчики и много душевых, так что ждать не придётся.' },
-  { q: 'Как попасть в зал?', a: 'Вход по браслету или QR-коду в приложении клуба. Оформить абонемент можно на ресепшене или оставить заявку на сайте.' },
+  { q: 'Сколько стоит тренажёрный зал?', a: `${plans[0].name} стоит ${rub(plans[0].month)} в месяц, это около ${dayPrice}\u00a0₽ в день, и действует ${plans[0].hours}. Тренироваться в любое время работы клуба можно по карте «${plans[1].name}» за ${rub(plans[1].month)} в месяц.` },
+  { q: 'Есть ли очереди к тренажёрам вечером?', a: `Зал занимает ${site.facts.area}, в нём ${site.facts.machines}, поэтому даже в час пик свободный тренажёр находится быстро.` },
+  { q: 'Кто поможет, если я новичок?', a: `Инструкторы в зале покажут, как настроить тренажёр и выполнить упражнение. В тарифы «${plans[1].name}» и «${plans[2].name}» входит пробная тренировка с тренером.` },
+  { q: 'Во сколько открыт зал?', a: `${site.hours[0].days} ${site.hours[0].time}, ${site.hours[1].days} ${site.hours[1].time}. Клуб в Железнодорожном районе, ${site.address.short}, рядом бесплатная парковка.` },
+  { q: 'Как попасть в зал?', a: 'Вход по QR-коду в приложении клуба. Оформить карту можно на ресепшене или оставить заявку на сайте, администратор перезвонит.' },
 ];
 ---
-<Layout title="Тренажёрный зал в Хабаровске, Железнодорожный район" description={`Тренажёрный зал Urban210: ${site.facts.area}, ${site.facts.machines} ${site.facts.brands}, свободные веса, кардиозона с Technogym Skillrun, октагон. Без очередей, с 6:30 до 23:30, бесплатная парковка.`} image="/og.jpg">
-  <PageHero title="Тренажёрный зал в Хабаровске" lead={`${site.facts.area[0].toUpperCase() + site.facts.area.slice(1)}, ${site.facts.machines} ${site.facts.brands}, свободные веса и кардиозона. Тренируйтесь без очередей с 6:30 до 23:30.`} crumbs={[{ href: '/zal/', label: 'Тренажёрный зал' }]} image="/images/zal.jpg" alt="Тренажёрный зал Urban210 с панорамными окнами">
-    <Cta block="zal_hero">Оставить заявку</Cta>
+<Layout
+  title="Тренажёрный зал в Хабаровске: Technogym и Matrix"
+  description={`Тренажёрный зал в Хабаровске: ${site.facts.area}, ${site.facts.machines} ${site.facts.brands}, свободные веса до 60 кг, кардиозона. Без очередей, от ${dayPrice}\u00a0₽ в день.`}
+>
+  <PageHero
+    title="Тренажёрный зал в Хабаровске"
+    lead={`${area}, ${site.facts.machines} ${site.facts.brands}, свободные веса и кардиозона. Безлимит от ${dayPrice}\u00a0₽ в день, по будням с 6:30 до 23:30.`}
+    crumbs={[{ href: '/zones/', label: 'Зоны клуба' }, { href: '/zal/', label: 'Тренажёрный зал' }]}
+    image="/images/zal.jpg"
+    alt="Тренажёрный зал Urban210 с панорамными окнами"
+    position="50% 55%"
+  >
+    <a class="f5-go" href="#cards"><span>Выбрать карту</span><i><Icon name="chev" /></i></a>
+    <a class="f5-pill f5-pill-org" href="#zayavka" data-lead="Заявка на карту" data-block="zal_hero">Оставить заявку</a>
   </PageHero>
-  <section class="sec" style="padding-top:0" data-block="zal_zones" aria-label="Что внутри">
-    <div class="wrap stack">
-      {blocks.map((b, i) => (
-        <article id={b.id} class:list={['split', i % 2 && 'rev']} data-rise>
-          <div class="ph"><Image src={img(b.image)} alt={b.alt} widths={[400, 640, 960, 1300]} sizes="(min-width: 900px) 50vw, 100vw" format="avif" quality={40} /></div>
-          <div><h2>{b.title}</h2><p>{b.text}</p></div>
-        </article>
+
+  <section class="f5-sec" aria-labelledby="zal-mach-t">
+    <div class="f5-split">
+      <div class="f5-split-ph"><Image src={img('/images/machines.jpg')} alt="Силовой тренажёр в зале Urban210" widths={[480, 800, 1100]} sizes="(min-width: 980px) 46vw, 92vw" format="avif" quality={50} style="object-position:50% 60%" /></div>
+      <div>
+        <h2 id="zal-mach-t">Тренажёры {site.facts.brands}</h2>
+        <p>{site.facts.machines[0].toUpperCase() + site.facts.machines.slice(1)}: блочные и рычажные, на все группы мышц. Подходят и тем, кто пришёл впервые, и тем, кто тренируется годами.</p>
+        <ul>
+          <li><Icon name="check" /><span>Ноги, спина, грудь, плечи, руки и пресс</span></li>
+          <li><Icon name="check" /><span>Инструктор подскажет, как настроить тренажёр</span></li>
+          <li><Icon name="check" /><span>Места хватает и в вечерний час пик</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="zal-fw-t">
+    <div class="f5-split rev">
+      <div class="f5-split-ph"><Image src={img('/images/free-weights.jpg')} alt="Ряды гантелей до 60 кг" widths={[480, 800, 1100]} sizes="(min-width: 980px) 46vw, 92vw" format="avif" quality={50} style="object-position:50% 60%" /></div>
+      <div>
+        <h2 id="zal-fw-t">Свободные веса</h2>
+        <p>Гантели до 60 кг, штанги, грифы и блины. Скамьи для жима, стойки для приседа и помосты для становой тяги: ждать своей очереди не приходится.</p>
+        <a class="f5-pill f5-pill-wht z-more" href="/zones/free-weights/">Подробнее о свободных весах</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="zal-zones-t">
+    <div class="f5-head f5-head-row">
+      <div>
+        <h2 id="zal-zones-t">Ещё зоны в зале</h2>
+        <p>Свободные веса, кардио и функциональная зона: у каждой своя страница с фото и подробностями.</p>
+      </div>
+      <a class="f5-pill f5-pill-wht" href="/zones/">Все зоны клуба</a>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {zones.map((z) => (
+        <a class="f5-card" href={z.href} data-rise>
+          <div class="f5-card-ph"><Image src={img(z.image)} alt={z.alt} widths={[400, 640, 900]} sizes="(min-width: 1100px) 31vw, (min-width: 760px) 46vw, 92vw" format="avif" quality={50} style={`object-position:${z.pos}`} /></div>
+          <h3>{z.title}</h3>
+          <p>{z.text}</p>
+          <span class="f5-card-more">Подробнее <Icon name="chev" /></span>
+        </a>
       ))}
     </div>
   </section>
-  <Faq items={faq} title="Вопросы о зале" />
-  <Final title="Посмотрите зал вживую" block="final_zal" />
+
+  <Plans block="zal" text={`Тренажёрный зал и кардиозона есть в любой карте: от ${dayPrice}\u00a0₽ в день. Групповые и сауна в тарифе «${plans[2].name}».`} />
+
+  <Faq items={faq} title="Вопросы о тренажёрном зале" />
+
+  <Final block="final_zal" title="Приходите посмотреть зал" />
 </Layout>
+
+<style>
+  .z-more { margin-top: 24px; }
+</style>

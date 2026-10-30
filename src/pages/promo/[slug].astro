@@ -1,7 +1,9 @@
 ---
+// Страница акции. Пробный день за 1 ₽ не выводится: /promo/1-rubl/ перенаправлен на /price/ (astro.config.mjs).
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
+import Promos from '../../components/Promos.astro';
 import Final from '../../components/Final.astro';
 import Cta from '../../components/Cta.astro';
 import Icon from '../../components/Icon.astro';
@@ -9,25 +11,47 @@ import { img } from '../../data/images';
 import { promos } from '../../data/content';
 
 export function getStaticPaths() {
-  return promos.map((p) => ({ params: { slug: p.slug }, props: { p } }));
+  return promos.filter((p) => p.slug !== '1-rubl').map((p) => ({ params: { slug: p.slug }, props: { p } }));
 }
 const { p } = Astro.props;
+const meta: Record<string, string> = {
+  'trade-in': 'Trade-in в фитнес-клубе Urban210 в Хабаровске: покажите действующую карту другого клуба и получите месяц безлимита за 999 ₽. Условия акции и заявка.',
+  '1-plus-1': 'Акция 1+1 в фитнес-клубе Urban210 в Хабаровске: купите годовую подписку и подарите месяц тренировок другу или партнёру. Условия акции и заявка на сайте.',
+};
 ---
-<Layout title={`${p.title}: акция фитнес-клуба в Хабаровске`} description={`${p.title}. ${p.text}`.slice(0, 190)} image="/og.jpg">
-  <PageHero title={p.title} lead={p.text} crumbs={[{ href: '/promo/', label: 'Акции' }, { href: `/promo/${p.slug}/`, label: p.title }]}>
-    <Cta goal={p.goal} block={`promo_${p.slug}`}>{p.cta}</Cta>
+<Layout title={`${p.title}: акция фитнес-клуба в Хабаровске`} description={meta[p.slug] ?? `${p.title}. ${p.text}`}>
+  <PageHero
+    title={p.title}
+    lead={p.text}
+    crumbs={[{ href: '/promo/', label: 'Акции' }, { href: `/promo/${p.slug}/`, label: p.title }]}
+    org
+  >
+    <Cta variant="wht" goal={p.goal} block={`promo_${p.slug}`}>{p.cta}</Cta>
   </PageHero>
-  <section class="sec" style="padding-top:0" aria-labelledby="terms-t">
-    <div class="wrap split">
-      <div class="ph"><Image src={img(`/images/promo/${p.slug}.jpg`)} alt={p.title} widths={[640, 1000]} sizes="(min-width: 900px) 50vw, 100vw" format="avif" quality={50} /></div>
+
+  <section class="f5-sec" aria-labelledby="terms-t">
+    <div class="f5-split">
+      <div class="pr-ph"><Image src={img(`/images/promo/${p.slug}.jpg`)} alt={p.title} widths={[640, 1000]} sizes="(min-width: 980px) 50vw, 100vw" format="avif" quality={55} /></div>
       <div>
         <h2 id="terms-t">Условия</h2>
-        <ul class="plan" style="background:none;border:0;padding:0;margin-top:20px;color:inherit">
-          {p.terms.map((t) => <li><Icon name="check" />{t}</li>)}
-        </ul>
-        <p style="margin-top:24px" class="muted">Подробности и сроки акции уточняйте у администратора.</p>
+        <ul>{p.terms.map((t) => <li><Icon name="check" />{t}</li>)}</ul>
+        <p>Сроки и детали акции уточняйте у администратора. Оставьте заявку, и вам перезвонят.</p>
       </div>
     </div>
   </section>
+
+  <section class="f5-sec" aria-labelledby="more-t">
+    <div class="f5-head f5-head-row">
+      <div><h2 id="more-t">Все акции</h2></div>
+      <a class="f5-pill f5-pill-wht" href="/price/">Цены на карты</a>
+    </div>
+    <Promos />
+  </section>
+
   <Final title={p.title} goal={p.goal} block={`final_${p.slug}`} button={p.cta} formTitle={p.cta} />
 </Layout>
+
+<style>
+  .pr-ph { border-radius: var(--r-l); overflow: hidden; background: #000; }
+  .pr-ph :global(img) { width: 100%; height: auto; display: block; }
+</style>

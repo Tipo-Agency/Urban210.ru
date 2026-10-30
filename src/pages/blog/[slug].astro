@@ -1,4 +1,6 @@
 ---
+// Статья блога в дизайне 05: шапка с крошками и мета, обложка, текст в f5-prose, липкая карточка с оффером,
+// вопросы из frontmatter (FAQPage), «Читайте также» и блок заявки.
 import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
@@ -22,6 +24,13 @@ const date = post.data.date.toLocaleDateString('ru-RU', { day: 'numeric', month:
 const related = posts.filter((p) => p.id !== post.id && p.data.category === post.data.category).slice(0, 3);
 const more = related.length < 3 ? posts.filter((p) => p.id !== post.id && !related.includes(p)).slice(0, 3 - related.length) : [];
 const url = `${SITE_URL}/blog/${post.id}/`;
+const dayPlan = plans[0];
+// Пробного дня за 1 ₽ нет: старое значение по умолчанию превращаем в обычную заявку
+const goal = !post.data.cta || post.data.cta.includes('1 ₽') ? 'Оставить заявку' : post.data.cta;
+
+// Хлебные крошки: Главная › Блог › Раздел (раздел ведёт на свой якорь в блоге)
+const cats = [...new Set([...posts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).map((p) => p.data.category))];
+const catHref = `/blog/#c-${cats.indexOf(post.data.category)}`;
 const ld: Record<string, unknown>[] = [
   {
     '@context': 'https://schema.org',
@@ -46,40 +55,62 @@ const ld: Record<string, unknown>[] = [
     ],
   },
 ];
-if (post.data.faq.length) ld.push({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: post.data.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) });
-const goal = post.data.cta;
 ---
 <Layout title={post.data.title} description={post.data.description} type="article" jsonld={ld}>
   <article>
-    <header class="page-hero" style="padding-bottom:40px">
-      <div class="wrap">
-        <nav aria-label="Хлебные крошки"><ol class="crumbs"><li><a href="/">Главная</a></li><li><a href="/blog/">Блог</a></li><li><span aria-current="page">{post.data.category}</span></li></ol></nav>
-        <h1 style="font-size:clamp(2rem,1.2rem+3.4vw,4.4rem);max-width:20ch">{post.data.title}</h1>
-        <p class="post-meta" style="margin-top:20px"><span class="cat">{post.data.category}</span><span>{date}</span><span>{minutes} мин чтения</span></p>
-        <div class="page-hero-media" style="aspect-ratio:21/8">
-          <Image src={img(post.data.image)} alt="" widths={[480, 828, 1280, 1600]} sizes="(min-width: 1360px) 1312px, 100vw" loading="eager" fetchpriority="high" format="webp" quality={55} />
+    <header class="f5-page-hero">
+      <div class="f5-page-card post-hero">
+        <nav aria-label="Хлебные крошки">
+          <ol class="f5-crumbs">
+            <li><a href="/">Главная</a></li>
+            <li><a href="/blog/">Блог</a></li>
+            <li><a href={catHref}>{post.data.category}</a></li>
+          </ol>
+        </nav>
+        <h1>{post.data.title}</h1>
+        <p class="f5-meta"><span class="cat">{post.data.category}</span><time datetime={post.data.date.toISOString().slice(0, 10)}>{date}</time><span>{minutes} мин чтения</span></p>
+        <div class="post-cover">
+          <Image src={img(post.data.image)} alt="" widths={[480, 828, 1280, 1600]} sizes="(min-width: 1440px) 1312px, 100vw" loading="eager" fetchpriority="high" format="webp" quality={55} />
         </div>
       </div>
     </header>
-    <div class="wrap article-grid" style="padding-bottom:var(--sec)">
-      <div class="prose"><Content /></div>
-      <aside>
-        <div class="aside-sticky aside-card on-accent">
-          <p class="num">{perDay(plans[0].month, 30)} ₽</p>
-          <h2 style="font-size:1.4rem">в день в Urban210</h2>
-          <p>Дневная карта {rub(plans[0].month)} в месяц: зал и кардиозона, парковка, раздевалки с душем.</p>
-          <Cta variant="dark" goal={goal} block="blog_aside" wide>{goal === 'Пробный день за 1 ₽' || goal === 'Оставить заявку' ? 'Оставить заявку' : goal}</Cta>
-          <a class="link" href="/price/">Все тарифы</a>
+
+    <div class="f5-sec f5-article post-article" style="padding-top:clamp(40px,5vw,72px)">
+      <div class="f5-prose post-body"><Content /></div>
+      <aside class="f5-aside" aria-label="Карта в Urban210">
+        <div class="f5-card is-org post-offer">
+          <p class="post-offer-num">от {perDay(dayPlan.month, 30)} ₽ <span>в день</span></p>
+          <p>{dayPlan.name} {rub(dayPlan.month)} в месяц: зал и кардиозона, бесплатная парковка, раздевалки с душем.</p>
+          <div class="post-offer-btns">
+            <a class="f5-pill f5-pill-ink" href="/price/#cards">Выбрать карту</a>
+            <Cta variant="ghost" goal={goal} block="blog_aside">Оставить заявку</Cta>
+          </div>
         </div>
       </aside>
     </div>
   </article>
+
   {post.data.faq.length > 0 && <Faq items={post.data.faq} title="Коротко о главном" />}
-  <section class="sec" style="padding-top:0" aria-labelledby="rel-t">
-    <div class="wrap">
-      <div class="head"><h2 id="rel-t" style="font-size:clamp(1.6rem,1.2rem+1.4vw,2.4rem)">Читайте также</h2></div>
-      <ul class="posts" style="list-style:none">{[...related, ...more].map((p) => <li><PostCard post={p} /></li>)}</ul>
-    </div>
+
+  <section class="f5-sec" aria-labelledby="rel-t">
+    <div class="f5-head"><h2 id="rel-t">Читайте также</h2></div>
+    <ul class="f5-posts">{[...related, ...more].map((p) => <li><PostCard post={p} /></li>)}</ul>
   </section>
+
   <Final />
 </Layout>
+
+<style>
+  .post-hero { gap: 20px; }
+  .post-hero h1 { max-width: 22ch; font-size: clamp(2rem, 1.2rem + 3.2vw, 4rem); }
+  .post-cover { margin-top: 8px; border-radius: var(--r-l); overflow: hidden; aspect-ratio: 16 / 10; background: #000; }
+  .post-cover img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; }
+  @media (min-width: 760px) { .post-cover { aspect-ratio: 21 / 9; } }
+  .post-article { padding-inline: clamp(4px, 4vw, 56px); }
+  .post-body { min-width: 0; }
+  .post-offer { gap: 16px; padding: 30px 28px; }
+  .post-offer-num { font-family: 'Geologica Variable', sans-serif; font-weight: 800; font-size: clamp(2.4rem, 2rem + 1.6vw, 3.2rem); line-height: 1; letter-spacing: -0.05em; color: #fff !important; }
+  .post-offer-num span { display: block; margin-top: 6px; font-size: 1.1rem; letter-spacing: -0.02em; }
+  .post-offer-btns { display: grid; gap: 10px; margin-top: 4px; }
+  .post-offer-btns :global(.f5-pill) { width: 100%; }
+</style>

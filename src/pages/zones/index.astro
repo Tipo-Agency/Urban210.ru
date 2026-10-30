@@ -1,0 +1,129 @@
+---
+// Хаб «Зоны клуба»: карточки всех зон со ссылками на их страницы, какие зоны входят в какой тариф, выбор карты.
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Plans from '../../components/Plans.astro';
+import Faq from '../../components/Faq.astro';
+import Final from '../../components/Final.astro';
+import Icon from '../../components/Icon.astro';
+import { img } from '../../data/images';
+import { site } from '../../data/site';
+import { plans, perDay, rub } from '../../data/pricing';
+
+const dayPrice = perDay(plans[0].month, 30);
+const area = site.facts.area[0].toUpperCase() + site.facts.area.slice(1);
+
+const cards = [
+  { href: '/zal/', title: 'Тренажёрный зал', text: `${site.facts.machines} ${site.facts.brands} на все группы мышц. Главный зал с панорамными окнами.`, image: '/images/zal.jpg', alt: 'Тренажёрный зал Urban210 с панорамными окнами', pos: '50% 50%' },
+  { href: '/zones/cardio/', title: 'Кардиозона', text: 'Беговые дорожки Technogym Skillrun на втором этаже: ходьба в наклоне, бег, интервалы.', image: '/images/cardio.jpg', alt: 'Ряд беговых дорожек Technogym в кардиозоне', pos: '50% 50%' },
+  { href: '/zones/free-weights/', title: 'Свободные веса', text: 'Гантели до 60 кг, штанги, скамьи для жима, стойки для приседа и помосты.', image: '/images/free-weights.jpg', alt: 'Ряды гантелей на стойке в зале Urban210', pos: '50% 60%' },
+  { href: '/zones/functional/', title: 'Функциональная зона и октагон', text: 'Петли TRX, медболы и октагон для единоборств и круговых тренировок.', image: '/images/functional.jpg', alt: 'Тренировка с медболами у октагона', pos: '50% 20%' },
+  { href: '/group/', title: 'Групповые программы', text: `${site.facts.groupHall[0].toUpperCase() + site.facts.groupHall.slice(1)}: от пилатеса до кроссфита.`, image: '/images/group.jpg', alt: 'Групповая тренировка в зале 150 м²', pos: '50% 35%' },
+];
+
+const access = [
+  { plan: plans[0], zones: ['Тренажёрный зал', 'Свободные веса', 'Кардиозона'] },
+  { plan: plans[1], zones: ['Тренажёрный зал', 'Свободные веса', 'Кардиозона'] },
+  { plan: plans[2], zones: ['Тренажёрный зал', 'Свободные веса', 'Кардиозона', 'Групповые программы', 'Сауна и хаммам'] },
+];
+
+const faq = [
+  { q: 'Какие зоны есть в клубе?', a: `Тренажёрный зал на ${site.facts.machines} ${site.facts.brands}, свободные веса, кардиозона на втором этаже, функциональная зона с октагоном, ${site.facts.groupHall} и SPA с финской сауной и хаммамом. Всего ${site.facts.area}.` },
+  { q: 'В какие зоны можно с самой дешёвой картой?', a: `${plans[0].name} за ${rub(plans[0].month)} в месяц открывает тренажёрный зал и кардиозону ${plans[0].hours}. Групповые программы и SPA входят в тариф «${plans[2].name}».` },
+  { q: 'Где находится клуб?', a: `${site.city}, ${site.district}, ${site.address.short}. ${site.parking}.` },
+  { q: 'Во сколько открыт клуб?', a: `${site.hours[0].days} ${site.hours[0].time}, ${site.hours[1].days} ${site.hours[1].time}. Все зоны работают в эти часы.` },
+];
+---
+<Layout
+  title="Зоны фитнес-клуба в Железнодорожном районе Хабаровска"
+  description={`Зоны фитнес-клуба Urban210 в Железнодорожном районе Хабаровска: тренажёрный зал, свободные веса, кардио, октагон, групповые, сауна. От ${dayPrice}\u00a0₽ в день.`}
+>
+  <PageHero
+    title="Зоны клуба"
+    lead={`${area} в Железнодорожном районе Хабаровска: тренажёрный зал, свободные веса, кардиозона, функциональная зона с октагоном, групповые программы, сауна и хаммам.`}
+    crumbs={[{ href: '/zones/', label: 'Зоны клуба' }]}
+    image="/images/zal.jpg"
+    alt="Тренажёрный зал Urban210 с панорамными окнами"
+    position="50% 55%"
+  >
+    <a class="f5-go" href="#zony"><span>Смотреть зоны</span><i><Icon name="chev" /></i></a>
+    <a class="f5-pill f5-pill-org" href="#zayavka" data-lead="Заявка на карту" data-block="zones_hero">Оставить заявку</a>
+  </PageHero>
+
+  <section class="f5-sec" id="zony" aria-labelledby="zones-list-t">
+    <div class="f5-head">
+      <h2 id="zones-list-t">Что есть в клубе</h2>
+      <p>Нажмите на зону, чтобы посмотреть оборудование, фото и тариф, в который она входит.</p>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {cards.map((c) => (
+        <a class="f5-card" href={c.href} data-rise>
+          <div class="f5-card-ph"><Image src={img(c.image)} alt={c.alt} widths={[400, 640, 900]} sizes="(min-width: 1100px) 31vw, (min-width: 760px) 46vw, 92vw" format="avif" quality={50} style={`object-position:${c.pos}`} /></div>
+          <h3>{c.title}</h3>
+          <p>{c.text}</p>
+          <span class="f5-card-more">Подробнее <Icon name="chev" /></span>
+        </a>
+      ))}
+      <a class="f5-card is-org z-spa" href="/spa/" data-rise>
+        <span class="f5-stk f5-stk-wht z-stk" data-spin><b>40–50 °C</b>хаммам</span>
+        <h3>Сауна и хаммам</h3>
+        <p>Финская сауна, хаммам и релакс-зона после тренировки. Входят в тариф «{plans[2].name}».</p>
+        <span class="f5-card-more">Подробнее <Icon name="chev" /></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="zones-access-t">
+    <div class="f5-head f5-head-row">
+      <div>
+        <h2 id="zones-access-t">Какие зоны в каком тарифе</h2>
+        <p>Тренажёрный зал и кардиозона есть в любой карте. Групповые и SPA добавляет «{plans[2].name}».</p>
+      </div>
+      <a class="f5-pill f5-pill-wht" href="/price/">Все тарифы и цены</a>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {access.map((a, i) => (
+        <article class:list={['f5-card', i === 2 && 'is-cob']} data-rise>
+          <h3>{a.plan.name}</h3>
+          <p>{rub(a.plan.month)} в месяц, {a.plan.hours}</p>
+          <ul class="z-list">
+            {a.zones.map((z) => <li><Icon name="check" />{z}</li>)}
+          </ul>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="zones-where-t">
+    <div class="f5-split">
+      <div class="f5-split-ph"><Image src={img('/images/reception.jpg')} alt="Ресепшен фитнес-клуба Urban210" widths={[480, 800, 1100]} sizes="(min-width: 980px) 46vw, 92vw" format="avif" quality={50} /></div>
+      <div>
+        <h2 id="zones-where-t">Клуб в Железнодорожном районе</h2>
+        <p>Urban210 находится по адресу {site.address.short}. Рядом бесплатная парковка, внутри два этажа: на первом тренажёры, свободные веса и октагон, на втором кардиозона.</p>
+        <ul>
+          <li><Icon name="check" /><span>{site.hours[0].days} {site.hours[0].time}, {site.hours[1].days} {site.hours[1].time}</span></li>
+          <li><Icon name="check" /><span>{site.parking}</span></li>
+          <li><Icon name="check" /><span>Вход по QR-коду в приложении клуба</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <Plans block="zones" />
+
+  <Faq items={faq} title="Вопросы о зонах клуба" />
+
+  <Final block="final_zones" title="Приходите посмотреть клуб" />
+</Layout>
+
+<style>
+  .z-spa { position: relative; justify-content: flex-end; min-height: 340px; }
+  .z-spa h3 { margin-top: auto; padding-top: 120px; }
+  .z-spa .f5-card-more { margin-top: 8px; }
+  .z-stk { top: 24px; left: 24px; rotate: -10deg; width: 112px; height: 112px; }
+  .z-stk b { font-size: 1.25rem; }
+  .z-list { list-style: none; display: grid; gap: 8px; margin-top: 4px; }
+  .z-list li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; }
+  .z-list :global(svg) { width: 22px; height: 22px; padding: 3px; border-radius: 50%; background: var(--org); color: #fff; }
+</style>

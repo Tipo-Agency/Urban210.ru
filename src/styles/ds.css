@@ -73,12 +73,12 @@
     transform: translateX(-50%) rotate(0deg); transition: transform 0.9s var(--lift); }
   .f5-fan-card img { width: 100%; height: 100%; object-fit: cover; }
   .f5-fan-card.n1 { z-index: 2; }
-  .f5-fan.is-open .n0 { transform: translateX(-108%) rotate(-11deg); }
+  .f5-fan.is-open .n0 { transform: translateX(-100%) rotate(-7deg); }
   .f5-fan.is-open .n1 { transform: translateX(-50%) translateY(-18px) rotate(1deg); }
-  .f5-fan.is-open .n2 { transform: translateX(8%) rotate(11deg); }
-  .f5-fan.is-open:hover .n0 { transform: translateX(-118%) rotate(-15deg); }
+  .f5-fan.is-open .n2 { transform: translateX(0%) rotate(7deg); }
+  .f5-fan.is-open:hover .n0 { transform: translateX(-106%) rotate(-10deg); }
   .f5-fan.is-open:hover .n1 { transform: translateX(-50%) translateY(-34px) rotate(-1deg); }
-  .f5-fan.is-open:hover .n2 { transform: translateX(18%) rotate(15deg); }
+  .f5-fan.is-open:hover .n2 { transform: translateX(6%) rotate(10deg); }
   .f5-fan-card.n0 { transition-delay: 0.15s; }
   .f5-fan-card.n2 { transition-delay: 0.25s; }
   .f5-fan.is-open:hover .f5-fan-card { transition-delay: 0s; }

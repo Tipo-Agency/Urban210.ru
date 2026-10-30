@@ -22,9 +22,9 @@ const rating = site.rating.value.toString().replace('.', ',');
   <div class="f5-feed" tabindex="0" aria-label="Отзывы и фото гостей">
     {reviews.map((r, i) => (
       <>
-        {people[i] && <figure class="f5-feed-ph"><Image src={img(people[i])} alt="Гость клуба Urban210" widths={[320, 480]} sizes="300px" format="avif" quality={50} style="object-position:50% 20%" /></figure>}
+        {people[i] && <figure class="f5-feed-ph"><Image src={img(people[i])} alt="Гость клуба Urban210" widths={[320, 480, 640]} sizes="300px" format="avif" quality={70} style="object-position:50% 20%" /></figure>}
         <blockquote class={`f5-feed-rv t-${tones[i % tones.length]}`}>
-          <span class="f5-stars" aria-label="5 звёзд">{[1, 2, 3, 4, 5].map(() => <Icon name="star" />)}</span>
+          <span class="f5-stars" role="img" aria-label="5 звёзд">{[1, 2, 3, 4, 5].map(() => <Icon name="star" />)}</span>
           <p>{r.text}</p>
           <footer><b>{r.name}</b><span>{r.source}</span></footer>
         </blockquote>

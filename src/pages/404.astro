@@ -1,14 +1,38 @@
 ---
+// 404 в дизайне 05: дружелюбная карточка и ссылки на главные разделы. Не индексируется.
 import Layout from '../layouts/Layout.astro';
-import Cta from '../components/Cta.astro';
+import Icon from '../components/Icon.astro';
+
+const links = [
+  { href: '/', title: 'Главная', text: 'Что есть в клубе и сколько стоит' },
+  { href: '/price/', title: 'Цены и карты', text: 'Безлимит от 43 ₽ в день' },
+  { href: '/zones/', title: 'Зоны клуба', text: 'Зал, кардио, свободные веса, SPA' },
+  { href: '/blog/', title: 'Блог', text: 'Статьи о тренировках и питании' },
+];
 ---
 <Layout title="Страница не найдена" description="Такой страницы нет на сайте фитнес-клуба Urban210." noindex>
-  <section class="page-hero" style="min-height:70svh;display:grid;align-items:center">
-    <div class="wrap">
-      <p class="num accent" style="font-size:clamp(6rem,20vw,14rem)">404</p>
-      <h1 style="margin-top:16px">Такой страницы нет</h1>
-      <p class="lead" style="margin-top:20px">Возможно, ссылка устарела. Начните с главной или загляните в тарифы.</p>
-      <div class="actions"><a class="btn btn-light" href="/">На главную</a><a class="link" href="/price/">Тарифы</a><Cta block="404">Оставить заявку</Cta></div>
+  <section class="f5-page-hero">
+    <div class="f5-page-card is-org nf">
+      <p class="nf-num" aria-hidden="true">404</p>
+      <h1>Такой страницы нет</h1>
+      <p class="f5-page-lead">Похоже, ссылка устарела или в адресе опечатка. Ничего страшного: вот куда можно заглянуть.</p>
     </div>
   </section>
+  <section class="f5-sec" style="padding-top:12px" aria-label="Куда перейти">
+    <ul class="nf-links">
+      {links.map((l) => (
+        <li><a class="f5-card" href={l.href}><h2>{l.title}</h2><p>{l.text}</p><span class="f5-card-more">Перейти <Icon name="chev" /></span></a></li>
+      ))}
+    </ul>
+  </section>
 </Layout>
+
+<style>
+  .nf { min-height: 46svh; align-content: center; }
+  .nf-num { font-family: 'Geologica Variable', sans-serif; font-weight: 800; font-size: clamp(6rem, 18vw, 13rem); line-height: 0.85; letter-spacing: -0.06em; }
+  .nf-links { list-style: none; display: grid; gap: 12px; }
+  .nf-links .f5-card { height: 100%; }
+  .nf-links h2 { font-size: clamp(1.35rem, 1.15rem + 0.7vw, 1.8rem); letter-spacing: -0.035em; }
+  @media (min-width: 760px) { .nf-links { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1100px) { .nf-links { grid-template-columns: repeat(4, 1fr); } }
+</style>

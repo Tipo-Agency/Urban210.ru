@@ -1,0 +1,119 @@
+---
+// Свободные веса: гантели до 60 кг, штанги, стойки, помосты. Оборудование, с чего начать, тариф, соседние зоны.
+import { Image } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import PageHero from '../../../components/PageHero.astro';
+import Faq from '../../../components/Faq.astro';
+import Final from '../../../components/Final.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site } from '../../../data/site';
+import { plans, perDay, rub } from '../../../data/pricing';
+
+const dayPrice = perDay(plans[0].month, 30);
+
+const kit = [
+  { title: 'Гантели до 60 кг', text: 'Полный ряд от лёгких до тяжёлых: хватает и для разминки, и для рабочих подходов.' },
+  { title: 'Штанги, грифы, блины', text: 'Блинов и грифов достаточно, чтобы не ждать, пока кто-то освободит снаряд.' },
+  { title: 'Скамьи и стойки', text: 'Скамьи для жима и стойки для приседа в достаточном количестве, очередь не собирается.' },
+  { title: 'Помосты', text: 'Для становой тяги и тяжёлых базовых упражнений со штангой.' },
+];
+
+const related = [
+  { href: '/zal/', title: 'Тренажёрный зал', text: `${site.facts.machines} ${site.facts.brands}` },
+  { href: '/zones/functional/', title: 'Функциональная зона', text: 'TRX, медболы, октагон' },
+  { href: '/zones/cardio/', title: 'Кардиозона', text: 'Technogym Skillrun на втором этаже' },
+];
+
+const faq = [
+  { q: 'Какой максимальный вес гантелей?', a: 'Гантели до 60 кг. Для тяжёлых базовых упражнений есть штанги, грифы и блины.' },
+  { q: 'Есть ли стойки для приседа и помосты?', a: 'Да: стойки для приседа, скамьи для жима и помосты для становой тяги. Их несколько, поэтому очередь обычно не собирается.' },
+  { q: 'Я ни разу не работал со штангой. Кто покажет технику?', a: `Инструкторы в зале подскажут технику базовых упражнений. В тарифы «${plans[1].name}» и «${plans[2].name}» входит пробная тренировка с тренером, а поставить технику подробно можно на персональных тренировках.` },
+  { q: 'Свободные веса входят в дневную карту?', a: `Да, это часть тренажёрного зала. ${plans[0].name} стоит ${rub(plans[0].month)} в месяц и действует ${plans[0].hours}.` },
+];
+---
+<Layout
+  title="Свободные веса в Хабаровске: гантели до 60 кг, помосты"
+  description={`Свободные веса в зале Urban210 в Хабаровске: гантели до 60 кг, штанги, стойки для приседа, скамьи и помосты. Без очередей, от ${dayPrice}\u00a0₽ в день, Железнодорожный район.`}
+>
+  <PageHero
+    title="Свободные веса"
+    lead="Гантели до 60 кг, штанги, скамьи для жима, стойки для приседа и помосты. Хватает всем даже вечером."
+    crumbs={[{ href: '/zones/', label: 'Зоны клуба' }, { href: '/zones/free-weights/', label: 'Свободные веса' }]}
+    image="/images/free-weights.jpg"
+    alt="Ряды гантелей до 60 кг в зале Urban210"
+    position="50% 60%"
+  >
+    <a class="f5-go" href="/price/"><span>Тарифы и цены</span><i><Icon name="chev" /></i></a>
+    <a class="f5-pill f5-pill-org" href="#zayavka" data-lead="Заявка на карту" data-block="free_weights_hero">Оставить заявку</a>
+  </PageHero>
+
+  <section class="f5-sec" aria-labelledby="fw-kit-t">
+    <div class="f5-head">
+      <h2 id="fw-kit-t">Что есть в зоне</h2>
+      <p>Всё для базовых упражнений: жим, присед, становая, тяги.</p>
+    </div>
+    <div class="f5-grid f5-grid-4">
+      {kit.map((k, i) => (
+        <article class:list={['f5-card', i === 0 && 'is-org']} data-rise>
+          <h3>{k.title}</h3>
+          <p>{k.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="fw-start-t">
+    <div class="f5-split rev">
+      <div class="f5-split-ph"><Image src={img('/images/group-strength.jpg')} alt="Тяга гантелей в упоре лёжа" widths={[480, 800, 1100]} sizes="(min-width: 980px) 46vw, 92vw" format="avif" quality={50} style="object-position:55% 30%" /></div>
+      <div>
+        <h2 id="fw-start-t">Если вы только начинаете</h2>
+        <p>Со свободными весами важна техника. Начните с лёгких гантелей и простых движений, а вес добавляйте, когда упражнение получается ровно.</p>
+        <ul>
+          <li><Icon name="check" /><span>Инструктор в зале покажет технику и подскажет вес</span></li>
+          <li><Icon name="check" /><span>Тренер составит программу на <a class="z-link" href="/personal/">персональных тренировках</a></span></li>
+          <li><Icon name="check" /><span>Силовые групповые Body и Pump учат работать с гантелями и штангой</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="fw-price-t">
+    <div class="f5-card is-cob z-teaser">
+      <div>
+        <h2 id="fw-price-t">Свободные веса в любой карте</h2>
+        <p>{plans[0].name}: {rub(plans[0].month)} в месяц, около {dayPrice}&nbsp;₽ в день, {plans[0].hours}. «{plans[1].name}»: {rub(plans[1].month)} в месяц, в любое время работы клуба.</p>
+      </div>
+      <a class="f5-pill f5-pill-wht" href="/price/">Сравнить тарифы</a>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="fw-rel-t">
+    <div class="f5-head f5-head-row">
+      <div><h2 id="fw-rel-t">Рядом в клубе</h2></div>
+      <a class="f5-pill f5-pill-wht" href="/zones/">Все зоны клуба</a>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {related.map((r) => (
+        <a class="f5-card" href={r.href}>
+          <h3>{r.title}</h3>
+          <p>{r.text}</p>
+          <span class="f5-card-more">Подробнее <Icon name="chev" /></span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <Faq items={faq} title="Вопросы о свободных весах" />
+
+  <Final block="final_free_weights" title="Подберём карту для силовых" />
+</Layout>
+
+<style>
+  .z-link { color: var(--org); text-decoration: underline; text-underline-offset: 3px; }
+  .z-teaser { gap: 24px; padding: clamp(28px, 4vw, 56px); border-radius: var(--r-xl); }
+  .z-teaser h2 { font-size: clamp(1.9rem, 1.3rem + 2.4vw, 3.2rem); letter-spacing: -0.045em; line-height: 1; }
+  .z-teaser p { margin-top: 14px; max-width: 56ch; font-size: 1.08rem; }
+  .z-teaser .f5-pill { width: fit-content; }
+  @media (min-width: 980px) { .z-teaser { flex-direction: row; align-items: center; justify-content: space-between; } }
+</style>

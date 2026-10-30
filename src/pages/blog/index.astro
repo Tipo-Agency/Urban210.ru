@@ -1,4 +1,5 @@
 ---
+// Блог в дизайне 05: первый экран, чипсы разделов с якорями, сетка статей по разделам, блок заявки.
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
@@ -11,16 +12,16 @@ const slug = (c: string) => 'c-' + cats.indexOf(c);
 ---
 <Layout title="Блог о фитнесе и тренировках" description="Статьи фитнес-клуба Urban210 в Хабаровске: как начать ходить в зал, похудение, набор массы, групповые программы, сауна и восстановление, питание без крайностей.">
   <PageHero title="Блог о тренировках" lead={`${posts.length} статей от фитнес-клуба Urban210: с чего начать, как худеть и набирать без вреда, что выбрать в Хабаровске.`} crumbs={[{ href: '/blog/', label: 'Блог' }]} />
-  <section class="sec" style="padding-top:0">
-    <div class="wrap">
-      <nav class="cats" aria-label="Разделы блога">{cats.map((c) => <a href={`#${slug(c)}`}>{c}</a>)}</nav>
-      {cats.map((c) => (
-        <section id={slug(c)} style="margin-top:56px" aria-labelledby={`${slug(c)}-t`}>
-          <h2 id={`${slug(c)}-t`} style="font-size:clamp(1.6rem,1.2rem+1.4vw,2.4rem);margin-bottom:24px">{c}</h2>
-          <ul class="posts">{posts.filter((p) => p.data.category === c).map((p) => <li><PostCard post={p} /></li>)}</ul>
-        </section>
-      ))}
-    </div>
+  <section class="f5-sec" style="padding-top:clamp(28px,4vw,48px)" aria-label="Статьи блога">
+    <nav class="f5-cats" aria-label="Разделы блога">
+      {cats.map((c) => <a href={`#${slug(c)}`}>{c} <span style="opacity:.6">{posts.filter((p) => p.data.category === c).length}</span></a>)}
+    </nav>
+    {cats.map((c, i) => (
+      <section id={slug(c)} class="f5-sec" style={`scroll-margin-top:100px;${i === 0 ? 'padding-top:24px' : 'padding-top:clamp(48px,6vw,80px)'}`} aria-labelledby={`${slug(c)}-t`}>
+        <div class="f5-head" style="margin-bottom:24px"><h2 id={`${slug(c)}-t`} style="font-size:clamp(1.8rem,1.2rem+2vw,2.8rem);max-width:none">{c}</h2></div>
+        <ul class="f5-posts">{posts.filter((p) => p.data.category === c).map((p) => <li><PostCard post={p} /></li>)}</ul>
+      </section>
+    ))}
   </section>
   <Final />
 </Layout>

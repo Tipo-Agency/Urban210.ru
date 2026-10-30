@@ -1,43 +1,103 @@
 ---
+// Персональные тренировки: как проходят, сколько стоят, кто тренирует, вопросы.
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
 import Trainers from '../../components/Trainers.astro';
 import Faq from '../../components/Faq.astro';
 import Final from '../../components/Final.astro';
 import Cta from '../../components/Cta.astro';
-import { personalText } from '../../data/content';
+import Icon from '../../components/Icon.astro';
 import { personal, rub } from '../../data/pricing';
+import { faqGeneral } from '../../data/content';
 
+const one = rub(Math.round(personal.price / personal.pack));
 const steps = [
-  ['Знакомство', 'Тренер спросит про цель, опыт и ограничения по здоровью, проверит подвижность и базовую силу.'],
-  ['Программа', 'Составит план под вашу цель: снижение веса, набор массы, здоровая спина или подготовка к старту.'],
+  ['Знакомство', 'Тренер спросит про цель, опыт и ограничения по здоровью, посмотрит подвижность и базовую силу.'],
+  ['Программа', 'Составит план под вашу цель: снизить вес, набрать массу, укрепить спину или вернуться в форму.'],
   ['Техника', 'На каждой тренировке следит за техникой и подбирает вес, чтобы был прогресс без травм.'],
-  ['Прогресс', 'Замеры и корректировка плана по ходу. Вы видите результат в цифрах, а не только в зеркале.'],
+  ['Прогресс', 'Замеры и правки плана по ходу. Результат видно в цифрах, а не только в зеркале.'],
 ];
 const faq = [
-  { q: 'Сколько стоят персональные тренировки?', a: `Пакет из ${personal.pack} тренировок стоит ${rub(personal.price)}, это ${rub(Math.round(personal.price / personal.pack))} за занятие. Абонемент в зал оплачивается отдельно.` },
-  { q: 'Можно ли попробовать бесплатно?', a: `Да. ${personal.firstFree}.` },
+  { q: 'Сколько стоят персональные тренировки?', a: `Пакет из ${personal.pack} тренировок стоит ${rub(personal.price)}, это ${one} за одну тренировку.` },
   { q: 'Сколько раз в неделю заниматься с тренером?', a: 'Чаще всего 2–3 раза. Между тренировками можно заниматься самостоятельно по программе, которую составит тренер.' },
+  faqGeneral[0],
+  faqGeneral[8],
 ];
 ---
-<Layout title="Персональный тренер в Хабаровске" description={`Персональные тренировки в фитнес-клубе Urban210: ${personalText.price}. Программа под цель, постановка техники, контроль прогресса. Первая тренировка бесплатно при покупке подписки.`}>
-  <PageHero title="Персональный тренер" lead={personalText.lead} crumbs={[{ href: '/personal/', label: 'Персональные тренировки' }]} image="/images/functional.jpg" alt="Тренер Urban210 занимается с клиентом">
-    <Cta goal="Персональные тренировки" block="personal_hero">Первая тренировка бесплатно</Cta>
+<Layout
+  title="Персональный тренер в Хабаровске"
+  description={`Персональный тренер в фитнес-клубе Urban210 в Хабаровске: программа под цель, техника, контроль прогресса. ${personal.pack} тренировок за ${rub(personal.price)}, Железнодорожный район.`}
+>
+  <PageHero
+    title="Персональный тренер в Хабаровске"
+    lead="Тренер поставит технику, составит программу под вашу цель и будет следить за прогрессом. Подходит и новичкам, и тем, кто давно тренируется."
+    crumbs={[{ href: '/personal/', label: 'Персональные тренировки' }]}
+    image="/images/functional.jpg"
+    alt="Персональная тренировка в функциональной зоне Urban210"
+    position="50% 35%"
+  >
+    <Cta goal="Персональные тренировки" block="personal_hero">Записаться к тренеру</Cta>
+    <a class="f5-pill f5-pill-ink" href="#team">Тренеры</a>
   </PageHero>
-  <section class="sec" style="padding-top:0" data-block="personal_how" aria-labelledby="how-t">
-    <div class="wrap">
-      <div class="head"><h2 id="how-t">Как это работает</h2></div>
-      <ol class="steps">{steps.map(([t, d]) => <li><h3>{t}</h3><p>{d}</p></li>)}</ol>
-      <div class="trial on-accent" style="margin-top:18px">
-        <p class="num" style="font-size:clamp(2rem,1.4rem+2.4vw,3.4rem)">{rub(personal.price)}</p>
-        <div><h3>{personal.pack} персональных тренировок</h3><p style="margin-top:8px">{personalText.bonus}</p></div>
-        <Cta variant="dark" goal="Персональные тренировки" block="personal_offer">Записаться</Cta>
+
+  <section class="f5-sec" aria-labelledby="how-t">
+    <div class="f5-head">
+      <h2 id="how-t">Как проходят занятия</h2>
+      <p>Четыре шага от первой встречи до заметного результата.</p>
+    </div>
+    <ol class="f5-grid f5-grid-4 ps-steps">
+      {steps.map(([t, d], i) => (
+        <li class:list={['f5-card', i === 3 && 'is-org']}>
+          <span class="ps-n">{i + 1}</span>
+          <h3>{t}</h3>
+          <p>{d}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="pp-t">
+    <div class="f5-split">
+      <div class="f5-card is-cob ps-price">
+        <h2 id="pp-t">Цена</h2>
+        <b>{rub(personal.price)}</b>
+        <p>{personal.pack} персональных тренировок, {one} за одну.</p>
+        <div><Cta variant="wht" goal="Персональные тренировки" block="personal_price">Записаться</Cta></div>
+      </div>
+      <div>
+        <h2>Что ещё стоит знать</h2>
+        <ul>
+          <li><Icon name="check" />Тренер подбирает программу с учётом ограничений по здоровью.</li>
+          <li><Icon name="check" />Между занятиями с тренером можно тренироваться самостоятельно по его плану.</li>
+          <li><Icon name="check" />В карты «Полный день» и «Всё включено» входит пробная тренировка с тренером.</li>
+        </ul>
+        <p><a class="ps-link" href="/price/">Цены на карты в клуб</a></p>
       </div>
     </div>
   </section>
-  <section class="sec" style="padding-top:0" data-block="trainers" aria-labelledby="team-t">
-    <div class="wrap"><div class="head"><h2 id="team-t">Тренеры</h2></div><Trainers /></div>
+
+  <section class="f5-sec team3" id="team" aria-labelledby="team-t">
+    <div class="f5-head f5-head-row">
+      <div>
+        <h2 id="team-t">Тренеры</h2>
+        <p>Откройте карточку, чтобы узнать, чем занимается тренер.</p>
+      </div>
+      <a class="f5-pill f5-pill-wht" href="/trainers/">Все тренеры</a>
+    </div>
+    <Trainers />
   </section>
-  <Faq items={faq} title="Вопросы о персональных" />
-  <Final title="Первая тренировка с тренером бесплатно" text="Оставьте номер, подберём тренера и время. Бесплатная тренировка действует при покупке подписки." goal="Персональные тренировки" block="final_personal" formTitle="Записаться к тренеру" button="Записаться" />
+
+  <Faq items={faq} title="Вопросы о персональных тренировках" />
+  <Final title="Запишитесь к тренеру" goal="Персональные тренировки" block="final_personal" formTitle="Записаться к тренеру" button="Записаться" steps={[['Оставьте заявку', 'Имя и телефон, больше ничего'], ['Администратор перезвонит', 'Подберём тренера и удобное время'], ['Первая тренировка', 'Знакомство, цель и программа']]} />
 </Layout>
+
+<style>
+  @media (min-width: 1100px) { .team3 :global(.f5-team) { grid-template-columns: repeat(3, 1fr); } }
+  .ps-steps { list-style: none; }
+  .ps-n { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--org); color: #fff; font-weight: 800; font-size: 1.3rem; }
+  .f5-card.is-org .ps-n { background: var(--card); color: var(--org); }
+  .ps-price { padding: clamp(28px, 4vw, 48px); }
+  .ps-price b { display: block; font-size: clamp(3rem, 2.2rem + 2.6vw, 4.4rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
+  .ps-price p { margin-top: 0 !important; color: rgb(255 255 255 / 0.9) !important; }
+  .ps-link { color: var(--org); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+</style>

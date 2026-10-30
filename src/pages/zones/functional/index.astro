@@ -1,0 +1,122 @@
+---
+// Функциональная зона и октагон: TRX, медболы, октагон. Групповые кроссфит и TRX, тариф, соседние зоны.
+import { Image } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import PageHero from '../../../components/PageHero.astro';
+import Faq from '../../../components/Faq.astro';
+import Final from '../../../components/Final.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site } from '../../../data/site';
+import { plans, perDay, rub } from '../../../data/pricing';
+import { programs } from '../../../data/content';
+
+const dayPrice = perDay(plans[0].month, 30);
+const func = programs.find((p) => p.group === 'Функциональные')!;
+const all = plans[2];
+
+const kit = [
+  { title: 'Петли TRX', text: 'Упражнения с собственным весом: тяги, приседания, планки. Нагрузку меняет угол наклона тела.' },
+  { title: 'Медболы', text: 'Броски, скручивания и круговые тренировки. Развивают силу корпуса и координацию.' },
+  { title: 'Октагон', text: 'Огороженная площадка для единоборств и работы в паре с тренером.' },
+];
+
+const related = [
+  { href: '/group/', title: 'Групповые программы', text: 'Кроссфит, TRX, Body, Pump и другие' },
+  { href: '/zones/free-weights/', title: 'Свободные веса', text: 'Гантели до 60 кг, штанги, помосты' },
+  { href: '/zones/cardio/', title: 'Кардиозона', text: 'Technogym Skillrun на втором этаже' },
+];
+
+const faq = [
+  { q: 'Что такое функциональный тренинг?', a: 'Упражнения, которые повторяют движения из жизни: приседания, толчки, тяги, броски. Тренируют сразу несколько групп мышц, выносливость и координацию.' },
+  { q: 'Есть ли групповые функциональные тренировки?', a: `Да, ${func.items.join(' и ')}. ${func.text} Групповые программы входят в тариф «${all.name}» за ${rub(all.month)} в месяц.` },
+  { q: 'Для чего в клубе октагон?', a: 'Для единоборств, работы в паре и тренировок с тренером.' },
+  { q: 'Подойдёт ли функциональный тренинг новичку?', a: 'Да, если начать с простых упражнений и своего веса. Темп и нагрузку подскажет тренер, а на групповом занятии можно работать в своём режиме.' },
+];
+---
+<Layout
+  title="Функциональный тренинг в Хабаровске: TRX и октагон"
+  description={`Функциональная зона Urban210 в Хабаровске: петли TRX, медболы и октагон для единоборств. Групповые кроссфит и TRX в тарифе «${all.name}», зал от ${dayPrice}\u00a0₽ в день.`}
+>
+  <PageHero
+    title="Функциональная зона и октагон"
+    lead="Петли TRX, медболы и октагон для единоборств. Здесь проходят круговые тренировки, групповые кроссфит и TRX, работа с тренером."
+    crumbs={[{ href: '/zones/', label: 'Зоны клуба' }, { href: '/zones/functional/', label: 'Функциональная зона' }]}
+    image="/images/functional.jpg"
+    alt="Тренировка с медболами у октагона в Urban210"
+    position="50% 20%"
+  >
+    <a class="f5-go" href="/group/"><span>Групповые программы</span><i><Icon name="chev" /></i></a>
+    <a class="f5-pill f5-pill-org" href="#zayavka" data-lead="Заявка на карту" data-block="functional_hero">Оставить заявку</a>
+  </PageHero>
+
+  <section class="f5-sec" aria-labelledby="fn-kit-t">
+    <div class="f5-head">
+      <h2 id="fn-kit-t">Что есть в зоне</h2>
+      <p>Оборудование для тренировок на силу, выносливость и координацию.</p>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {kit.map((k, i) => (
+        <article class:list={['f5-card', i === 2 && 'is-org']} data-rise>
+          <h3>{k.title}</h3>
+          <p>{k.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="fn-group-t">
+    <div class="f5-split">
+      <div class="f5-split-ph"><Image src={img('/images/functional.jpg')} alt="Тренер и гости клуба с медболами" widths={[480, 800, 1100]} sizes="(min-width: 980px) 46vw, 92vw" format="avif" quality={50} style="object-position:40% 20%" /></div>
+      <div>
+        <h2 id="fn-group-t">Кроссфит и TRX в группе</h2>
+        <p>{func.text} Занятия ведёт инструктор, запись в приложении клуба.</p>
+        <ul>
+          <li><Icon name="check" /><span>Входят в тариф «{all.name}»: {rub(all.month)} в месяц</span></li>
+          <li><Icon name="check" /><span>Темп и вес подбираются под ваш уровень</span></li>
+          <li><Icon name="check" /><span>Ещё 7 направлений: от пилатеса до зумбы</span></li>
+        </ul>
+        <a class="f5-pill f5-pill-wht z-more" href="/group/">Все групповые программы</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="fn-price-t">
+    <div class="f5-card is-cob z-teaser">
+      <div>
+        <h2 id="fn-price-t">Зал от {dayPrice}&nbsp;₽ в день</h2>
+        <p>{plans[0].name}: {rub(plans[0].month)} в месяц. Групповые кроссфит и TRX, сауна и хаммам в тарифе «{all.name}» за {rub(all.month)} в месяц.</p>
+      </div>
+      <a class="f5-pill f5-pill-wht" href="/price/">Сравнить тарифы</a>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="fn-rel-t">
+    <div class="f5-head f5-head-row">
+      <div><h2 id="fn-rel-t">Рядом в клубе</h2></div>
+      <a class="f5-pill f5-pill-wht" href="/zones/">Все зоны клуба</a>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {related.map((r) => (
+        <a class="f5-card" href={r.href}>
+          <h3>{r.title}</h3>
+          <p>{r.text}</p>
+          <span class="f5-card-more">Подробнее <Icon name="chev" /></span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <Faq items={faq} title="Вопросы о функциональной зоне" />
+
+  <Final block="final_functional" title="Подберём карту для функционального" goal="Всё включено" />
+</Layout>
+
+<style>
+  .z-more { margin-top: 24px; }
+  .z-teaser { gap: 24px; padding: clamp(28px, 4vw, 56px); border-radius: var(--r-xl); }
+  .z-teaser h2 { font-size: clamp(1.9rem, 1.3rem + 2.4vw, 3.2rem); letter-spacing: -0.045em; line-height: 1; }
+  .z-teaser p { margin-top: 14px; max-width: 56ch; font-size: 1.08rem; }
+  .z-teaser .f5-pill { width: fit-content; }
+  @media (min-width: 980px) { .z-teaser { flex-direction: row; align-items: center; justify-content: space-between; } }
+</style>

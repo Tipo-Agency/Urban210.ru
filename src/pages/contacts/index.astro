@@ -1,29 +1,110 @@
 ---
+// Контакты: адрес, часы, телефон, почта, парковка, как добраться, юрлицо. Без виджетов и ссылок на карты.
+import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
 import Final from '../../components/Final.astro';
-import { site, whatsappLink, telegramLink } from '../../data/site';
-const { lat, lng } = site.address;
-const map = `https://yandex.ru/map-widget/v1/?ll=${lng}%2C${lat}&z=16&pt=${lng}%2C${lat}%2Cpm2rdl&oid=122837663271&ol=biz`;
+import Cta from '../../components/Cta.astro';
+import Icon from '../../components/Icon.astro';
+import { site, messengerLinks } from '../../data/site';
+import { img } from '../../data/images';
+
+const messengers = messengerLinks();
 ---
-<Layout title="Контакты фитнес-клуба: адрес, телефон, режим работы" description={`Фитнес-клуб Urban210: Хабаровск, ${site.address.short}, Железнодорожный район. Телефон ${site.phone.display}. Пн–Пт 06:30–23:30, Сб–Вс 07:30–22:30. Бесплатная парковка.`}>
-  <PageHero title="Контакты" lead={`${site.district}, ${site.address.short}. ${site.parking}.`} crumbs={[{ href: '/contacts/', label: 'Контакты' }]} />
-  <section class="sec" style="padding-top:0" data-block="contacts">
-    <div class="wrap contacts">
-      <dl>
-        <div><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}<br /><a class="link" href={site.maps.yandex} target="_blank" rel="noopener">Яндекс Карты</a> · <a class="link" href={site.maps.twoGis} target="_blank" rel="noopener">2ГИС</a></dd></div>
-        <div><dt>Режим работы</dt><dd>{site.hours.map((h) => <>{h.days}: {h.time}<br /></>)}</dd></div>
-        <div><dt>Отдел продаж</dt><dd><a href={site.phone.href}>{site.phone.display}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
-        <div><dt>Написать</dt><dd><a href={whatsappLink('Здравствуйте! Вопрос по клубу Urban210')} target="_blank" rel="noopener">WhatsApp</a> · <a href={telegramLink('site_contacts')} target="_blank" rel="noopener">Telegram-бот</a> · <a href={site.instagram} target="_blank" rel="noopener">Instagram</a></dd></div>
-        <div><dt>Юрлицо</dt><dd style="font-size:1rem;font-weight:400">{site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn}<br />{site.legal.address}</dd></div>
-      </dl>
-      <div class="map">
-        <button class="map-btn" type="button" data-frame={map} data-title="Urban210 на Яндекс Картах">
-          <span class="num accent" style="font-size:2.4rem">Карта</span>
-          <span class="muted">Нажмите, чтобы загрузить Яндекс Карту</span>
-        </button>
+<Layout
+  title="Контакты фитнес-клуба Urban210 в Хабаровске"
+  description={`Контакты фитнес-клуба Urban210: Хабаровск, ${site.address.short}, Железнодорожный район. Телефон ${site.phone.display}, режим работы, бесплатная парковка.`}
+>
+  <PageHero
+    title="Контакты фитнес-клуба Urban210"
+    lead={`${site.address.locality}, ${site.address.street}. ${site.district}. ${site.parking}.`}
+    crumbs={[{ href: '/contacts/', label: 'Контакты' }]}
+    image="/images/reception.jpg"
+    alt="Вход и ресепшен фитнес-клуба Urban210"
+    position="50% 50%"
+  >
+    <a class="f5-pill f5-pill-org" href={site.phone.href}><Icon name="phone" />{site.phone.display}</a>
+    <Cta variant="ink" goal="Вопрос с сайта" block="contacts_hero">Оставить заявку</Cta>
+  </PageHero>
+
+  <section class="f5-sec" aria-labelledby="ct-t">
+    <div class="f5-head"><h2 id="ct-t">Как с нами связаться</h2></div>
+    <div class="f5-grid f5-grid-2">
+      <div class="f5-card is-org ct">
+        <span class="ct-ico"><Icon name="pin" /></span>
+        <h3>Адрес</h3>
+        <p class="ct-big">{site.address.locality}, {site.address.street}</p>
+        <p>{site.district}, индекс {site.address.postalCode}</p>
+      </div>
+      <div class="f5-card ct">
+        <span class="ct-ico"><Icon name="clock" /></span>
+        <h3>Режим работы</h3>
+        {site.hours.map((h) => <p class="ct-big">{h.days}: {h.time}</p>)}
+      </div>
+      <div class="f5-card ct">
+        <span class="ct-ico"><Icon name="phone" /></span>
+        <h3>Телефон и почта</h3>
+        <p class="ct-big"><a href={site.phone.href}>{site.phone.display}</a></p>
+        <p><a class="ct-link" href={`mailto:${site.email}`}>{site.email}</a></p>
+        {messengers.length > 0 && (
+          <div class="ct-ms">{messengers.map((m) => <a class="f5-pill f5-pill-ink" href={m.href} target="_blank" rel="noopener">{m.label}</a>)}</div>
+        )}
+      </div>
+      <div class="f5-card is-cob ct">
+        <span class="ct-ico">P</span>
+        <h3>Парковка</h3>
+        <p class="ct-big">{site.parking}</p>
+        <p>Места у входа в клуб, оплачивать не нужно.</p>
       </div>
     </div>
   </section>
-  <Final />
+
+  <section class="f5-sec" aria-labelledby="way-t">
+    <div class="f5-split">
+      <div>
+        <h2 id="way-t">Как добраться</h2>
+        <p>Клуб находится в Железнодорожном районе Хабаровска, на проспекте 60-летия Октября, дом 210.</p>
+        <ul>
+          <li><Icon name="check" />На машине: у клуба бесплатная парковка на 50 мест, искать место во дворах не придётся.</li>
+          <li><Icon name="check" />На общественном транспорте: ищите остановки на проспекте 60-летия Октября рядом с домом 210.</li>
+          <li><Icon name="check" />Если не нашли вход, позвоните администратору: {site.phone.display}.</li>
+        </ul>
+      </div>
+      <div class="f5-split-ph"><Image src={img('/images/zal.jpg')} alt="Тренажёрный зал Urban210 с панорамными окнами" widths={[640, 1000]} sizes="(min-width: 980px) 46vw, 100vw" format="avif" quality={50} /></div>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="legal-t">
+    <div class="f5-card ct-legal">
+      <h2 id="legal-t">Реквизиты</h2>
+      <dl>
+        <div><dt>Организация</dt><dd>{site.legal.name}</dd></div>
+        <div><dt>ИНН</dt><dd>{site.legal.inn}</dd></div>
+        <div><dt>ОГРН</dt><dd>{site.legal.ogrn}</dd></div>
+        <div><dt>Юридический адрес</dt><dd>{site.legal.address}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <Final block="contacts_final" />
 </Layout>
+
+<style>
+  .ct { gap: 10px; }
+  .ct-ico { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--lil); color: var(--cob); font-weight: 800; font-size: 1.3rem; margin-bottom: 8px; }
+  .ct-ico :global(svg) { width: 24px; height: 24px; }
+  .f5-card.is-org .ct-ico { background: var(--card); color: var(--org); }
+  .f5-card.is-cob .ct-ico { background: var(--card); color: var(--ink); }
+  .ct h3 { font-size: 1rem !important; letter-spacing: 0 !important; font-weight: 700; opacity: 0.8; }
+  .ct .ct-big { color: inherit !important; font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.6rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; }
+  .ct-big a { color: inherit; }
+  .ct-link { color: var(--org); font-weight: 700; }
+  .ct-ms { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .ct-legal { padding: clamp(28px, 4vw, 48px); }
+  .ct-legal h2 { font-size: clamp(1.8rem, 1.3rem + 1.6vw, 2.6rem); letter-spacing: -0.04em; }
+  .ct-legal dl { display: grid; gap: 14px; margin-top: 20px; }
+  .ct-legal dl > div { display: grid; gap: 2px; }
+  .ct-legal dt { font-size: 0.9rem; color: var(--mut); }
+  .ct-legal dd { font-weight: 600; }
+  @media (min-width: 760px) { .ct-legal dl { grid-template-columns: repeat(3, auto) 1fr; gap: 32px; } }
+</style>

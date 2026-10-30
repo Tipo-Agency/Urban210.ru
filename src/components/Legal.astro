@@ -1,10 +1,21 @@
 ---
+// Юридическая страница в дизайне 05: первый экран с крошками и текст документа в карточке.
 import Layout from '../layouts/Layout.astro';
 import PageHero from './PageHero.astro';
 interface Props { title: string; description: string; path: string; html: string }
 const { title, description, path, html } = Astro.props;
 ---
 <Layout title={title} description={description}>
-  <PageHero title={title} crumbs={[{ href: path, label: title }]} />
-  <section class="sec" style="padding-top:0"><div class="wrap"><div class="legal" set:html={html} /></div></section>
+  <div class="legal-page"><PageHero title={title} crumbs={[{ href: path, label: title }]} /></div>
+  <section class="f5-sec" style="padding-top:12px" aria-label="Текст документа">
+    <div class="f5-card legal-card"><div class="f5-legal" set:html={html} /></div>
+  </section>
 </Layout>
+
+<style>
+  /* Длинные слова вроде «конфиденциальности» не должны вылезать за карточку на телефоне */
+  .legal-page :global(.f5-page-card h1) { font-size: clamp(1.7rem, 0.6rem + 5vw, 5rem); max-width: none; hyphens: auto; -webkit-hyphens: auto; overflow-wrap: anywhere; }
+  .legal-card { display: block; padding: clamp(24px, 4vw, 56px); border-radius: var(--r-xl); }
+  .legal-card :global(.f5-legal > :first-child) { margin-top: 0; }
+  .legal-card :global(.f5-legal a) { color: var(--org); text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+</style>

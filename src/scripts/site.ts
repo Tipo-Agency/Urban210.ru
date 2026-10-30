@@ -146,7 +146,7 @@ function initForm(form: HTMLFormElement) {
     } catch (err) {
       msg.textContent = (err as Error).message.startsWith('Не удалось') || (err as Error).message.startsWith('Слишком')
         ? (err as Error).message
-        : 'Не удалось отправить заявку. Позвоните нам или напишите в WhatsApp.';
+        : 'Не удалось отправить заявку. Позвоните нам, пожалуйста.';
       msg.classList.add('is-err');
     } finally {
       btn.disabled = false;
@@ -321,8 +321,8 @@ export function boot() {
   initHeroVideo();
   initDeferredFrames();
   document.addEventListener('click', (e) => {
-    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="tel:"], a[href*="wa.me"], a[href*="t.me"]');
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="tel:"], a[href*="max.ru"], a[href*="t.me"]');
     if (!a) return;
-    goal(a.href.startsWith('tel:') ? 'call_click' : a.href.includes('wa.me') ? 'whatsapp_click' : 'telegram_click');
+    goal(a.href.startsWith('tel:') ? 'call_click' : a.href.includes('max.ru') ? 'max_click' : 'telegram_click');
   });
 }

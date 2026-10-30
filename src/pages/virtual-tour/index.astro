@@ -1,35 +1,78 @@
 ---
+// 3D-тур Matterport загружается только по клику (f5-embed), ниже фотографии клуба.
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
 import Final from '../../components/Final.astro';
+import Cta from '../../components/Cta.astro';
+import Icon from '../../components/Icon.astro';
 import { img } from '../../data/images';
+import { site } from '../../data/site';
+
 const TOUR = 'https://my.matterport.com/show/?m=RX7Vmh4E33h&play=1&lang=ru';
-const photos = [
-  ['/images/zal.jpg', 'Тренажёрный зал'],
-  ['/images/cardio.jpg', 'Кардиозона'],
-  ['/images/free-weights.jpg', 'Свободные веса'],
-  ['/images/machines.jpg', 'Силовые тренажёры'],
-  ['/images/group.jpg', 'Групповая тренировка'],
-  ['/images/reception.jpg', 'Ресепшен и зона отдыха'],
+const photos: [string, string, string][] = [
+  ['/images/zal.jpg', 'Тренажёрный зал с панорамными окнами', '50% 50%'],
+  ['/images/cardio.jpg', 'Кардиозона с беговыми дорожками Technogym', '50% 50%'],
+  ['/images/free-weights.jpg', 'Свободные веса: гантели и штанги', '50% 50%'],
+  ['/images/machines.jpg', 'Силовые тренажёры', '50% 50%'],
+  ['/images/group.jpg', 'Зал групповых программ', '50% 30%'],
+  ['/images/functional.jpg', 'Функциональная зона и октагон', '50% 30%'],
+  ['/images/stretching.jpg', 'Растяжка в зале групповых программ', '50% 30%'],
+  ['/images/group-strength.jpg', 'Силовая групповая тренировка', '50% 30%'],
+  ['/images/reception.jpg', 'Ресепшен и зона отдыха', '50% 50%'],
 ];
 ---
-<Layout title="3D-тур по фитнес-клубу в Хабаровске" description="Виртуальный 3D-тур по фитнес-клубу Urban210 в Хабаровске: тренажёрный зал, кардиозона, студия групповых программ, раздевалки и SPA.">
-  <PageHero title="3D-тур по клубу" lead="Пройдитесь по залам, раздевалкам и SPA-зоне, не выходя из дома. А потом приходите посмотреть вживую." crumbs={[{ href: '/virtual-tour/', label: '3D-тур' }]} />
-  <section class="wrap" data-block="tour">
-    <div class="tour">
-      <button class="map-btn" type="button" data-frame={TOUR} data-title="3D-тур по клубу Urban210">
-        <span class="num accent" style="font-size:2.4rem">Начать тур</span>
-        <span class="muted">Загрузится 3D-модель клуба, около 10 МБ</span>
+<Layout
+  title="3D-тур по фитнес-клубу Urban210 в Хабаровске"
+  description={`Виртуальный 3D-тур по фитнес-клубу Urban210 в Хабаровске: тренажёрный зал ${site.facts.area}, кардиозона, зал групповых программ и раздевалки. Фото клуба.`}
+>
+  <PageHero
+    title="3D-тур по фитнес-клубу Urban210"
+    lead="Пройдитесь по залам и раздевалкам, не выходя из дома. А потом приходите посмотреть вживую."
+    crumbs={[{ href: '/virtual-tour/', label: '3D-тур' }]}
+  >
+    <a class="f5-go" href="#tour"><span>Открыть тур</span><i><Icon name="chev" /></i></a>
+    <Cta block="tour_hero">Оставить заявку</Cta>
+  </PageHero>
+
+  <section class="f5-sec" id="tour" aria-labelledby="tour-t">
+    <div class="f5-head">
+      <h2 id="tour-t">Клуб в 3D</h2>
+      <p>Тур загружается по нажатию. Перемещайтесь по клубу стрелками или кликом по полу.</p>
+    </div>
+    <div class="f5-embed">
+      <button type="button" data-frame={TOUR} data-title="3D-тур по фитнес-клубу Urban210">
+        <span class="vt-play"><Icon name="chev" /></span>
+        <span class="vt-big">Начать 3D-тур</span>
+        <span class="vt-sm">Загрузится модель клуба, около 10 МБ</span>
       </button>
     </div>
   </section>
-  <section class="sec" aria-label="Фотографии клуба">
-    <div class="wrap">
-      <ul class="gallery">
-        {photos.map(([src, alt]) => <li><Image src={img(src)} alt={alt} widths={[480, 800]} sizes="(min-width: 900px) 33vw, 50vw" format="avif" quality={50} /></li>)}
-      </ul>
-    </div>
+
+  <section class="f5-sec" aria-labelledby="ph-t">
+    <div class="f5-head"><h2 id="ph-t">Фотографии клуба</h2></div>
+    <ul class="f5-grid f5-grid-3 vt-gal">
+      {photos.map(([src, alt, pos]) => (
+        <li>
+          <figure>
+            <Image src={img(src)} alt={alt} widths={[480, 800]} sizes="(min-width: 1100px) 31vw, (min-width: 760px) 46vw, 100vw" format="avif" quality={50} style={`object-position:${pos}`} />
+            <figcaption>{alt}</figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
   </section>
-  <Final />
+
+  <Final block="tour_final" />
 </Layout>
+
+<style>
+  .vt-play { display: grid; place-items: center; width: 84px; height: 84px; margin: 0 auto 8px; border-radius: 50%; background: var(--org); color: #fff; }
+  .vt-play :global(svg) { width: 28px; height: 26px; }
+  .vt-big { font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem); font-weight: 800; letter-spacing: -0.04em; }
+  .vt-sm { color: var(--mut); font-weight: 500; font-size: 0.95rem; }
+  .vt-gal { list-style: none; }
+  .vt-gal figure { margin: 0; border-radius: var(--r-l); overflow: hidden; background: var(--card); }
+  .vt-gal :global(img) { display: block; width: 100%; aspect-ratio: 4 / 3; height: auto; object-fit: cover; }
+  .vt-gal figcaption { padding: 14px 20px 18px; font-weight: 600; font-size: 0.95rem; }
+</style>

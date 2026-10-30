@@ -1,17 +1,58 @@
 ---
+// Тренеры клуба: карточки ведут на страницы тренеров, ниже чем тренеры помогают в зале и на групповых.
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
 import Trainers from '../../components/Trainers.astro';
 import Final from '../../components/Final.astro';
 import Cta from '../../components/Cta.astro';
-import { personalText } from '../../data/content';
+import Icon from '../../components/Icon.astro';
+import { personal, rub } from '../../data/pricing';
+
+const help = [
+  { title: 'Персональные тренировки', text: `Программа под вашу цель, техника и контроль прогресса. ${personal.pack} тренировок за ${rub(personal.price)}.`, href: '/personal/', tone: 'is-org' },
+  { title: 'Тренажёрный зал', text: 'Инструкторы в зале покажут, как настроить тренажёр и выполнить упражнение без риска для спины и суставов.', href: '/zal/', tone: '' },
+  { title: 'Групповые программы', text: 'Силовые, функциональные, танцевальные и мягкие форматы в зале 150 м² с инструктором.', href: '/group/', tone: 'is-cob' },
+];
 ---
-<Layout title="Тренеры фитнес-клуба в Хабаровске" description="Тренеры фитнес-клуба Urban210 в Хабаровске: персональные тренировки, групповые программы, постановка техники. Первая персональная тренировка бесплатно при покупке подписки.">
-  <PageHero title="Тренеры" lead={`${personalText.lead} ${personalText.bonus}.`} crumbs={[{ href: '/trainers/', label: 'Тренеры' }]}>
+<Layout
+  title="Тренеры фитнес-клуба Urban210 в Хабаровске"
+  description="Тренеры фитнес-клуба Urban210 в Хабаровске: инструкторы тренажёрного зала и групповых программ. Персональные тренировки, постановка техники и программа под цель."
+>
+  <PageHero
+    title="Тренеры фитнес-клуба Urban210"
+    lead="Инструкторы тренажёрного зала и групповых программ. Помогут начать, поставят технику и составят программу под вашу цель."
+    crumbs={[{ href: '/trainers/', label: 'Тренеры' }]}
+  >
     <Cta goal="Персональные тренировки" block="trainers_hero">Записаться к тренеру</Cta>
+    <a class="f5-pill f5-pill-ink" href="/personal/">Персональные тренировки</a>
   </PageHero>
-  <section class="sec" style="padding-top:0" data-block="trainers" aria-label="Команда тренеров">
-    <div class="wrap"><Trainers /></div>
+
+  <section class="f5-sec team3" aria-labelledby="team-t">
+    <div class="f5-head">
+      <h2 id="team-t">Команда</h2>
+      <p>Нажмите на карточку, чтобы узнать, чем занимается тренер.</p>
+    </div>
+    <Trainers />
   </section>
-  <Final title="Первая тренировка с тренером" text="Оставьте номер: тренер или администратор перезвонит и подберёт время. При покупке подписки первая персональная тренировка бесплатно." goal="Персональные тренировки" block="final_trainers" formTitle="Записаться к тренеру" button="Записаться" />
+
+  <section class="f5-sec" aria-labelledby="help-t">
+    <div class="f5-head">
+      <h2 id="help-t">Где тренеры помогут</h2>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {help.map((h) => (
+        <a class:list={['f5-card', h.tone]} href={h.href}>
+          <h3>{h.title}</h3>
+          <p>{h.text}</p>
+          <span class="f5-card-more">Подробнее<Icon name="chev" /></span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <Final title="Запишитесь к тренеру" goal="Персональные тренировки" block="final_trainers" formTitle="Записаться к тренеру" button="Записаться" />
 </Layout>
+
+<style>
+  @media (min-width: 1100px) { .team3 :global(.f5-team) { grid-template-columns: repeat(3, 1fr); } }
+</style>

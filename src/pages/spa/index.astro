@@ -1,52 +1,129 @@
 ---
+// Сауна и хаммам: финская сауна, хаммам 40–50 °C, релакс-зона. Как восстанавливаться, тариф «Всё включено», соседние зоны.
+// Фото SPA-зоны пока нет, поэтому первый экран оранжевый без фото.
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
 import Faq from '../../components/Faq.astro';
 import Final from '../../components/Final.astro';
-import Cta from '../../components/Cta.astro';
-import { plans, rub } from '../../data/pricing';
+import Icon from '../../components/Icon.astro';
+import { site } from '../../data/site';
+import { plans, perDay, rub } from '../../data/pricing';
+
+const all = plans[2];
 
 const items = [
-  { title: 'Финская сауна', text: 'Сухой жар расслабляет мышцы после силовой и помогает восстановиться к следующей тренировке.' },
-  { title: 'Хаммам', text: 'Влажный пар 40–50 °C. Мягче сауны, полезен для дыхания и кожи. Хорошо чередовать с прохладным душем.' },
-  { title: 'Релакс-зона', text: 'Массажные кресла и тишина. Десять минут после тренировки, чтобы пульс пришёл в норму.' },
+  { title: 'Финская сауна', text: 'Сухой жар расслабляет мышцы после силовой и помогает восстановиться к следующей тренировке.', stk: 'сухой жар' },
+  { title: 'Хаммам', text: 'Влажный пар 40–50 °C. Мягче сауны, приятен для дыхания и кожи. Хорошо чередовать с прохладным душем.', stk: '40–50 °C' },
+  { title: 'Релакс-зона', text: 'Массажные кресла и тишина. Десять минут после тренировки, чтобы пульс пришёл в норму.', stk: 'кресла' },
 ];
-const steps = [
+
+const steps: [string, string][] = [
   ['Остыньте', 'Подождите 10–15 минут после тренировки, пока пульс и дыхание успокоятся.'],
   ['Прогрейтесь', 'Тёплый душ, затем сауна или хаммам на 8–12 минут.'],
-  ['Остудитесь', 'Прохладный душ и отдых 10 минут, выпейте воды.'],
+  ['Остудитесь', 'Прохладный душ и 10 минут отдыха, выпейте воды.'],
   ['Повторите', '2–3 захода и финал в релакс-зоне.'],
 ];
+
+const related = [
+  { href: '/group/', title: 'Групповые программы', text: `Тоже в тарифе «${all.name}»` },
+  { href: '/zal/', title: 'Тренажёрный зал', text: `${site.facts.machines} ${site.facts.brands}` },
+  { href: '/zones/cardio/', title: 'Кардиозона', text: 'Technogym Skillrun на втором этаже' },
+];
+
 const faq = [
-  { q: 'Сколько стоит SPA-зона?', a: `SPA входит в тариф «Всё включено»: ${rub(plans[2].month)} в месяц или ${rub(plans[2].year)} за год. Отдельно за сауну платить не нужно.` },
+  { q: 'Сколько стоит сауна в фитнес-клубе?', a: `Сауна, хаммам и релакс-зона входят в тариф «${all.name}»: ${rub(all.month)} в месяц, около ${perDay(all.month, 30)}\u00a0₽ в день, или ${rub(all.year)} за год. Отдельно за SPA платить не нужно.` },
   { q: 'Можно ли в сауну сразу после тренировки?', a: 'Лучше подождать 10–15 минут, пока пульс и дыхание восстановятся. Заходите на 8–12 минут, между заходами отдыхайте и пейте воду.' },
   { q: 'Кому нельзя в сауну и хаммам?', a: 'При повышенной температуре, острых воспалениях, гипертонии, болезнях сердца и сосудов, во время беременности. Если сомневаетесь, посоветуйтесь с врачом.' },
-  { q: 'Что взять с собой?', a: 'Полотенце, сланцы и шапочку для сауны. Душевые с гелем и шампунем есть в раздевалках.' },
+  { q: 'Что взять с собой?', a: 'Полотенце, сланцы и шапочку для сауны.' },
+  { q: 'Когда работает SPA-зона?', a: `В часы работы клуба: ${site.hours[0].days} ${site.hours[0].time}, ${site.hours[1].days} ${site.hours[1].time}.` },
 ];
 ---
-<Layout title="Сауна и хаммам в фитнес-клубе, Хабаровск" description={`SPA-зона фитнес-клуба Urban210: финская сауна, хаммам 40–50 °C и релакс-зона с массажными креслами. Входит в тариф «Всё включено» за ${rub(plans[2].month)} в месяц.`}>
-  <PageHero title="SPA-зона: сауна и хаммам" lead="Восстановление после тренировки без отдельной оплаты: финская сауна, хаммам и релакс-зона входят в тариф «Всё включено»." crumbs={[{ href: '/spa/', label: 'SPA-зона' }]}>
-    <Cta goal="Всё включено" block="spa_hero">Хочу «Всё включено»</Cta>
+<Layout
+  title="Фитнес с сауной и хаммамом в Хабаровске"
+  description={`Фитнес-клуб с сауной в Хабаровске: финская сауна, хаммам 40–50 °C и релакс-зона в Urban210. Входят в тариф «${all.name}» за ${rub(all.month)} в месяц вместе с залом.`}
+>
+  <PageHero
+    title="Сауна и хаммам"
+    lead={`Финская сауна, хаммам 40–50 °C и релакс-зона после тренировки. Без отдельной оплаты: всё входит в тариф «${all.name}».`}
+    crumbs={[{ href: '/zones/', label: 'Зоны клуба' }, { href: '/spa/', label: 'Сауна и хаммам' }]}
+    org
+  >
+    <a class="f5-go" href="/price/"><span>Тарифы и цены</span><i><Icon name="chev" /></i></a>
+    <a class="f5-pill f5-pill-ghost" href="#zayavka" data-lead="Тариф «Всё включено»" data-block="spa_hero">Оставить заявку</a>
   </PageHero>
-  <section class="sec" style="padding-top:0" data-block="spa_items" aria-labelledby="spa-t">
-    <div class="wrap">
-      <h2 id="spa-t" class="sr">Что есть в SPA-зоне</h2>
-      <div class="grid-3">
-        {items.map((it, i) => (
-          <article class:list={['tile', i === 0 && 'zone-spa']} style="min-height:280px;justify-content:flex-end" data-rise>
-            <h3>{it.title}</h3>
-            <p style={i === 0 ? 'color:rgb(245 240 234 / .85)' : ''}>{it.text}</p>
-          </article>
-        ))}
+
+  <section class="f5-sec" aria-labelledby="spa-items-t">
+    <div class="f5-head">
+      <h2 id="spa-items-t">Что есть в SPA-зоне</h2>
+      <p>Три способа восстановиться после зала или групповой тренировки.</p>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {items.map((it, i) => (
+        <article class:list={['f5-card', 'z-spa', i === 1 && 'is-cob']} data-rise>
+          <span class:list={['f5-stk', 'z-stk', 'f5-stk-org']} data-spin><b>{it.stk}</b></span>
+          <h3>{it.title}</h3>
+          <p>{it.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="spa-how-t">
+    <div class="f5-head">
+      <h2 id="spa-how-t">Как правильно восстанавливаться</h2>
+      <p>Простая схема, чтобы сауна помогала, а не утомляла.</p>
+    </div>
+    <ol class="f5-grid f5-grid-4 z-steps">
+      {steps.map(([t, d], i) => (
+        <li class="f5-card" data-rise>
+          <span class="z-num">{i + 1}</span>
+          <h3>{t}</h3>
+          <p>{d}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="spa-price-t">
+    <div class="f5-card is-cob z-teaser">
+      <div>
+        <h2 id="spa-price-t">SPA в тарифе «{all.name}»</h2>
+        <p>{rub(all.month)} в месяц или {rub(all.year)} за год. В тариф также входят тренажёрный зал в любое время и все групповые программы.</p>
       </div>
+      <a class="f5-pill f5-pill-wht" href="/price/">Сравнить тарифы</a>
     </div>
   </section>
-  <section class="sec" style="padding-top:0" data-block="spa_how" aria-labelledby="how-t">
-    <div class="wrap">
-      <div class="head"><h2 id="how-t">Как правильно восстанавливаться</h2></div>
-      <ol class="steps">{steps.map(([t, d]) => <li><h3>{t}</h3><p>{d}</p></li>)}</ol>
+
+  <section class="f5-sec" aria-labelledby="spa-rel-t">
+    <div class="f5-head f5-head-row">
+      <div><h2 id="spa-rel-t">Перед сауной</h2></div>
+      <a class="f5-pill f5-pill-wht" href="/zones/">Все зоны клуба</a>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {related.map((r) => (
+        <a class="f5-card" href={r.href}>
+          <h3>{r.title}</h3>
+          <p>{r.text}</p>
+          <span class="f5-card-more">Подробнее <Icon name="chev" /></span>
+        </a>
+      ))}
     </div>
   </section>
-  <Faq items={faq} title="Вопросы о SPA" />
-  <Final title="SPA в тарифе «Всё включено»" block="final_spa" goal="Всё включено" text="Оставьте номер: администратор расскажет про тариф «Всё включено» и покажет SPA-зону, когда придёте в клуб." />
+
+  <Faq items={faq} title="Вопросы о сауне и хаммаме" />
+
+  <Final block="final_spa" title="Сауна и хаммам в тарифе «Всё включено»" goal="Тариф «Всё включено»" />
 </Layout>
+
+<style>
+  .z-spa { position: relative; min-height: 300px; justify-content: flex-end; }
+  .z-stk { top: 24px; right: 24px; rotate: 10deg; width: 104px; height: 104px; }
+  .z-stk b { font-size: 1.05rem; margin: 0; }
+  .z-steps { list-style: none; }
+  .z-num { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--org); color: #fff; font-weight: 800; font-size: 1.3rem; margin-bottom: 8px; }
+  .z-teaser { gap: 24px; padding: clamp(28px, 4vw, 56px); border-radius: var(--r-xl); }
+  .z-teaser h2 { font-size: clamp(1.9rem, 1.3rem + 2.4vw, 3.2rem); letter-spacing: -0.045em; line-height: 1; }
+  .z-teaser p { margin-top: 14px; max-width: 56ch; font-size: 1.08rem; }
+  .z-teaser .f5-pill { width: fit-content; }
+  @media (min-width: 980px) { .z-teaser { flex-direction: row; align-items: center; justify-content: space-between; } }
+</style>

@@ -1,8 +1,8 @@
 ---
 // Одна форма на сайт: имя, телефон, согласие. Отправка в /api/lead/ (Telegram и CRM на сервере).
-// Если сервер не ответил, предлагаем позвонить или написать в WhatsApp.
+// Если сервер не ответил, предлагаем позвонить.
 import Icon from './Icon.astro';
-import { site, whatsappLink } from '../data/site';
+import { site, messengerLinks } from '../data/site';
 interface Props { title?: string; goal?: string; block?: string; id?: string; button?: string }
 const { title = 'Оставить заявку', goal = 'Заявка с сайта', block = 'final', id = 'form', button = 'Отправить заявку' } = Astro.props;
 ---
@@ -30,6 +30,6 @@ const { title = 'Оставить заявку', goal = 'Заявка с сай�
   <div class="form-done" role="status">
     <span class="ok"><Icon name="check" /></span>
     <h3>Заявка у нас</h3>
-    <p class="muted">Администратор перезвонит в часы работы клуба. Если удобнее, напишите сразу в <a href={whatsappLink('Здравствуйте! Оставил заявку на сайте Urban210')} target="_blank" rel="noopener">WhatsApp</a>.</p>
+    <p class="muted">Администратор перезвонит в часы работы клуба.{messengerLinks().length > 0 && <> Если удобнее, напишите в {messengerLinks().map((m, i) => <>{i > 0 && ' или '}<a href={m.href} target="_blank" rel="noopener">{m.label}</a></>)}.</>}</p>
   </div>
 </form>

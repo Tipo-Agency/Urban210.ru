@@ -1,0 +1,119 @@
+---
+// Кардиозона: беговые дорожки Technogym Skillrun на втором этаже, как тренироваться, тариф, соседние зоны.
+import { Image } from 'astro:assets';
+import Layout from '../../../layouts/Layout.astro';
+import PageHero from '../../../components/PageHero.astro';
+import Faq from '../../../components/Faq.astro';
+import Final from '../../../components/Final.astro';
+import Icon from '../../../components/Icon.astro';
+import { img } from '../../../data/images';
+import { site } from '../../../data/site';
+import { plans, perDay, rub } from '../../../data/pricing';
+
+const dayPrice = perDay(plans[0].month, 30);
+
+const modes = [
+  { title: 'Ходьба в наклоне', text: 'Спокойный пульс, нагрузка на ноги и ягодицы, подходит для начала и для разминки перед силовой.' },
+  { title: 'Ровный бег', text: 'Темп, при котором можно говорить. 20–40 минут развивают выносливость и сердце.' },
+  { title: 'Интервалы', text: 'Короткие ускорения и отдых. Занимают меньше времени, нагружают сильнее.' },
+];
+
+const related = [
+  { href: '/zal/', title: 'Тренажёрный зал', text: `${site.facts.machines} ${site.facts.brands}` },
+  { href: '/zones/free-weights/', title: 'Свободные веса', text: 'Гантели до 60 кг, штанги, помосты' },
+  { href: '/zones/functional/', title: 'Функциональная зона', text: 'TRX, медболы, октагон' },
+];
+
+const faq = [
+  { q: 'Какие беговые дорожки в кардиозоне?', a: 'Technogym Skillrun. На них можно ходить в наклоне, бегать в ровном темпе и делать интервалы.' },
+  { q: 'Приходится ли ждать свободную дорожку?', a: 'Кардиозона на втором этаже большая, поэтому свободная дорожка находится почти всегда, даже вечером.' },
+  { q: 'В какой тариф входит кардиозона?', a: `В любой. ${plans[0].name} за ${rub(plans[0].month)} в месяц действует ${plans[0].hours}, «${plans[1].name}» за ${rub(plans[1].month)} открывает кардиозону на всё время работы клуба.` },
+  { q: 'Сколько ходить по дорожке, чтобы похудеть?', a: 'Для начала 3–4 раза в неделю по 30–40 минут ходьбы в наклоне или спокойного бега. Лучше сочетать с силовыми тренировками и следить за питанием.' },
+];
+---
+<Layout
+  title="Кардиозона с беговыми дорожками Technogym, Хабаровск"
+  description={`Кардиозона фитнес-клуба Urban210 в Хабаровске: беговые дорожки Technogym Skillrun на втором этаже, без очередей. Входит в любую карту, от ${dayPrice}\u00a0₽ в день.`}
+>
+  <PageHero
+    title="Кардиозона с беговыми дорожками"
+    lead={`Беговые дорожки Technogym Skillrun на втором этаже клуба. Входит в любую карту: от ${dayPrice}\u00a0₽ в день.`}
+    crumbs={[{ href: '/zones/', label: 'Зоны клуба' }, { href: '/zones/cardio/', label: 'Кардиозона' }]}
+    image="/images/cardio.jpg"
+    alt="Ряд беговых дорожек Technogym Skillrun в кардиозоне Urban210"
+    position="50% 50%"
+  >
+    <a class="f5-go" href="/price/"><span>Тарифы и цены</span><i><Icon name="chev" /></i></a>
+    <a class="f5-pill f5-pill-org" href="#zayavka" data-lead="Заявка на карту" data-block="cardio_hero">Оставить заявку</a>
+  </PageHero>
+
+  <section class="f5-sec" aria-labelledby="cardio-what-t">
+    <div class="f5-split">
+      <div class="f5-split-ph"><Image src={img('/images/cardio.jpg')} alt="Гости клуба на беговых дорожках" widths={[480, 800, 1100]} sizes="(min-width: 980px) 46vw, 92vw" format="avif" quality={50} style="object-position:15% 50%" /></div>
+      <div>
+        <h2 id="cardio-what-t">Technogym Skillrun на втором этаже</h2>
+        <p>Кардиозона вынесена на второй этаж, отдельно от силовой части зала. Дорожки стоят в ряд, между ними достаточно места, свободная находится почти всегда.</p>
+        <ul>
+          <li><Icon name="check" /><span>Ходьба, бег и интервалы на одной дорожке</span></li>
+          <li><Icon name="check" /><span>Можно размяться перед силовой и вернуться к весам</span></li>
+          <li><Icon name="check" /><span>Открыта {site.hours[0].days} {site.hours[0].time}, {site.hours[1].days} {site.hours[1].time}</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="cardio-how-t">
+    <div class="f5-head">
+      <h2 id="cardio-how-t">Как заниматься на дорожке</h2>
+      <p>Три режима, из которых собирается любая кардиотренировка.</p>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {modes.map((m, i) => (
+        <article class:list={['f5-card', i === 1 && 'is-org']} data-rise>
+          <span class="z-num">{i + 1}</span>
+          <h3>{m.title}</h3>
+          <p>{m.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="cardio-price-t">
+    <div class="f5-card is-cob z-teaser">
+      <div>
+        <h2 id="cardio-price-t">Кардиозона в любой карте</h2>
+        <p>{plans[0].name}: {rub(plans[0].month)} в месяц, около {dayPrice}&nbsp;₽ в день, {plans[0].hours}. «{plans[1].name}»: {rub(plans[1].month)} в месяц, в любое время работы клуба.</p>
+      </div>
+      <a class="f5-pill f5-pill-wht" href="/price/">Сравнить тарифы</a>
+    </div>
+  </section>
+
+  <section class="f5-sec" aria-labelledby="cardio-rel-t">
+    <div class="f5-head f5-head-row">
+      <div><h2 id="cardio-rel-t">После кардио</h2></div>
+      <a class="f5-pill f5-pill-wht" href="/zones/">Все зоны клуба</a>
+    </div>
+    <div class="f5-grid f5-grid-3">
+      {related.map((r) => (
+        <a class="f5-card" href={r.href}>
+          <h3>{r.title}</h3>
+          <p>{r.text}</p>
+          <span class="f5-card-more">Подробнее <Icon name="chev" /></span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <Faq items={faq} title="Вопросы о кардиозоне" />
+
+  <Final block="final_cardio" title="Подберём карту для кардио" />
+</Layout>
+
+<style>
+  .z-num { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--bg); color: var(--org); font-weight: 800; font-size: 1.3rem; margin-bottom: 8px; }
+  .z-teaser { gap: 24px; padding: clamp(28px, 4vw, 56px); border-radius: var(--r-xl); }
+  .z-teaser h2 { font-size: clamp(1.9rem, 1.3rem + 2.4vw, 3.2rem); letter-spacing: -0.045em; line-height: 1; }
+  .z-teaser p { margin-top: 14px; max-width: 56ch; font-size: 1.08rem; }
+  .z-teaser .f5-pill { width: fit-content; }
+  @media (min-width: 980px) { .z-teaser { flex-direction: row; align-items: center; justify-content: space-between; } }
+</style>

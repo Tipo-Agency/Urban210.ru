@@ -5,6 +5,7 @@ import node from '@astrojs/node';
 export default defineConfig({
   site: process.env.PUBLIC_SITE_URL || 'https://urban210.ru',
   trailingSlash: 'always',
+  redirects: { '/promo/1-rubl/': '/price/' },
   output: 'static',
   adapter: node({ mode: 'standalone' }),
   build: { inlineStylesheets: 'always' },

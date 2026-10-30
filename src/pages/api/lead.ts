@@ -115,7 +115,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   results.forEach((r) => r.status === 'rejected' && console.error('[lead]', r.reason));
   if (!delivered) {
     console.error('[lead] не доставлена ни в один канал', { goal: lead.goal, page: lead.page });
-    return json({ ok: false, error: 'Не удалось отправить. Позвоните или напишите в WhatsApp.' }, 503);
+    return json({ ok: false, error: 'Не удалось отправить. Позвоните нам, пожалуйста.' }, 503);
   }
   return json({ ok: true });
 };

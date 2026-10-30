@@ -1,0 +1,104 @@
+---
+// Страница тренера: имя, роль, фото, чем занимается специалист с такой ролью. Без придуманной биографии:
+// только роль из src/data/content.ts и общий текст о работе в этой роли.
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Trainers from '../../components/Trainers.astro';
+import Final from '../../components/Final.astro';
+import Cta from '../../components/Cta.astro';
+import Icon from '../../components/Icon.astro';
+import { trainers } from '../../data/content';
+import { SITE_URL } from '../../data/site';
+
+const slugOf = (photo: string) => photo.split('/').pop()!.replace(/\.[a-z]+$/, '');
+
+export function getStaticPaths() {
+  return trainers.map((t) => ({ params: { slug: t.photo.split('/').pop()!.replace(/\.[a-z]+$/, '') }, props: { t } }));
+}
+const { t } = Astro.props;
+const slug = slugOf(t.photo);
+const role = t.role.toLowerCase();
+const isGroup = role.includes('групповых');
+const isZal = role.includes('тренажёрного зала');
+const isCoord = role.includes('координатор');
+
+// Что делает специалист в этой роли (общий текст о роли, не биография)
+const duties: string[] = [];
+if (isZal && !isCoord) duties.push(
+  'Показывает, как настроить тренажёр под рост и вес, и следит за техникой упражнений.',
+  'Помогает новичкам освоиться в зале и составить первую программу.',
+  'Проводит персональные тренировки под цель гостя.',
+);
+if (isCoord) duties.push(
+  'Отвечает за работу тренажёрного зала и инструкторов.',
+  'Помогает гостям разобраться с тренажёрами и подобрать формат занятий.',
+  'Подскажет, к какому тренеру записаться на персональные тренировки.',
+);
+if (isGroup) duties.push(
+  'Ведёт групповые тренировки в зале групповых программ.',
+  'Показывает технику и подбирает нагрузку под уровень каждого в группе.',
+  'Помогает выбрать направление, если вы пришли на групповые впервые.',
+);
+if (role.includes('tia bo')) duties.push('Ведёт тренировки TIA BO.');
+
+const links = [
+  { href: '/personal/', title: 'Персональные тренировки', text: 'Программа под цель, техника и контроль прогресса.', tone: 'is-org' },
+  ...(isZal ? [{ href: '/zal/', title: 'Тренажёрный зал', text: 'Тренажёры, свободные веса и кардиозона.', tone: '' }] : []),
+  ...(isGroup ? [{ href: '/group/', title: 'Групповые программы', text: 'Направления и запись на тренировки.', tone: 'is-cob' }] : []),
+];
+
+const description = `${t.name}, ${role} фитнес-клуба Urban210 в Хабаровске. Чем занимается тренер, как записаться на персональные тренировки${isGroup ? ' и групповые занятия' : ''}.`;
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: t.name,
+  jobTitle: t.role,
+  url: SITE_URL + '/trainers/' + slug + '/',
+  worksFor: { '@id': SITE_URL + '/#club' },
+};
+---
+<Layout title={`${t.name}, тренер фитнес-клуба Urban210`} description={description} jsonld={[person]}>
+  <PageHero
+    title={t.name}
+    lead={t.role}
+    crumbs={[{ href: '/trainers/', label: 'Тренеры' }, { href: `/trainers/${slug}/`, label: t.name }]}
+    image={t.photo}
+    alt={`${t.name}, ${role}`}
+    position="50% 12%"
+  >
+    <Cta goal="Персональные тренировки" block={`trainer_${slug}_hero`}>Записаться к тренеру</Cta>
+  </PageHero>
+
+  <section class="f5-sec" aria-labelledby="do-t">
+    <div class="f5-split">
+      <div>
+        <h2 id="do-t">Чем занимается</h2>
+        <p>{t.role}. Вот с чем можно обратиться.</p>
+        <ul>{duties.map((d) => <li><Icon name="check" />{d}</li>)}</ul>
+      </div>
+      <div class="f5-grid">
+        {links.map((l) => (
+          <a class:list={['f5-card', l.tone]} href={l.href}>
+            <h3>{l.title}</h3>
+            <p>{l.text}</p>
+            <span class="f5-card-more">Подробнее<Icon name="chev" /></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="f5-sec team3" aria-labelledby="team-t">
+    <div class="f5-head f5-head-row">
+      <div><h2 id="team-t">Вся команда</h2></div>
+      <a class="f5-pill f5-pill-wht" href="/trainers/">Все тренеры</a>
+    </div>
+    <Trainers />
+  </section>
+
+  <Final title="Запишитесь к тренеру" goal="Персональные тренировки" block={`final_trainer_${slug}`} formTitle="Записаться к тренеру" button="Записаться" />
+</Layout>
+
+<style>
+  @media (min-width: 1100px) { .team3 :global(.f5-team) { grid-template-columns: repeat(3, 1fr); } }
+</style>
