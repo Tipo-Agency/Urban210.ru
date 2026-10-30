@@ -65,11 +65,18 @@ async function sendTelegram(l: Lead) {
   return true;
 }
 
+// Адрес входа с метками (utm, yclid): Calltouch берёт источник из сессии, а этот адрес страхует, если сессии нет
+function landingUrl(l: Lead) {
+  const land = l.attribution.landing;
+  if (land && land.includes('?') && /utm_|yclid|gclid/.test(land)) return 'https://urban210.ru' + land;
+  return l.url || 'https://urban210.ru' + (l.page || '/');
+}
+
 // Заявки в Calltouch: тот же публичный метод register, что вызывал старый сайт на WordPress
 async function sendCalltouch(l: Lead) {
   const id = env('CALLTOUCH_SITE_ID');
   if (!id) return false;
-  const data: Record<string, string> = { fio: l.name, phoneNumber: '+' + l.phone, subject: `Заявка с urban210.ru: ${l.goal}`, requestUrl: l.url || 'https://urban210.ru' + (l.page || '/'), sessionId: l.ctSession };
+  const data: Record<string, string> = { fio: l.name, phoneNumber: '+' + l.phone, subject: `Заявка с urban210.ru: ${l.goal}`, requestUrl: landingUrl(l), sessionId: l.ctSession };
   const body = Object.entries(data).filter(([, v]) => v).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
   const res = await fetch(`https://api.calltouch.ru/calls-service/RestAPI/requests/${id}/register/`, {
     method: 'POST',

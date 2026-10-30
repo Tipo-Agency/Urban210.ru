@@ -22,8 +22,9 @@ function goal(name: string, params: Record<string, string> = {}) {
 
 function captureAttribution() {
   try {
-    if (sessionStorage.getItem(STORE)) return;
+    // Метки нового перехода из рекламы перезаписывают старые; без меток оставляем то, что уже сохранено
     const q = new URLSearchParams(location.search);
+    if (sessionStorage.getItem(STORE) && !KEYS.some((k) => q.get(k))) return;
     const data: Record<string, string> = { landing: location.pathname + location.search, referrer: document.referrer || '' };
     for (const k of KEYS) {
       const v = q.get(k);
