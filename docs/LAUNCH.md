@@ -46,3 +46,34 @@ ssh tipa-prod "mkdir -p /var/www/urban210/releases /etc/urban210 /var/www/certbo
 - Ссылки на Макс и Telegram клуба.
 - Логотип (новый брендбук).
 - Доступ к Яндекс Вебмастеру и Search Console, если их нет на этом Mac.
+
+## DNS urban210.ru до переезда (nic.ru, DNS-master DP2108262055, снято 30.10.2026)
+
+Откат: вернуть A `@` и A `www` на 212.19.27.203.
+
+```
+$TTL 3600
+urban210.ru.               IN NS    ns4-cloud.nic.ru. / ns3-l2.nic.ru. / ns4-l2.nic.ru. / ns8-l2.nic.ru. / ns8-cloud.nic.ru.
+urban210.ru.               IN A     212.19.27.203
+co.urban210.ru.            IN A     185.165.123.36
+ko.urban210.ru.            IN A     185.165.123.36
+old.urban210.ru.           IN A     195.24.68.21
+www.urban210.ru.           IN A     212.19.27.203
+www.co.urban210.ru.        IN A     185.165.123.36
+www.ko.urban210.ru.        IN A     185.165.123.36
+www.old.urban210.ru.       IN A     195.24.68.21
+urban210.ru.urban210.ru.   IN MX    5 mx02.nicmail.ru. / 10 mx01.nicmail.ru. / 20 mx03.nicmail.ru.
+promo.urban210.ru.         IN CNAME lp556605.myflexbe.ru.
+_dmarc.urban210.ru.urban210.ru. IN TXT "v=DMARC1; p=quarantine"
+urban210.ru.urban210.ru.   IN TXT   "v=spf1 include:dc1.nicmail.ru include:dc2.nicmail.ru ?all"
+```
+
+Замечание: MX, SPF и DMARC записаны на имя `urban210.ru.urban210.ru` (лишний суффикс), поэтому у самого urban210.ru сейчас нет MX и SPF. Не трогали, нужно решение клуба: если почта @urban210.ru в nicmail нужна, эти записи надо перенести на `@`.
+
+## Итог запуска 30.10.2026
+
+- DNS (nic.ru): A `@` и A `www` → 217.199.252.14; добавлены TXT `google-site-verification=ArIkaqD0TXglUBRNKi9sAXL041ef5LL1czl4HU5Eac8` и `yandex-verification: 93ab28aaa15c1022`. Остальные записи не трогали.
+- HTTPS: Let's Encrypt для urban210.ru и www (до 28.01.2027, продлевается certbot сам).
+- Проверено на живом сайте: страницы 200, http и www → https://urban210.ru, старые адреса 301, WordPress 410, Метрика грузится, Calltouch подменяет номер (на сайте виден номер подмены), тестовая заявка «ТЕСТ сайта, не звонить» принята Calltouch.
+- Google Search Console (аккаунт «Типа Агентство»): доменный ресурс urban210.ru подтверждён, sitemap отправлен.
+- Яндекс Вебмастер: сайт добавлен, проверка DNS запущена (Яндекс проверяет до двух дней), sitemap и регион добавить после подтверждения.
