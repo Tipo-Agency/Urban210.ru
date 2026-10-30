@@ -185,7 +185,9 @@ function initDialog() {
     lockScroll(true);
     goal('cta_click', { goal: g, block: blockInput.value });
     if (g.startsWith('Тариф')) goal('plan_choice', { plan: g });
-    setTimeout(() => form.querySelector<HTMLInputElement>('input[name=name]')?.focus(), 50);
+    // На телефоне не открываем клавиатуру сразу: иначе iOS сдвигает форму и крестик уходит за экран
+    if (!matchMedia('(max-width: 600px)').matches) setTimeout(() => form.querySelector<HTMLInputElement>('input[name=name]')?.focus(), 50);
+    dlg.querySelector<HTMLElement>(':scope > div')?.scrollTo(0, 0);
   });
   dlg.addEventListener('close', () => lockScroll(false));
   dlg.querySelector('[data-close]')?.addEventListener('click', () => dlg.close());
