@@ -139,6 +139,28 @@ function initForm(form: HTMLFormElement) {
   });
 }
 
+/* ---------- Блокировка прокрутки (iOS не слушает overflow: hidden у body) ---------- */
+let lockY = 0;
+let locks = 0;
+function lockScroll(on: boolean) {
+  const b = document.body;
+  if (on) {
+    if (locks++ > 0) return;
+    lockY = scrollY;
+    b.style.top = `-${lockY}px`;
+    b.classList.add('is-locked');
+  } else {
+    if (locks === 0 || --locks > 0) return;
+    b.classList.remove('is-locked');
+    b.style.top = '';
+    const html = document.documentElement;
+    const prev = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';
+    scrollTo(0, lockY);
+    html.style.scrollBehavior = prev;
+  }
+}
+
 /* ---------- Окно заявки ---------- */
 function initDialog() {
   const dlg = document.querySelector<HTMLDialogElement>('[data-dialog]');
@@ -159,10 +181,12 @@ function initDialog() {
     form.classList.remove('is-done');
     closeMenu();
     dlg.showModal();
+    lockScroll(true);
     goal('cta_click', { goal: g, block: blockInput.value });
     if (g.startsWith('Тариф')) goal('plan_choice', { plan: g });
     setTimeout(() => form.querySelector<HTMLInputElement>('input[name=name]')?.focus(), 50);
   });
+  dlg.addEventListener('close', () => lockScroll(false));
   dlg.querySelector('[data-close]')?.addEventListener('click', () => dlg.close());
   dlg.addEventListener('click', (e) => {
     if (e.target === dlg) dlg.close();
@@ -205,9 +229,11 @@ function initHeader() {
   update();
 
   const setOpen = (open: boolean) => {
+    if (open === menu.classList.contains('is-open')) return;
     menu.classList.toggle('is-open', open);
     burger.setAttribute('aria-expanded', String(open));
-    document.body.style.overflow = open ? 'hidden' : '';
+    header.classList.remove('is-hidden');
+    lockScroll(open);
     header.classList.toggle('is-solid', open || scrollY > 40);
   };
   closeMenu = () => setOpen(false);
