@@ -19,7 +19,8 @@ interface Props {
 const { title, description, image = '/og/default.jpg', noindex = false, jsonld = [], type = 'website', bare = false } = Astro.props;
 const path = Astro.url.pathname;
 const canonical = SITE_URL + path;
-const fullTitle = path === '/' ? title : `${title} | Urban210`;
+// Суффикс бренда только если заголовок остаётся в пределах 60 знаков (иначе поисковик обрежет)
+const fullTitle = path === '/' || `${title} | Urban210`.length > 60 ? title : `${title} | Urban210`;
 const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 const messengers = messengerLinks();
 const year = new Date().getFullYear();

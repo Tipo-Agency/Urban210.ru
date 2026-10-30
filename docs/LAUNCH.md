@@ -7,7 +7,7 @@
 - Статика: `/var/www/urban210/current/client`, отдаёт nginx (`deploy/prod-nginx.conf` → `/etc/nginx/sites-available/urban210.ru`).
 - Заявки: node `server/entry.mjs` на 127.0.0.1:3210, служба `urban210` (`deploy/urban210.service`), ключи в `/etc/urban210/urban210.env`.
 - Выкатка: `bash scripts/deploy-prod.sh` (релизы в `/var/www/urban210/releases`, ссылка `current`, хранятся 3 последних).
-- Превью https://urban210.uchetgram.ru остаётся отдельно: `bash scripts/deploy-preview.sh`, noindex, без Метрики.
+- Превью и концепции дизайна убраны с сервера 30.10.2026 (остались в истории git, коммит 622cd18).
 
 ## Что настроено в коде
 
