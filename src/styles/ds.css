@@ -2,7 +2,10 @@
    Чистый чёрный фон, ровные оранжевый и кобальт, скруглённые карточки, Geologica.
    Классы f5-* общие для всех страниц, корневой контейнер .f5 ставит Layout. */
   .f5 {
-    --org: #ff5722; --org-2: #ff7a4d; --cob: #2b3be0; --cob-d: #1c278f; --pch: #ffe0d2; --lil: #e3e5ff;
+    --org: #ff5722; --org-2: #ff7a4d; --pch: #ffe0d2;
+    /* Второй цвет. Синего в бренде Urban нет (30.10.2026), поэтому графит и тёплые тона.
+       Вернуть синий: --cob: #2b3be0; --cob-d: #1c278f; --cob-txt: #6f7bff; --lil: #e3e5ff; --hov: #2b3be0; --hov-ink: #fff; --focus: #2b3be0 */
+    --cob: #242424; --cob-d: #161616; --cob-txt: #ff7a4d; --lil: #ffe0d2; --hov: #ff5722; --hov-ink: #000; --focus: #fff;
     --ink: #f4f2ee; --mut: #a9a6b8; --bg: #000; --card: #111;
     --r-xl: 40px; --r-l: 32px; --r-m: 24px;
     --lift: cubic-bezier(0.34, 1.45, 0.64, 1);
@@ -25,7 +28,7 @@
   .f5-pill-org { background: var(--org); color: #fff; }
   .f5-pill-org:hover { background: #ff6a3a; }
   .f5-pill-ink { background: var(--ink); color: var(--bg); }
-  .f5-pill-ink:hover { background: var(--cob); }
+  .f5-pill-ink:hover { background: var(--hov); color: var(--hov-ink); }
   .f5-pill-wht { background: var(--card); color: var(--ink); }
   .f5-pill-ghost { background: rgb(255 255 255 / 0.18); color: #fff; box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.55); }
   .f5-pill-ghost:hover { background: rgb(255 255 255 / 0.3); }
@@ -33,11 +36,11 @@
   .f5-go { display: inline-flex; align-items: center; gap: 18px; min-height: 64px; padding: 6px 6px 6px 28px; border-radius: 999px; background: var(--ink); color: var(--bg); font-weight: 700; font-size: 1.05rem; transition: transform 0.35s var(--lift), background-color 0.25s ease; }
   .f5-go i { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--card); color: var(--org); transition: transform 0.45s var(--lift); }
   .f5-go svg { width: 20px; height: 18px; }
-  .f5-go:hover { transform: translateY(-2px); background: var(--cob); }
+  .f5-go:hover { transform: translateY(-2px); background: var(--hov); color: var(--hov-ink); }
   .f5-go:hover i { transform: rotate(-12deg) scale(1.06); }
   .f5-go:active { transform: scale(0.96); }
   .f5-go-wht { background: var(--card); color: var(--ink); }
-  .f5-go-wht i { background: var(--org); color: #fff; }
+  .f5-go-wht i { background: var(--org); color: #000; }
   .f5-go-wht:hover { background: var(--card); }
 
   /* ---------- Шапка ---------- */
@@ -45,15 +48,17 @@
   .f5-bar { display: flex; align-items: center; gap: 18px; min-height: 68px; padding: 8px 8px 8px 24px; background: rgb(17 17 17 / 0.92); backdrop-filter: blur(16px); border-radius: 999px; box-shadow: var(--sh); }
   .f5-logo { display: inline-flex; align-items: center; gap: 2px; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.04em; color: var(--ink); }
   .f5-logo b { color: var(--org); font-weight: 800; }
-  .f5-logo-chev { display: grid; place-items: center; width: 26px; height: 26px; margin-left: 6px; border-radius: 50%; background: var(--org); color: #fff; }
-  .f5-logo-chev svg { width: 12px; height: 11px; }
+  .f5-logo-mark { margin-left: 8px; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.12); border-radius: 50%; }
+  .f5-foot .f5-logo-mark { box-shadow: none; }
   .f5-nav { display: none; gap: 4px; margin-inline: auto; }
-  .f5-nav a { padding: 10px 14px; border-radius: 999px; font-weight: 600; font-size: 0.95rem; color: var(--ink); transition: background-color 0.2s ease; }
+  .f5-nav a { white-space: nowrap; padding: 10px 13px; border-radius: 999px; font-weight: 600; font-size: 0.95rem; color: var(--ink); transition: background-color 0.2s ease; }
   .f5-nav a:hover { background: var(--bg); }
-  .f5-tel { display: none; font-weight: 700; font-size: 0.95rem; color: var(--ink); }
+  .f5-tel { display: none; white-space: nowrap; font-weight: 700; font-size: 0.95rem; color: var(--ink); }
   .f5-top-cta { margin-left: auto; min-height: 48px; padding: 0 18px; font-size: 0.92rem; }
-  @media (min-width: 1000px) { .f5-nav { display: flex; } .f5-top-cta { margin-left: 0; } }
-  @media (min-width: 1180px) { .f5-tel { display: inline; } }
+  /* Полное меню только там, где оно влезает в одну строку; ниже бургер */
+  @media (min-width: 1280px) { .f5-nav { display: flex; } .f5-top-cta { margin-left: 0; } }
+  @media (min-width: 1420px) { .f5-tel { display: inline; } }
+  @media (min-width: 720px) and (max-width: 1279px) { .f5-tel { display: inline; margin-left: auto; } .f5-top-cta { margin-left: 0; } }
 
   /* ---------- Первый экран ---------- */
   .f5-hero { padding-top: 22px; }
@@ -85,7 +90,7 @@
 
   .f5-stk { position: absolute; z-index: 4; display: grid; place-content: center; text-align: center; width: 116px; height: 116px; border-radius: 50%; font-size: 0.72rem; font-weight: 600; line-height: 1.15; padding: 12px; }
   .f5-stk b { display: block; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin-bottom: 4px; }
-  .f5-stk-cob { background: var(--cob); color: #fff; top: 0; right: 6%; rotate: 12deg; box-shadow: 0 14px 30px -10px rgb(28 39 143 / 0.6); }
+  .f5-stk-cob { background: var(--cob); color: #fff; top: 0; right: 6%; rotate: 12deg; box-shadow: 0 14px 30px -10px rgb(0 0 0 / 0.55); }
   .f5-stk-org { background: var(--org); color: #fff; }
   .f5-stk-wht { background: var(--card); color: var(--ink); }
   .f5-stk-rate { position: absolute; z-index: 4; left: 4%; top: 44px; display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 6px; padding: 12px 16px; border-radius: 20px; background: var(--card); color: var(--ink); rotate: -7deg; box-shadow: var(--sh); transition: rotate 0.4s var(--lift); }
@@ -102,7 +107,7 @@
 
   .f5-facts { list-style: none; display: grid; gap: 10px; margin-top: 10px; }
   .f5-facts li { display: flex; align-items: center; gap: 16px; padding: 18px 22px; background: var(--card); border-radius: var(--r-m); }
-  .f5-facts li > svg, .f5-p { width: 44px; height: 44px; padding: 10px; border-radius: 50%; background: var(--lil); color: var(--cob); }
+  .f5-facts li > svg, .f5-p { width: 44px; height: 44px; padding: 10px; border-radius: 50%; background: var(--lil); color: var(--org); }
   .f5-p { display: grid; place-items: center; padding: 0; font-weight: 800; font-size: 1.2rem; }
   .f5-facts b { display: block; font-weight: 700; }
   .f5-facts span:not(.f5-p) { font-size: 0.92rem; color: var(--mut); }
@@ -145,7 +150,7 @@
   .f5-tag { width: fit-content; padding: 6px 14px; border-radius: 999px; background: var(--org); color: #fff; font-size: 0.82rem; font-weight: 700; }
   .f5-arrow { position: absolute; z-index: 3; top: 18px; right: 18px; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--card); color: var(--ink); transition: transform 0.45s var(--lift), background-color 0.25s ease, color 0.25s ease; }
   .f5-arrow svg { width: 18px; height: 16px; }
-  a.f5-zone:hover .f5-arrow { transform: rotate(-30deg); background: var(--org); color: #fff; }
+  a.f5-zone:hover .f5-arrow { transform: rotate(-30deg); background: var(--org); color: #000; }
 
   .f5-zone-spa { color: #17142a; background: var(--pch); padding: 28px; min-height: 340px; display: grid; align-content: end; gap: 12px; }
   .f5-zone-spa p { color: #6b4234; max-width: 34ch; }
@@ -185,9 +190,10 @@
   .f5-period label { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 22px; border-radius: 999px; font-weight: 700; cursor: pointer; transition: background-color 0.25s ease, color 0.25s ease; }
   .f5-period em { font-style: normal; font-size: 0.75rem; padding: 3px 8px; border-radius: 999px; background: var(--org); color: #fff; }
   .f5-period input:checked + label { background: var(--ink); color: var(--bg); }
-  .f5-period input:focus-visible + label { outline: 3px solid var(--cob); outline-offset: 2px; }
+  .f5-period input:focus-visible + label { outline: 3px solid var(--focus); outline-offset: 2px; }
 
-  .f5-plans { display: grid; gap: 12px; }
+  .f5-plans { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .f5-plan { min-width: 0; }
   .f5-plan { display: flex; flex-direction: column; gap: 14px; padding: 28px; border-radius: var(--r-l); background: var(--bg); transition: transform 0.5s var(--lift), box-shadow 0.4s ease; }
   .f5-plan:hover { transform: translateY(-6px); box-shadow: var(--sh-up); }
   .f5-plan.is-hot { background: var(--org); color: #fff; }
@@ -199,7 +205,7 @@
   .f5-plan.is-hot .f5-plan-hours, .f5-plan.is-hot .f5-plan-day { color: rgb(255 255 255 / 0.85); }
   .f5-plan-price b { display: block; font-size: clamp(2.6rem, 2rem + 2vw, 3.4rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
   .f5-plan-price small { display: block; margin-top: 6px; font-size: 0.92rem; font-weight: 600; }
-  .f5-plan-day { font-size: 0.92rem; font-weight: 600; color: var(--cob); }
+  .f5-plan-day { font-size: 0.92rem; font-weight: 600; color: var(--cob-txt); }
   .f5-plan-list { list-style: none; display: grid; gap: 10px; padding-top: 16px; margin-bottom: 8px; border-top: 1px solid rgb(244 242 238 / 0.12); font-size: 0.97rem; }
   .f5-plan.is-hot .f5-plan-list { border-color: rgb(255 255 255 / 0.3); }
   .f5-plan-list li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; }
@@ -218,8 +224,8 @@
   .f5-promos li { display: grid; gap: 4px; padding: 20px 24px; border-radius: var(--r-m); box-shadow: inset 0 0 0 2px var(--bg); }
   .f5-promos b { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; }
   .f5-promos span { color: var(--mut); font-size: 0.95rem; }
-  @media (min-width: 980px) {
-    .f5-plans { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (min-width: 1100px) {
+    .f5-plans { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
     .f5-plan { padding: 36px; }
     .f5-plan.is-hot { transform: translateY(-12px); }
     .f5-plan.is-hot:hover { transform: translateY(-18px); }
@@ -250,7 +256,7 @@
   .t-cob { background: var(--cob); color: #fff; }
   .t-wht { background: var(--card); }
   .t-pch { background: var(--pch); color: #4a2a1f; }
-  .f5-feed:focus-visible { outline: 3px solid var(--cob); outline-offset: -3px; }
+  .f5-feed:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
 
   /* ---------- Тренеры ---------- */
   .f5-team { display: grid; gap: 12px; }
@@ -278,7 +284,7 @@
   @media (min-width: 1100px) { .f5-team { grid-template-columns: repeat(4, 1fr); gap: 14px; } }
 
   /* ---------- Заявка ---------- */
-  .f5-lead { position: relative; overflow: hidden; display: grid; gap: 28px; padding: 32px 16px 16px; border-radius: var(--r-xl); color: #fff;
+  .f5-lead { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 32px 16px 16px; border-radius: var(--r-xl); color: #fff;
     background: var(--org); }
   .f5-lead-txt { padding-inline: 8px; display: grid; gap: 28px; align-content: start; }
   .f5-lead h2 { font-size: clamp(2.2rem, 1.3rem + 3.6vw, 4.4rem); line-height: 0.96; letter-spacing: -0.05em; max-width: 13ch; }
@@ -293,7 +299,7 @@
   .f5-form .form { background: #111; color: var(--ink); --ink: #f4f2ee; --muted: #a9a6b8; --line: rgb(244 242 238 / 0.14); --card: #1a1a1a; --accent: #ff5722; border-radius: 28px; padding: clamp(24px, 3vw, 40px); gap: 16px; }
   .f5-form .form h3 { font-family: 'Geologica Variable', sans-serif; font-weight: 800; font-size: 1.7rem; letter-spacing: -0.04em; }
   .f5-form .field input { border-radius: 16px; border: 2px solid transparent; min-height: 58px; }
-  .f5-form .field input:focus { border-color: var(--cob); background: var(--card); }
+  .f5-form .field input:focus { border-color: var(--org); background: var(--card); }
   .f5-form .btn { border-radius: 999px; min-height: 62px; color: #fff; font-weight: 700; font-family: 'Geologica Variable', sans-serif; font-size: 1.05rem; background: var(--org); }
   .f5-form .btn:hover { background: var(--cob); }
   .f5-form .form-done .ok { color: #fff; }
@@ -305,7 +311,9 @@
   /* ---------- Подвал ---------- */
   .f5-foot { padding: clamp(72px, 9vw, 128px) 0 calc(var(--gut) + 84px); }
   .f5-foot-card { padding: clamp(28px, 4vw, 56px); border-radius: var(--r-xl); background: var(--ink); color: var(--bg); }
-  .f5-foot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px 20px; }
+  .f5-foot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
+  .f5-foot-grid a { overflow-wrap: anywhere; }
+  @media (max-width: 400px) { .f5-foot-grid { grid-template-columns: minmax(0, 1fr); } }
   .f5-foot-grid > :nth-child(-n + 2) { grid-column: 1 / -1; }
   .f5-foot .f5-logo { color: var(--bg); }
   .f5-logo-lg { font-size: 2rem; }
@@ -348,7 +356,7 @@
   .f5-burger i { display: block; width: 20px; height: 2px; background: var(--ink); transition: transform 0.35s var(--lift); }
   .f5-burger[aria-expanded='true'] i:first-child { transform: translateY(4px) rotate(45deg); }
   .f5-burger[aria-expanded='true'] i:last-child { transform: translateY(-4px) rotate(-45deg); }
-  @media (min-width: 1000px) { .f5-burger { display: none; } }
+  @media (min-width: 1280px) { .f5-burger { display: none; } }
   .f5-menu { position: fixed; inset: 0; z-index: 25; display: flex; flex-direction: column; gap: 28px; padding: 108px var(--gut) 28px; background: #000; overflow-y: auto; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
   .f5-menu.is-open { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
   .f5-menu nav { display: grid; gap: 6px; }
@@ -467,4 +475,8 @@
   .f5-embed button { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; width: 100%; border: 0; background: var(--card); color: var(--ink); cursor: pointer; font-weight: 700; }
   @media (max-width: 760px) { .f5-embed { aspect-ratio: 3 / 4; } }
   /* Узкие телефоны: в шапке логотип и меню, кнопка заявки живёт в нижней панели */
+  @media (max-width: 380px) { .f5-plan { padding: 22px; } .f5-period label { padding: 0 14px; } }
   @media (max-width: 520px) { .f5-top-cta { display: none; } .f5-burger { margin-left: auto; } .f5-bar { padding-left: 18px; } }
+
+  /* Таблицы в статьях прокручиваются внутри, а не растягивают страницу */
+  .f5-prose table { display: block; max-width: 100%; overflow-x: auto; }

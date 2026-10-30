@@ -1,4 +1,5 @@
 ---
+import AppBlock from '../../components/AppBlock.astro';
 // Контакты: адрес, часы, телефон, почта, парковка, как добраться, юрлицо. Без виджетов и ссылок на карты.
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
@@ -86,12 +87,14 @@ const messengers = messengerLinks();
     </div>
   </section>
 
+  <section class="f5-sec" aria-label="Приложение клуба"><AppBlock compact /></section>
+
   <Final block="contacts_final" />
 </Layout>
 
 <style>
   .ct { gap: 10px; }
-  .ct-ico { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--lil); color: var(--cob); font-weight: 800; font-size: 1.3rem; margin-bottom: 8px; }
+  .ct-ico { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--lil); color: var(--org); font-weight: 800; font-size: 1.3rem; margin-bottom: 8px; }
   .ct-ico :global(svg) { width: 24px; height: 24px; }
   .f5-card.is-org .ct-ico { background: var(--card); color: var(--org); }
   .f5-card.is-cob .ct-ico { background: var(--card); color: var(--ink); }

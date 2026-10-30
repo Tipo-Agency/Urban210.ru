@@ -1,4 +1,5 @@
 ---
+import AppBlock from '../../components/AppBlock.astro';
 // Цены: выбор карты, сравнение тарифов, сколько стоит день, персональные тренировки и вопросы об оплате.
 import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
@@ -36,6 +37,7 @@ const faq = [
 ];
 ---
 <Layout
+  image="/og/price.jpg"
   title="Цены на абонементы в фитнес-клуб в Хабаровске"
   description={`Абонементы в фитнес-клуб Urban210 в Хабаровске: от ${rub(day.month)} в месяц или от ${dayPrice} ₽ в день. Сравнение трёх карт, цены за год, персональный тренер.`}
 >
@@ -118,6 +120,8 @@ const faq = [
       </div>
     </div>
   </section>
+
+  <section class="f5-sec" aria-label="Приложение клуба"><AppBlock compact /></section>
 
   <Faq items={faq} title="Вопросы о ценах" />
   <Final block="price_final" />

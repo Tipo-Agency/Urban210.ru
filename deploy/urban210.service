@@ -1,15 +1,21 @@
-# /etc/systemd/system/urban210.service: приём заявок /api/lead/ (Node, порт 3210)
 [Unit]
-Description=Urban210 lead API
+Description=Urban210 website (приём заявок /api/lead)
 After=network.target
 
 [Service]
-WorkingDirectory=/opt/urban210/current
-EnvironmentFile=/opt/urban210/.env
-Environment=HOST=127.0.0.1 PORT=3210
-ExecStart=/usr/bin/node server/entry.mjs
-Restart=always
+Type=simple
 User=www-data
+Group=www-data
+WorkingDirectory=/var/www/urban210/current
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=3210
+EnvironmentFile=/etc/urban210/urban210.env
+ExecStart=/usr/bin/node server/entry.mjs
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
 
 [Install]
 WantedBy=multi-user.target

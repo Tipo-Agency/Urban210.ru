@@ -1,0 +1,78 @@
+---
+// Блок о мобильном приложении клуба. Кнопки магазинов показываем, только когда в site.app есть ссылки.
+import Icon from './Icon.astro';
+import LogoMark from './LogoMark.astro';
+import { site } from '../data/site';
+interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+const stores = [
+  { label: 'App Store', href: site.app.appStore },
+  { label: 'Google Play', href: site.app.googlePlay },
+  { label: 'RuStore', href: site.app.ruStore },
+].filter((s) => s.href);
+// Рисунок «QR-кода» для макета телефона: три угловых квадрата и псевдослучайные точки
+const N = 11;
+const finder = (x: number, y: number) => { const f = (a: number, b: number) => x >= a && x < a + 3 && y >= b && y < b + 3; return f(0, 0) || f(N - 3, 0) || f(0, N - 3); };
+const qr = Array.from({ length: N * N }, (_, i) => { const x = i % N, y = Math.floor(i / N); return finder(x, y) || (!finder(x - 1, y) && ((x * 73 + y * 151 + x * y * 7) % 11) < 5); });
+---
+{compact ? (
+  <div class="f5-card app-mini">
+    <h3>Мобильное приложение</h3>
+    <p>{site.app.features.map((f) => f.title).join(', ')}. Приложение работает на платформе «{site.app.platform}».</p>
+    {stores.length > 0 && <p class="app-stores">{stores.map((s) => <a class="f5-pill f5-pill-ink" href={s.href} target="_blank" rel="noopener">{s.label}</a>)}</p>}
+  </div>
+) : (
+  <section class="f5-sec" id="app" aria-labelledby="f5-app">
+    <div class="app">
+      <div class="app-txt">
+        <span class="f5-tag">Приложение клуба</span>
+        <h2 id="f5-app">Клуб в телефоне</h2>
+        <p class="app-lead">Приложение Urban210 на платформе «{site.app.platform}»: вход, запись и абонемент в одном месте.</p>
+        <ul class="app-list">
+          {site.app.features.map((f) => <li><Icon name="check" /><div><b>{f.title}</b><span>{f.text}</span></div></li>)}
+        </ul>
+        {stores.length > 0
+          ? <p class="app-stores">{stores.map((s) => <a class="f5-pill f5-pill-ink" href={s.href} target="_blank" rel="noopener">{s.label}</a>)}</p>
+          : <p class="app-note">Подключить приложение поможет администратор: <a href={site.phone.href}>{site.phone.display}</a></p>}
+      </div>
+      <div class="app-phone" aria-hidden="true">
+        <div class="app-screen">
+          <div class="app-top"><LogoMark size={28} /><span>URBAN<b>210</b></span></div>
+          <div class="app-qr">{qr.map((on) => <i class={on ? 'on' : ''} />)}</div>
+          <p class="app-cap">Покажите код на входе</p>
+          <div class="app-row"><span>Пилатес</span><em>19:00</em></div>
+          <div class="app-row"><span>Body Pump</span><em>20:00</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .app { display: grid; gap: 32px; padding: clamp(28px, 4vw, 64px); border-radius: var(--r-xl); background: var(--card); overflow: hidden; }
+  .app-txt { display: grid; gap: 20px; align-content: start; }
+  .app h2 { font-size: clamp(2.1rem, 1.3rem + 3.4vw, 4.2rem); line-height: 0.98; letter-spacing: -0.045em; }
+  .app-lead { color: var(--mut); font-size: 1.1rem; max-width: 40ch; }
+  .app-list { list-style: none; display: grid; gap: 14px; }
+  .app-list li { display: grid; grid-template-columns: 30px 1fr; gap: 12px; }
+  .app-list li > :global(svg) { width: 30px; height: 30px; padding: 6px; border-radius: 50%; background: var(--org); color: #000; }
+  .app-list b { display: block; font-size: 1.08rem; }
+  .app-list span { color: var(--mut); }
+  .app-note { color: var(--mut); }
+  .app-note a { color: var(--ink); font-weight: 700; }
+  .app-stores { display: flex; flex-wrap: wrap; gap: 10px; }
+  .app-phone { justify-self: center; width: min(280px, 78vw); aspect-ratio: 9 / 18.5; padding: 12px; border-radius: 44px; background: #000; box-shadow: 0 0 0 2px #2a2a2a, 0 40px 80px -30px rgb(255 87 34 / 0.45); rotate: 4deg; }
+  .app-screen { height: 100%; display: grid; align-content: start; gap: 14px; padding: 22px 18px; border-radius: 34px; background: var(--org); color: #000; }
+  .app-top { display: flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: -0.04em; }
+  .app-top b { color: #fff; }
+  .app-qr { display: grid; grid-template-columns: repeat(11, 1fr); gap: 2px; padding: 14px; border-radius: 20px; background: #fff; }
+  .app-qr i { aspect-ratio: 1; border-radius: 2px; background: transparent; }
+  .app-qr i.on { background: #000; }
+  .app-cap { text-align: center; font-weight: 700; font-size: 0.9rem; }
+  .app-row { display: flex; justify-content: space-between; padding: 12px 14px; border-radius: 16px; background: #000; color: #fff; font-weight: 700; font-size: 0.9rem; }
+  .app-row em { font-style: normal; color: var(--org); }
+  .app-mini h3 { font-size: 1.4rem; margin-bottom: 8px; }
+  .app-mini p { color: var(--mut); }
+  .app-mini .app-stores { margin-top: 14px; }
+  @media (min-width: 900px) { .app { grid-template-columns: 1.2fr 1fr; align-items: center; } }
+</style>

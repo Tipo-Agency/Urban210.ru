@@ -12,6 +12,7 @@ import Trainers from '../components/Trainers.astro';
 import Promos from '../components/Promos.astro';
 import PostCard from '../components/PostCard.astro';
 import Faq from '../components/Faq.astro';
+import AppBlock from '../components/AppBlock.astro';
 import { img } from '../data/images';
 import { site } from '../data/site';
 import { plans, perDay, rub } from '../data/pricing';
@@ -34,6 +35,7 @@ const marquee = [`Безлимит от ${dayPrice} ₽ в день`, 'Парк�
 const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
 ---
 <Layout
+  image="/og/home.jpg"
   title="Фитнес-клуб Urban210 в Хабаровске: тренажёрный зал от 43 ₽ в день"
   description={`Фитнес-клуб в Железнодорожном районе Хабаровска: ${site.facts.area}, ${site.facts.machines}, групповые программы, сауна и хаммам. Безлимит от ${dayPrice} ₽ в день, карта от ${rub(dayPlan.month)} в месяц.`}
 >
@@ -125,6 +127,8 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf()
   </section>
 
   <Reviews />
+
+  <AppBlock />
 
   <section class="f5-sec" id="team" aria-labelledby="f5-t">
     <div class="f5-head f5-head-row">

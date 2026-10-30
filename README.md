@@ -1,6 +1,6 @@
 # Urban210, фитнес-клуб в Хабаровске
 
-Сайт [urban210.ru](https://urban210.ru) на Astro 5. Все страницы собираются статикой, на сервере работает только приём заявок `/api/lead/` (адаптер `@astrojs/node`). Адреса старого сайта сохранены: `/price/`, `/zal/`, `/group/`, `/spa/`, `/trainers/`, `/personal/`, `/promo/`, `/promo/<акция>/`, `/contacts/`, `/virtual-tour/`, `/blog/`, `/policy/`, `/rules/`, `/oferta/`. Старые адреса WordPress перенаправляются в `deploy/nginx.conf`.
+Сайт [urban210.ru](https://urban210.ru) на Astro 5. Все страницы собираются статикой, на сервере работает только приём заявок `/api/lead/` (адаптер `@astrojs/node`). Адреса старого сайта сохранены: `/price/`, `/zal/`, `/group/`, `/spa/`, `/trainers/`, `/personal/`, `/promo/`, `/promo/<акция>/`, `/contacts/`, `/virtual-tour/`, `/blog/`, `/policy/`, `/rules/`, `/oferta/`. Старые адреса WordPress перенаправляются в `deploy/prod-nginx.conf`.
 
 ## Запуск
 
@@ -36,4 +36,4 @@ Node.js 20.9 или новее.
 
 ## Выкладка
 
-`npm run build` даёт `dist/client` (статика для nginx) и `dist/server` (Node для заявок). На сервере: `dist` копируется в `/opt/urban210/releases/<время>`, симлинк `/opt/urban210/current`, сервис `deploy/urban210.service`, nginx `deploy/nginx.conf`.
+`npm run build` даёт `dist/client` (статика для nginx) и `dist/server` (Node для заявок). Выкатка на tipa-prod: `bash scripts/deploy-prod.sh` (релизы в `/var/www/urban210/releases/<время>`, симлинк `/var/www/urban210/current`, сервис `deploy/urban210.service`, nginx `deploy/prod-nginx.conf`). Порядок запуска и проверки в `docs/LAUNCH.md`.

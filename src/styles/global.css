@@ -13,7 +13,8 @@
   --line: rgb(244 242 238 / 0.14);
   --accent: #ff5722;
   --accent-ink: #fff;
-  --cob: #2b3be0;
+  --cob: #242424; /* был синий #2b3be0 */
+  --focus: #fff;
   --font: 'Geologica Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --header: 92px;
@@ -32,7 +33,7 @@ h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
 p { margin: 0; text-wrap: pretty; }
 ul, ol { margin: 0; padding: 0; }
 ::selection { background: var(--accent); color: #fff; }
-:focus-visible { outline: 3px solid var(--cob); outline-offset: 3px; border-radius: 4px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
 .sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .skip { position: absolute; left: 12px; top: -60px; z-index: 100; background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 999px; font-weight: 700; text-decoration: none; }
 .skip:focus { top: 12px; }
@@ -49,7 +50,7 @@ ul, ol { margin: 0; padding: 0; }
 .field { display: grid; gap: 6px; font-size: 0.92rem; font-weight: 600; color: var(--muted); }
 .field input { min-height: 58px; padding: 0 18px; background: var(--card-2); border: 2px solid transparent; border-radius: 16px; color: var(--ink); font-size: 1.05rem; transition: border-color 0.25s ease; }
 .field input::placeholder { color: #77748a; }
-.field input:focus { outline: none; border-color: var(--cob); }
+.field input:focus { outline: none; border-color: var(--accent); }
 .field .err { display: none; color: #ff8a65; font-size: 0.88rem; }
 .field.bad input { border-color: #ff8a65; }
 .field.bad .err { display: block; }

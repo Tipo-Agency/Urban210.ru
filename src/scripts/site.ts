@@ -47,22 +47,6 @@ function readAttribution() {
   return data;
 }
 
-function sendCalltouch(name: string, phone: string, subject: string) {
-  const id = document.body.dataset.ctSite;
-  if (!id) return;
-  const data: Record<string, string | undefined> = { fio: name, phoneNumber: phone, subject: `Заявка с ${location.hostname}: ${subject}`, requestUrl: location.href, sessionId: window.call_value };
-  const body = Object.entries(data)
-    .filter(([, v]) => v)
-    .map(([k, v]) => `${k}=${encodeURIComponent(v as string)}`)
-    .join('&');
-  fetch(`https://api.calltouch.ru/calls-service/RestAPI/requests/${id}/register/`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/x-www-form-urlencoded;charset=utf-8' },
-    body,
-    keepalive: true,
-  }).catch(() => {});
-}
-
 /* ---------- Телефон: маска +7 (___) ___-__-__ ---------- */
 function digits(v: string) {
   let d = v.replace(/\D/g, '');
@@ -133,6 +117,8 @@ function initForm(form: HTMLFormElement) {
       website: String(fd.get('website') || ''),
       t: Date.now() - opened,
       page: location.pathname,
+      url: location.href,
+      ctSession: String(window.call_value || ''),
       attribution: readAttribution(),
     };
     btn.disabled = true;
@@ -142,7 +128,6 @@ function initForm(form: HTMLFormElement) {
       if (!res.ok || !data.ok) throw new Error(data.error || 'Не удалось отправить');
       form.classList.add('is-done');
       goal('lead', { goal: payload.goal, block: payload.block });
-      sendCalltouch(payload.name, '+' + digits(payload.phone), payload.goal);
     } catch (err) {
       msg.textContent = (err as Error).message.startsWith('Не удалось') || (err as Error).message.startsWith('Слишком')
         ? (err as Error).message
@@ -175,6 +160,7 @@ function initDialog() {
     closeMenu();
     dlg.showModal();
     goal('cta_click', { goal: g, block: blockInput.value });
+    if (g.startsWith('Тариф')) goal('plan_choice', { plan: g });
     setTimeout(() => form.querySelector<HTMLInputElement>('input[name=name]')?.focus(), 50);
   });
   dlg.querySelector('[data-close]')?.addEventListener('click', () => dlg.close());

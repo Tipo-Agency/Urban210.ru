@@ -16,7 +16,7 @@ interface Props {
   // bare: страница рисует свою шапку и подвал (концепции дизайна)
   bare?: boolean;
 }
-const { title, description, image = '/og.jpg', noindex = false, jsonld = [], type = 'website', bare = false } = Astro.props;
+const { title, description, image = '/og/default.jpg', noindex = false, jsonld = [], type = 'website', bare = false } = Astro.props;
 const path = Astro.url.pathname;
 const canonical = SITE_URL + path;
 const fullTitle = path === '/' ? title : `${title} | Urban210`;
@@ -75,6 +75,9 @@ const gym = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL(image, SITE_URL).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
     <meta name="twitter:card" content="summary_large_image" />
     {!bare && <link rel="preload" href="/fonts/geologica-cyrillic.woff2" as="font" type="font/woff2" crossorigin />}
     <script type="application/ld+json" set:html={JSON.stringify(gym)} />
@@ -154,7 +157,7 @@ const gym = {
             </div>
             <div class="f5-foot-bottom">
               <span>© {year} {site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn}</span>
-              <span><a href="/policy/">Политика конфиденциальности</a> · <a href="/oferta/">Договор-оферта</a> · <a href="/rules/">Правила клуба</a></span>
+              <span><a href="/policy/">Политика конфиденциальности</a> · <a href="/oferta/">Публичная оферта</a> · <a href="/rules/">Правила посещения</a></span>
             </div>
           </div>
         </footer>

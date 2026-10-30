@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 
-// Приём заявок: Telegram администраторов и webhook CRM. Ключи только из переменных окружения сервера.
+// Приём заявок: Calltouch (как на старом сайте, CALLTOUCH_SITE_ID), Telegram администраторов и webhook CRM.
+// Ключи только из переменных окружения сервера. Если ни один канал не принял заявку, форма просит позвонить.
 export const prerender = false;
 
 const hits = new Map<string, number[]>();
@@ -21,7 +22,7 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const str = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
 
-type Lead = { name: string; phone: string; goal: string; block: string; page: string; attribution: Record<string, string> };
+type Lead = { name: string; phone: string; goal: string; block: string; page: string; url: string; ctSession: string; attribution: Record<string, string> };
 
 function normPhone(v: string) {
   let d = v.replace(/\D/g, '');
@@ -61,6 +62,22 @@ async function sendTelegram(l: Lead) {
     signal: AbortSignal.timeout(8000),
   });
   if (!res.ok) throw new Error(`telegram ${res.status}`);
+  return true;
+}
+
+// Заявки в Calltouch: тот же публичный метод register, что вызывал старый сайт на WordPress
+async function sendCalltouch(l: Lead) {
+  const id = env('CALLTOUCH_SITE_ID');
+  if (!id) return false;
+  const data: Record<string, string> = { fio: l.name, phoneNumber: '+' + l.phone, subject: `Заявка с urban210.ru: ${l.goal}`, requestUrl: l.url || 'https://urban210.ru' + (l.page || '/'), sessionId: l.ctSession };
+  const body = Object.entries(data).filter(([, v]) => v).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+  const res = await fetch(`https://api.calltouch.ru/calls-service/RestAPI/requests/${id}/register/`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded;charset=utf-8' },
+    body,
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!res.ok) throw new Error(`calltouch ${res.status}`);
   return true;
 }
 
@@ -108,9 +125,9 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       if (s) attribution[k.slice(0, 40)] = s;
     }
   }
-  const lead: Lead = { name, phone, goal: str(body.goal, 60) || 'Пробный день за 1 ₽', block: str(body.block, 40), page: str(body.page, 200), attribution };
+  const lead: Lead = { name, phone, goal: str(body.goal, 60) || 'Заявка с сайта', block: str(body.block, 40), page: str(body.page, 200), url: str(body.url, 300), ctSession: str(body.ctSession, 60), attribution };
 
-  const results = await Promise.allSettled([sendTelegram(lead), sendWebhook(lead)]);
+  const results = await Promise.allSettled([sendCalltouch(lead), sendTelegram(lead), sendWebhook(lead)]);
   const delivered = results.some((r) => r.status === 'fulfilled' && r.value === true);
   results.forEach((r) => r.status === 'rejected' && console.error('[lead]', r.reason));
   if (!delivered) {
