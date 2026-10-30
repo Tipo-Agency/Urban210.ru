@@ -14,7 +14,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, reasons, programs } from '../../../data/content';
 import cutout from '../../../assets/images/trainers/lazko-cutout.webp';
 
@@ -34,7 +34,8 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const z = Object.fromEntries(zones.map((x) => [x.id, x]));
 const tradein = promos.find((p) => p.slug === 'trade-in')!;
 const friend = promos.find((p) => p.slug === '1-plus-1')!;
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const dayPrice = perDay(plans[0].month, 30);
+const points = reasons.filter((r) => !/взнос/i.test(r.title));
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
 const toc = [
   { p: '04', t: 'Клуб изнутри', h: '#zony' },
@@ -64,7 +65,7 @@ const planSkin = ['w', 'k', 'r'];
           {toc.map((t) => <a href={t.h}><small>P.{t.p}</small>{t.t}</a>)}
         </nav>
         <a class="nm-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="nm-btn nm-btn-s" href="#zayavka" data-lead={trial.title} data-block="26_header"><span class="nm-hide-l">Пробный&nbsp;</span>1 ₽<span class="nm-hide-s">&nbsp;пробный день</span><Icon name="chev" /></a>
+        <a class="nm-btn nm-btn-s" href="#tarify" data-block="26_header">Выбрать карту<Icon name="chev" /></a>
       </div>
     </header>
 
@@ -76,9 +77,9 @@ const planSkin = ['w', 'k', 'r'];
         <div class="nm-cover-main">
           <p class="nm-special"><b>Спецвыпуск</b><span>Фитнес-клуб в Хабаровске</span></p>
           <h1 id="nm-h1" class="nm-h1">
-            <span class="a">Первый</span>
+            <span class="a">Каждый</span>
             <span class="b">день</span>
-            <span class="c">в зале <em>за 1 ₽</em></span>
+            <span class="c">в зале <em>от {dayPrice} ₽</em></span>
           </h1>
 
           <div class="nm-comp" aria-hidden="true">
@@ -95,7 +96,7 @@ const planSkin = ['w', 'k', 'r'];
         </div>
 
         <aside class="nm-cover-side">
-          <p class="nm-lead">Тренажёрный зал, кардио, групповые и SPA в одном клубе на проспекте 60-летия Октября. Пробный день за 1&nbsp;₽, вступительного взноса нет.</p>
+          <p class="nm-lead">Тренажёрный зал, кардио, групповые и SPA в одном клубе на проспекте 60-летия Октября. Безлимит от {dayPrice}&nbsp;₽ в день: {plans[0].name.toLowerCase()} за {rub(plans[0].month)} в месяц.</p>
           <ol class="nm-points">
             <li><span>1</span><p><b>{site.facts.machines}</b> {site.facts.brands}</p></li>
             <li><span>2</span><p><b>Парковка на 50 мест</b> бесплатно, под видеонаблюдением</p></li>
@@ -103,13 +104,13 @@ const planSkin = ['w', 'k', 'r'];
           </ol>
           <div class="nm-stats">
             <div class="k"><b>1300+</b><span>м² на двух этажах</span></div>
-            <div class="r"><b>0 ₽</b><span>вступительный взнос</span></div>
+            <div class="r"><b>{dayPrice} ₽</b><span>в день, безлимит</span></div>
             <div><b>{num(plans[0].month)}</b><span>₽ в месяц, от</span></div>
             <div><b>{site.rating.count}</b><span>отзывов</span></div>
           </div>
           <div class="nm-cta">
-            <a class="nm-btn" href="#zayavka" data-lead={trial.title} data-block="26_hero">Записаться за 1 ₽<Icon name="chev" /></a>
-            <a class="nm-link" href="#tarify">Все тарифы</a>
+            <a class="nm-btn" href="#tarify" data-block="26_hero">Выбрать карту<Icon name="chev" /></a>
+            <a class="nm-link" href="#zayavka" data-lead="Заявка с сайта" data-block="26_hero">Оставить заявку</a>
           </div>
         </aside>
 
@@ -132,7 +133,7 @@ const planSkin = ['w', 'k', 'r'];
       <div class="nm-w nm-col-in">
         <h2 id="nm-col-h" class="nm-col-h"><span>Колонка</span>Почему сюда</h2>
         <ol class="nm-col-list">
-          {reasons.map((r, i) => (
+          {points.map((r, i) => (
             <li data-pop style={`--d:${i * 80}ms`}>
               <span class="n">{i + 1}</span>
               <h3>{r.title}</h3>
@@ -214,7 +215,7 @@ const planSkin = ['w', 'k', 'r'];
         <header class="nm-head">
           <span class="nm-theme"><small>Тема</small>2</span>
           <h2 id="nm-p-h" class="nm-h2">Сколько <em>стоит</em></h2>
-          <p class="nm-head-t">Три тарифа и ни одного взноса за вход. Годовая карта выходит дешевле, считаем цену дня.</p>
+          <p class="nm-head-t">Три тарифа, безлимит от {dayPrice}&nbsp;₽ в день. Годовая карта выходит дешевле, считаем цену дня.</p>
           <p class="nm-head-v" aria-hidden="true">PRICE DATA</p>
         </header>
 
@@ -239,15 +240,15 @@ const planSkin = ['w', 'k', 'r'];
         </div>
 
         <div class="nm-coupon" data-pop>
-          <div class="cp-sun" aria-hidden="true"><b>1</b><span>₽</span></div>
+          <div class="cp-sun" aria-hidden="true"><b>{dayPrice}</b><span>₽</span></div>
           <div class="cp-tx">
-            <p class="cp-k">Купон читателя</p>
-            <h3>{trial.title}</h3>
-            <p>{trial.text}</p>
-            <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-            <a class="nm-btn" href="#zayavka" data-lead={trial.title} data-block="26_trial">{trialPromo.cta}<Icon name="chev" /></a>
+            <p class="cp-k">Цифра номера</p>
+            <h3>Безлимит от {dayPrice} ₽ в день</h3>
+            <p>{plans[0].name}: {rub(plans[0].month)} в месяц, {plans[0].hours}. Зал, кардиозона, раздевалки и парковка.</p>
+            <ul>{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+            <a class="nm-btn" href="#zayavka" data-lead="Заявка с сайта" data-block="26_offer">Оставить заявку<Icon name="chev" /></a>
           </div>
-          <p class="cp-vert" aria-hidden="true">TRIAL DAY · 1 RUB</p>
+          <p class="cp-vert" aria-hidden="true">DAY CARD · {dayPrice} RUB A DAY</p>
         </div>
 
         <div class="nm-ads">
@@ -574,7 +575,7 @@ const planSkin = ['w', 'k', 'r'];
     .nm-col-in { grid-template-columns: 70px 1fr; gap: 40px; padding-block: 56px; }
     .nm-col-h { writing-mode: vertical-rl; font-size: 1.9rem; align-self: start; flex-direction: row; }
     .nm-col-h span { writing-mode: vertical-rl; }
-    .nm-col-list { grid-template-columns: repeat(4, 1fr); }
+    .nm-col-list { grid-template-columns: repeat(3, 1fr); }
     .nm-col-list li { grid-template-columns: 1fr; padding: 4px 26px 6px; border-top: 0; border-left: 2px solid var(--ink); gap: 14px; align-content: start; }
     .nm-col-list .n { grid-row: auto; width: 64px; height: 64px; font-size: 1.9rem; }
     .nm-col-list h3 { font-size: 1.4rem; }
@@ -690,7 +691,7 @@ const planSkin = ['w', 'k', 'r'];
 
   .nm-coupon { position: relative; margin-top: clamp(56px, 7vw, 100px); display: grid; gap: 22px; padding: 28px 22px; border: 3px dashed var(--ink); background: var(--paper); }
   .cp-sun { width: min(64vw, 280px); aspect-ratio: 1; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; gap: 2px; justify-self: center; border: 8px solid #fff; outline: 3px solid var(--ink); }
-  .cp-sun b { font-family: var(--fd); font-weight: 800; font-size: min(38vw, 180px); line-height: 0.8; }
+  .cp-sun b { font-family: var(--fd); font-weight: 800; font-size: min(26vw, 120px); line-height: 0.8; }
   .cp-sun span { font-family: var(--fd); font-weight: 800; font-size: min(14vw, 64px); align-self: flex-end; margin-bottom: 22%; }
   .cp-tx { display: grid; gap: 14px; justify-items: start; }
   .cp-k { font-family: var(--fc); font-weight: 900; font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.14em; background: var(--ink); color: #fff; padding: 3px 10px 2px; }
@@ -702,7 +703,7 @@ const planSkin = ['w', 'k', 'r'];
   @media (min-width: 1100px) {
     .nm-coupon { grid-template-columns: 420px 1fr 40px; gap: 56px; padding: 48px 40px 48px 56px; align-items: center; }
     .cp-sun { width: 400px; }
-    .cp-sun b { font-size: 270px; }
+    .cp-sun b { font-size: 170px; }
     .cp-sun span { font-size: 90px; }
     .cp-vert { display: block; writing-mode: vertical-rl; font-family: var(--fc); font-weight: 900; font-size: 1.1rem; letter-spacing: 0.24em; color: var(--red); justify-self: end; }
   }

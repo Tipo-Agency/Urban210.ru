@@ -1,7 +1,7 @@
 ---
 // Концепция 27 «Аэробика»: видеокассета с аэробикой из восьмидесятых.
 // Неоновые розовый, бирюзовый и оранжевый полосами, экран кинескопа с надписями видеомагнитофона
-// (PLAY, счётчик времени, едва заметные полосы трекинга), фото с цветокоррекцией под VHS, аудиокассета для пробного дня.
+// (PLAY, счётчик времени, едва заметные полосы трекинга), фото с цветокоррекцией под VHS, аудиокассета с ценой дня.
 // Rubik Mono One в заголовках, IBM Plex Mono для экранных надписей. Хром не используем (он был в 11).
 // Движение: катушки кассеты крутятся, счётчик идёт, полоса трекинга проползает по экрану. При reduced motion всё стоит.
 import rmCyr from '@fontsource/rubik-mono-one/files/rubik-mono-one-cyrillic-400-normal.woff2?url';
@@ -15,7 +15,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, programs } from '../../../data/content';
 
 const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -33,9 +33,9 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const z = Object.fromEntries(zones.map((x) => [x.id, x]));
 const tradein = promos.find((p) => p.slug === 'trade-in')!;
 const friend = promos.find((p) => p.slug === '1-plus-1')!;
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const dayPrice = perDay(plans[0].month, 30);
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
-const run = ['Вступительного взноса нет', `Пробный день ${trial.price} ₽`, 'Парковка на 50 мест', `${site.hours[0].days} ${site.hours[0].time}`, `${site.hours[1].days} ${site.hours[1].time}`, `${rating} на Яндекс Картах`, site.facts.machines];
+const run = [`Безлимит от ${dayPrice} ₽ в день`, 'Выберите карту', 'Парковка на 50 мест', `${site.hours[0].days} ${site.hours[0].time}`, `${site.hours[1].days} ${site.hours[1].time}`, `${rating} на Яндекс Картах`, site.facts.machines];
 const channels = [
   { ch: '01', zone: z.zal, photo: '/images/free-weights.jpg', alt: 'Свободные веса в зале Urban210' },
   { ch: '02', zone: z.cardio, photo: '/images/cardio.jpg', alt: 'Беговые дорожки в кардиозоне' },
@@ -44,7 +44,7 @@ const channels = [
 const progSkin = ['p', 'o', 'c', 'y'];
 const tapeSkin = ['c', 'p', 'o'];
 ---
-<Layout title="Концепция 27 «Аэробика»" description="Концепция дизайна сайта Urban210: видеокассета с аэробикой восьмидесятых, неоновые полосы, экран кинескопа и аудиокассета пробного дня." noindex bare>
+<Layout title="Концепция 27 «Аэробика»" description="Концепция дизайна сайта Urban210: видеокассета с аэробикой восьмидесятых, неоновые полосы, экран кинескопа и аудиокассета с ценой дня." noindex bare>
   <Fragment slot="head">
     <link rel="preload" href={rmCyr} as="font" type="font/woff2" crossorigin />
     <style set:html={fonts} />
@@ -58,7 +58,7 @@ const tapeSkin = ['c', 'p', 'o'];
           <a href="#kanaly">Зоны</a><a href="#tarify">Тарифы</a><a href="#vedushchie">Тренеры</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Адрес</a>
         </nav>
         <a class="vh-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="vh-btn vh-btn-s" href="#zayavka" data-lead={trial.title} data-block="27_header"><i class="vh-rec" aria-hidden="true"></i>Пробный 1 ₽</a>
+        <a class="vh-btn vh-btn-s" href="#tarify" data-block="27_header"><i class="vh-rec" aria-hidden="true"></i>Выбрать карту</a>
       </div>
     </header>
 
@@ -72,12 +72,12 @@ const tapeSkin = ['c', 'p', 'o'];
             <span class="l1">Раз<i>,</i></span>
             <span class="l1">два<i>,</i></span>
             <span class="l2">в зал!</span>
-            <span class="l3">Первый день в Urban210 за 1 ₽</span>
+            <span class="l3">Безлимит в Urban210 от {dayPrice} ₽ в день</span>
           </h1>
-          <p class="vh-lead">Тренажёрный зал, кардио, групповые программы и SPA в Железнодорожном районе. Включайтесь с 6:30 утра, вступительного взноса нет.</p>
+          <p class="vh-lead">Тренажёрный зал, кардио, групповые программы и SPA в Железнодорожном районе. Включайтесь с 6:30 утра: {plans[0].name.toLowerCase()} {rub(plans[0].month)} в месяц.</p>
           <div class="vh-cta">
-            <a class="vh-btn" href="#zayavka" data-lead={trial.title} data-block="27_hero">Записаться за 1 ₽<Icon name="chev" /></a>
-            <a class="vh-link" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+            <a class="vh-btn" href="#tarify" data-block="27_hero">Выбрать карту<Icon name="chev" /></a>
+            <a class="vh-link" href="#zayavka" data-lead="Заявка с сайта" data-block="27_hero">Оставить заявку</a>
           </div>
         </div>
 
@@ -106,7 +106,7 @@ const tapeSkin = ['c', 'p', 'o'];
           <li><b>{rating}</b><span>Яндекс Карты, {site.rating.text}</span></li>
           <li><b>06:30</b><span>открываемся по будням</span></li>
           <li><b>50</b><span>мест бесплатной парковки</span></li>
-          <li><b>0 ₽</b><span>вступительный взнос</span></li>
+          <li><b>{dayPrice} ₽</b><span>в день по дневной карте</span></li>
         </ul>
       </div>
     </section>
@@ -175,7 +175,7 @@ const tapeSkin = ['c', 'p', 'o'];
     <section class="vh-sec vh-light" id="tarify" aria-labelledby="vh-p-h">
       <div class="vh-w">
         <div class="vh-head">
-          <p class="vh-kick">Абонементы без взноса за вход</p>
+          <p class="vh-kick">Безлимит от {dayPrice} ₽ в день</p>
           <h2 id="vh-p-h" class="vh-h2">Выберите <span>кассету</span></h2>
           <p class="vh-head-t">Помесячно или сразу на год. Годовая карта выходит дешевле, цену дня посчитали.</p>
         </div>
@@ -199,14 +199,14 @@ const tapeSkin = ['c', 'p', 'o'];
           ))}
         </div>
 
-        <!-- Пробный день: аудиокассета -->
-        <div class="vh-trial">
+        <!-- Цена дня: аудиокассета -->
+        <div class="vh-offer">
           <div class="cs" aria-hidden="true">
             <span class="cs-scr s1"></span><span class="cs-scr s2"></span><span class="cs-scr s3"></span><span class="cs-scr s4"></span>
             <div class="cs-label">
               <span class="cs-side">A</span>
-              <span class="cs-title">Пробный день</span>
-              <span class="cs-price">1 ₽</span>
+              <span class="cs-title">{plans[0].name}</span>
+              <span class="cs-price">{dayPrice} ₽</span>
               <span class="cs-lines"></span>
             </div>
             <div class="cs-win">
@@ -216,12 +216,12 @@ const tapeSkin = ['c', 'p', 'o'];
             </div>
             <span class="cs-foot"></span>
           </div>
-          <div class="vh-trial-tx">
+          <div class="vh-offer-tx">
             <p class="vh-kick">Сторона А</p>
-            <h3>{trial.title}</h3>
-            <p>{trial.text}</p>
-            <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-            <a class="vh-btn" href="#zayavka" data-lead={trial.title} data-block="27_trial">{trialPromo.cta}<Icon name="chev" /></a>
+            <h3>От {dayPrice} ₽ в день</h3>
+            <p>{plans[0].name}: {rub(plans[0].month)} в месяц, {plans[0].hours}. Безлимит в зал и кардиозону.</p>
+            <ul>{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+            <a class="vh-btn" href="#zayavka" data-lead="Заявка с сайта" data-block="27_offer">Оставить заявку<Icon name="chev" /></a>
           </div>
         </div>
 
@@ -298,7 +298,7 @@ const tapeSkin = ['c', 'p', 'o'];
       <div class="vh-w fi-in">
         <div class="fi-tx">
           <p class="fi-rec"><i class="vh-rec" aria-hidden="true"></i>REC</p>
-          <h2 id="vh-f-h" class="vh-h2 fi-h">Запишите себя <span>на пробный день</span></h2>
+          <h2 id="vh-f-h" class="vh-h2 fi-h">Оставьте заявку, <span>подберём карту</span></h2>
           <dl class="fi-facts">
             <div><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}<br />{site.district}</dd></div>
             <div><dt>Часы</dt><dd>{site.hours.map((h) => <>{`${h.days} ${h.time}`}<br /></>)}</dd></div>
@@ -400,7 +400,7 @@ const tapeSkin = ['c', 'p', 'o'];
     background: var(--night); color: var(--cream); font-family: var(--fb); overflow-x: clip;
   }
   /* в моноширинном Rubik пробел и запятая занимают целую клетку: поджимаем */
-  .vh-h1 .l1, .vh-h1 .l2, .vh-h2, .vh-btn, .vh-link, .vh-run span, .vh-logo, .ch h3, .pg h3, .tp h3, .tp-price b, .vh-stats b, .cs-title, .cs-price, .vh-trial-tx h3, .st h3, .cv figcaption b, .vh-pt-big, .vh-score b, .vh-foot-big, .ch-bars-t { word-spacing: -0.42em; }
+  .vh-h1 .l1, .vh-h1 .l2, .vh-h2, .vh-btn, .vh-link, .vh-run span, .vh-logo, .ch h3, .pg h3, .tp h3, .tp-price b, .vh-stats b, .cs-title, .cs-price, .vh-offer-tx h3, .st h3, .cv figcaption b, .vh-pt-big, .vh-score b, .vh-foot-big, .ch-bars-t { word-spacing: -0.42em; }
   .vh .vh-stats b, .vh .vh-score b { font-family: var(--fb); font-weight: 900; letter-spacing: -0.03em; word-spacing: 0; }
   .vh :global(h2), .vh :global(h3) { hyphens: manual; text-wrap: balance; }
   .vh-w { width: 100%; max-width: 1360px; margin: 0 auto; padding-inline: var(--gut); }
@@ -410,7 +410,7 @@ const tapeSkin = ['c', 'p', 'o'];
   .vh-btn :global(svg) { flex: none; width: 18px; height: 16px; }
   .vh-btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--cyan); }
   .vh-btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--cyan); }
-  .vh-pt .vh-btn, .vh-trial-tx .vh-btn { font-size: 0.8rem; padding: 0 20px; }
+  .vh-pt .vh-btn, .vh-offer-tx .vh-btn { font-size: 0.8rem; padding: 0 20px; }
   .vh-btn-s { min-height: 44px; padding: 0 16px; font-size: 0.74rem; box-shadow: 3px 3px 0 var(--cyan); gap: 8px; white-space: nowrap; }
   .vh-btn-w { width: 100%; justify-content: space-between; }
   .vh-link { font-family: var(--fd); font-weight: 800; font-size: 0.82rem; text-transform: uppercase; text-decoration: none; padding-bottom: 4px; background: linear-gradient(90deg, var(--pink), var(--cyan)) 0 100% / 100% 3px no-repeat; }
@@ -590,7 +590,7 @@ const tapeSkin = ['c', 'p', 'o'];
   }
 
   /* аудиокассета */
-  .vh-trial { margin-top: clamp(64px, 8vw, 120px); display: grid; gap: 40px; align-items: center; }
+  .vh-offer { margin-top: clamp(64px, 8vw, 120px); display: grid; gap: 40px; align-items: center; }
   .cs { position: relative; width: 100%; max-width: 560px; aspect-ratio: 1.6; justify-self: center; border-radius: 22px; background: var(--stripes); border: 4px solid var(--night); box-shadow: 10px 10px 0 var(--night); padding: 7% 7% 0; }
   .cs-scr { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle, var(--night) 0 25%, #d9cfe0 30%); border: 2px solid var(--night); }
   .s1 { left: 10px; top: 10px; } .s2 { right: 10px; top: 10px; } .s3 { left: 10px; bottom: 10px; } .s4 { right: 10px; bottom: 10px; }
@@ -605,12 +605,12 @@ const tapeSkin = ['c', 'p', 'o'];
   .cs-tape { position: absolute; left: 16%; right: 16%; top: 50%; height: 34%; transform: translateY(-50%); background: #5a3a2a; border-radius: 4px; }
   .cs-foot { position: absolute; left: 20%; right: 20%; bottom: 0; height: 18%; background: rgb(28 14 44 / 0.88); clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%); border-radius: 6px 6px 0 0; }
   @keyframes vh-spin { to { transform: rotate(360deg); } }
-  .vh-trial-tx { display: grid; gap: 14px; justify-items: start; }
-  .vh-trial-tx h3 { font-family: var(--fd); font-weight: 800; text-transform: uppercase; font-size: clamp(1.6rem, 6.6vw, 2.8rem); line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
-  .vh-trial-tx p { font-size: 1.04rem; line-height: 1.55; max-width: 44ch; color: var(--muted-l); }
-  .vh-trial-tx ul { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-  .vh-trial-tx li { border: 2px solid var(--night); border-radius: 999px; padding: 5px 12px; font-size: 0.86rem; font-weight: 600; }
-  @media (min-width: 1100px) { .vh-trial { grid-template-columns: 1fr 1fr; gap: 72px; } }
+  .vh-offer-tx { display: grid; gap: 14px; justify-items: start; }
+  .vh-offer-tx h3 { font-family: var(--fd); font-weight: 800; text-transform: uppercase; font-size: clamp(1.6rem, 6.6vw, 2.8rem); line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  .vh-offer-tx p { font-size: 1.04rem; line-height: 1.55; max-width: 44ch; color: var(--muted-l); }
+  .vh-offer-tx ul { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .vh-offer-tx li { border: 2px solid var(--night); border-radius: 999px; padding: 5px 12px; font-size: 0.86rem; font-weight: 600; }
+  @media (min-width: 1100px) { .vh-offer { grid-template-columns: 1fr 1fr; gap: 72px; } }
 
   .vh-stickers { display: grid; gap: 18px; margin-top: clamp(56px, 7vw, 96px); }
   .st { padding: 24px 24px 26px; border-radius: 22px; border: 3px solid var(--night); display: grid; gap: 10px; justify-items: start; background: #fff; }

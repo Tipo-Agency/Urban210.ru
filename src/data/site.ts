@@ -18,6 +18,12 @@ export const site = {
     lng: 135.098167,
   },
   phone: { display: "+7 (4212) 95-09-20", href: "tel:+74212950920" },
+  // Мессенджеры клуба: Макс и Telegram. Ссылки пришлёт Александр; пока пусто, на сайте вместо них телефон.
+  messengers: {
+    max: "", // ЗАГЛУШКА: ссылка на Макс клуба
+    telegram: "", // ЗАГЛУШКА: ссылка на Telegram клуба (бота нет)
+  },
+  // Устарело (30.10.2026): WhatsApp, Telegram-бот и Instagram клуб не использует. Поля остались только для архивных концепций.
   whatsapp: "79242054109",
   telegramBot: "urban210_bot",
   instagram: "https://www.instagram.com/fc.urban210",
@@ -56,12 +62,20 @@ export function telegramLink(start: string) {
   return `https://t.me/${site.telegramBot}?start=${encodeURIComponent(start.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 64))}`;
 }
 
+// Мессенджеры, у которых уже есть ссылка. Пустые заглушки на сайт не выводятся.
+export function messengerLinks() {
+  return [
+    { id: "max", label: "Макс", href: site.messengers.max },
+    { id: "telegram", label: "Telegram", href: site.messengers.telegram },
+  ].filter((m) => m.href);
+}
+
 export const nav = [
   { href: "/price/", label: "Тарифы" },
-  { href: "/zal/", label: "Тренажёрный зал" },
+  { href: "/zones/", label: "Зоны клуба" },
   { href: "/group/", label: "Групповые" },
-  { href: "/spa/", label: "SPA" },
   { href: "/trainers/", label: "Тренеры" },
   { href: "/promo/", label: "Акции" },
+  { href: "/blog/", label: "Блог" },
   { href: "/contacts/", label: "Контакты" },
 ] as const;

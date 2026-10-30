@@ -1,21 +1,22 @@
 ---
+// Вопросы и ответы с разметкой FAQPage.
 import type { Faq as Item } from '../data/content';
-interface Props { items: Item[]; title?: string; text?: string }
-const { items, title = 'Частые вопросы', text } = Astro.props;
+interface Props { items: Item[]; title?: string; text?: string; id?: string }
+const { items, title = 'Частые вопросы', text, id = 'faq' } = Astro.props;
+const ld = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: items.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) };
 ---
-<section class="sec" data-block="faq" aria-labelledby="faq-t">
-  <div class="wrap faq-wrap">
-    <div class="head">
-      <h2 id="faq-t">{title}</h2>
-      {text && <p>{text}</p>}
-    </div>
-    <div class="faq">
-      {items.map((f, i) => (
-        <details open={i === 0}>
-          <summary>{f.q}<i aria-hidden="true"></i></summary>
-          <p class="a">{f.a}</p>
-        </details>
-      ))}
-    </div>
+<section class="f5-sec" id={id} aria-labelledby={`${id}-t`}>
+  <div class="f5-head">
+    <h2 id={`${id}-t`}>{title}</h2>
+    {text && <p>{text}</p>}
   </div>
+  <div class="f5-faq">
+    {items.map((f, i) => (
+      <details open={i === 0}>
+        <summary>{f.q}<i aria-hidden="true"></i></summary>
+        <p class="a">{f.a}</p>
+      </details>
+    ))}
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
 </section>

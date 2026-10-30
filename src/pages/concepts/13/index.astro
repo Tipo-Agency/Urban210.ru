@@ -12,7 +12,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos } from '../../../data/content';
 import hero from '../../../assets/images/hero.jpg';
 
@@ -30,6 +30,7 @@ const shots = [
 ];
 const tradein = promos.find((p) => p.slug === 'trade-in')!;
 const friend = promos.find((p) => p.slug === '1-plus-1')!;
+const day = perDay(plans[0].month, 30);
 const personalLine = `${personal.pack} тренировок за ${rub(personal.price)}`;
 const hours = site.hours.map((h) => `${h.days} ${h.time}`).join(', ');
 const year = new Date().getFullYear();
@@ -41,7 +42,7 @@ const next = () => two(++n);
 const F = {
   hero: next(), ch1: next(), facts: next(),
   zones: shots.map(() => next()), spa: next(),
-  ch2: next(), trial: next(), plans: plans.map(() => next()), promo: next(),
+  ch2: next(), day: next(), plans: plans.map(() => next()), promo: next(),
   ch3: next(), trainers: trainers.map(() => next()),
   reviews: shownReviews.map(() => next()), end: next(),
 };
@@ -64,7 +65,7 @@ const edge = 'URBAN210 · ХАБАРОВСК · Ч/Б';
         <i class="pl-prog"><i data-prog></i></i>
       </p>
       <a class="pl-tel" href={site.phone.href}>{site.phone.display}</a>
-      <a class="pl-btn" href="#zayavka" data-lead={trial.title} data-block="13_header">Пробный день 1 ₽<Icon name="chev" /></a>
+      <a class="pl-btn" href="#zayavka" data-lead="Заявка с сайта" data-block="13_header">Оставить заявку<Icon name="chev" /></a>
     </header>
 
     <main>
@@ -72,11 +73,11 @@ const edge = 'URBAN210 · ХАБАРОВСК · Ч/Б';
         <div class="reel-vp" data-vp>
           <div class="reel-track" data-track>
 
-            <!-- Ракорд: обратный отсчёт до 1 ₽ -->
+            <!-- Ракорд: обратный отсчёт до цены дня -->
             <div class="leader" aria-hidden="true">
               <div class="leader-in">
                 <p class="mono">Ракорд · Катушка 1</p>
-                <div class="count"><span class="count-n"><i>3</i><i>2</i><i>1</i><b>1 ₽</b></span></div>
+                <div class="count"><span class="count-n"><i>3</i><i>2</i><i>1</i><b>{day} ₽</b></span></div>
                 <p class="mono">Прокрутите вниз,<br />плёнка поедет</p>
                 <span class="leader-arrow"><Icon name="chev" /></span>
               </div>
@@ -91,11 +92,11 @@ const edge = 'URBAN210 · ХАБАРОВСК · Ч/Б';
                 <div class="shade" aria-hidden="true"></div>
                 <div class="hero-txt">
                   <p class="slate mono"><span>Фитнес-клуб Urban210</span><span>{site.address.short}</span></p>
-                  <h1><span class="ln"><span>Первый дубль</span></span><span class="ln"><span>за <em>1 ₽</em></span></span></h1>
-                  <p class="hero-lead">Пробный день в клубе: зал, кардиозона и тренажёры на целый день. Дальше от {num(plans[0].month)}&nbsp;₽ в&nbsp;месяц, вступительного взноса нет.</p>
+                  <h1><span class="ln"><span>Первый дубль</span></span><span class="ln"><span>от <em>{day} ₽</em> в день</span></span></h1>
+                  <p class="hero-lead">{plans[0].name}: зал, кардиозона и тренажёры {plans[0].hours} за {rub(plans[0].month)} в&nbsp;месяц.</p>
                   <div class="hero-cta">
-                    <a class="pl-btn pl-btn-lg" href="#zayavka" data-lead={trial.title} data-block="13_hero">Записаться за 1 ₽<Icon name="chev" /></a>
-                    <a class="pl-link" href="#tarify" data-goto>Тарифы от {num(plans[0].month)} ₽</a>
+                    <a class="pl-btn pl-btn-lg" href="#tarify" data-goto data-block="13_hero">Выбрать карту<Icon name="chev" /></a>
+                    <a class="pl-link" href="#zayavka" data-lead="Заявка с сайта" data-block="13_hero">Оставить заявку</a>
                   </div>
                   <p class="hero-rate mono"><Icon name="star" />{rating} на Яндекс Картах · {site.rating.text}</p>
                 </div>
@@ -124,7 +125,7 @@ const edge = 'URBAN210 · ХАБАРОВСК · Ч/Б';
                   <div><dt>60+</dt><dd>тренажёров {site.facts.brands}</dd></div>
                   <div><dt>60 кг</dt><dd>свободные веса до</dd></div>
                   <div><dt>50</dt><dd>мест бесплатной парковки</dd></div>
-                  <div><dt>0 ₽</dt><dd>вступительный взнос</dd></div>
+                  <div><dt>{day} ₽</dt><dd>в день по дневной карте</dd></div>
                   <div><dt>06:30</dt><dd>открываемся по будням</dd></div>
                 </dl>
               </div>
@@ -167,21 +168,21 @@ const edge = 'URBAN210 · ХАБАРОВСК · Ч/Б';
               <div class="fr-w card">
                 <p class="mono">Часть II</p>
                 <h2 class="card-h">Тарифы</h2>
-                <p class="card-p">Три карты без вступительного взноса. Регистрация и браслет входят в стоимость.</p>
+                <p class="card-p">Три карты на месяц или год. {plans[0].name} от {day}&nbsp;₽ в&nbsp;день.</p>
               </div>
               <div class="fr-e fr-b"><span>▸ {F.ch2}</span><span>{F.ch2}A</span></div>
             </article>
 
-            <article class="fr fr-trial" style="--r:0.74" data-frame={F.trial}>
-              <div class="fr-e fr-a"><span>{edge}</span><span>Проба</span></div>
-              <div class="fr-w ptrial">
-                <p class="mono">Для новых гостей</p>
-                <p class="ptrial-n"><span>1</span>₽</p>
-                <h3>Пробный день</h3>
-                <p>{trial.text}</p>
-                <a class="pl-btn pl-btn-dark" href="#zayavka" data-lead={trial.title} data-block="13_trial">Записаться<Icon name="chev" /></a>
+            <article class="fr fr-day" style="--r:0.74" data-frame={F.day}>
+              <div class="fr-e fr-a"><span>{edge}</span><span>Цена дня</span></div>
+              <div class="fr-w pday">
+                <p class="mono">{plans[0].name}</p>
+                <p class="pday-n"><span>{day}</span>₽</p>
+                <h3>В день</h3>
+                <p>{rub(plans[0].month)} в месяц: зал, кардиозона и тренажёры {plans[0].hours}.</p>
+                <a class="pl-btn pl-btn-dark" href="#zayavka" data-lead="Заявка с сайта" data-block="13_day">Оставить заявку<Icon name="chev" /></a>
               </div>
-              <div class="fr-e fr-b"><span>▸ {F.trial}</span><span>{F.trial}A</span></div>
+              <div class="fr-e fr-b"><span>▸ {F.day}</span><span>{F.day}A</span></div>
             </article>
 
             {plans.map((p, i) => (
@@ -266,7 +267,7 @@ const edge = 'URBAN210 · ХАБАРОВСК · Ч/Б';
               <div class="fr-w card">
                 <p class="mono">Конец первой катушки</p>
                 <h2 class="card-h card-h-s">Продол&shy;жение следует</h2>
-                <p class="card-p">Ниже заявка на пробный день, адрес и часы работы.</p>
+                <p class="card-p">Ниже заявка, адрес и часы работы.</p>
                 <a class="pl-link pl-link-light" href="#zayavka">К заявке</a>
               </div>
               <div class="fr-e fr-b"><span>▸ {F.end}</span><span>{F.end}A</span></div>
@@ -288,12 +289,12 @@ const edge = 'URBAN210 · ХАБАРОВСК · Ч/Б';
           <div class="cta-txt">
             <p class="mono">Кадр {two(total + 1)} · Ваш</p>
             <h2 id="pl-cta-h">Снимем ваш первый дубль</h2>
-            <p class="cta-lead">Пробный день за 1 ₽: полный доступ в зал. Оставьте имя и телефон, администратор перезвонит и подберёт время.</p>
+            <p class="cta-lead">{plans[0].name} от {day}&nbsp;₽ в&nbsp;день. Оставьте имя и телефон, администратор перезвонит и поможет выбрать карту.</p>
             <ul class="cta-list">
               <li><span class="mono">Адрес</span>{site.address.locality}, {site.address.street}</li>
               <li><span class="mono">Часы</span>{hours}</li>
               <li><span class="mono">Парковка</span>{site.parking}</li>
-              <li><span class="mono">Связь</span><span><a href={site.phone.href}>{site.phone.display}</a> · <a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a> · <a href={telegramLink('concept13')} target="_blank" rel="noopener">Telegram</a></span></li>
+              <li><span class="mono">Связь</span><span><a href={site.phone.href}>{site.phone.display}</a> · <a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a> · <a href={telegramLink('concept13')} target="_blank" rel="noopener">Telegram</a></span></li>
             </ul>
           </div>
           <div class="cta-frame">
@@ -594,13 +595,13 @@ const edge = 'URBAN210 · ХАБАРОВСК · Ч/Б';
       radial-gradient(70% 40% at 0% 100%, rgb(255 190 120 / 0.18), transparent 70%); filter: blur(6px); }
 
   /* Проба */
-  .ptrial { display: flex; flex-direction: column; gap: 12px; padding: clamp(22px, 2.4vw, 34px); background: var(--acc); color: #160d08; }
-  .ptrial .mono { color: rgb(22 13 8 / 0.75); }
-  .ptrial-n { margin-top: auto; display: flex; align-items: flex-start; gap: 8px; font: 800 clamp(3rem, 4vw, 4rem)/1 var(--display); }
-  .ptrial-n span { font-size: clamp(9rem, 15vw, 15rem); line-height: 0.78; letter-spacing: -0.02em; }
-  .ptrial h3 { font: 800 2.6rem/0.95 var(--display); text-transform: uppercase; }
-  .ptrial p:not(.mono):not(.ptrial-n) { font-size: 1rem; line-height: 1.45; max-width: 32ch; }
-  .ptrial .pl-btn { align-self: flex-start; margin-top: 6px; }
+  .pday { display: flex; flex-direction: column; gap: 12px; padding: clamp(22px, 2.4vw, 34px); background: var(--acc); color: #160d08; }
+  .pday .mono { color: rgb(22 13 8 / 0.75); }
+  .pday-n { margin-top: auto; display: flex; align-items: flex-start; gap: 8px; font: 800 clamp(3rem, 4vw, 4rem)/1 var(--display); }
+  .pday-n span { font-size: clamp(9rem, 15vw, 15rem); line-height: 0.78; letter-spacing: -0.02em; }
+  .pday h3 { font: 800 2.6rem/0.95 var(--display); text-transform: uppercase; }
+  .pday p:not(.mono):not(.pday-n) { font-size: 1rem; line-height: 1.45; max-width: 32ch; }
+  .pday .pl-btn { align-self: flex-start; margin-top: 6px; }
 
   /* Тарифы */
   .pp { display: flex; flex-direction: column; gap: 10px; padding: clamp(20px, 2.2vw, 30px); background: #110e0b; }
@@ -665,7 +666,7 @@ const edge = 'URBAN210 · ХАБАРОВСК · Ч/Б';
   .coach-ph { aspect-ratio: 1; flex: none; }
   .fr-card .fr-w { min-height: 300px; }
   .fr-spa .fr-w { min-height: 440px; }
-  .fr-trial .fr-w { min-height: 480px; }
+  .fr-day .fr-w { min-height: 480px; }
   .fr-facts .fr-w { min-height: 0; }
 
   @media (max-width: 1023px) {
@@ -726,7 +727,7 @@ const edge = 'URBAN210 · ХАБАРОВСК · Ч/Б';
     .card-h-s { font-size: clamp(3.4rem, calc(var(--wh) * 0.1), 5.8rem); }
     .facts dt { font-size: clamp(2.8rem, calc(var(--wh) * 0.085), 4.6rem); }
     .pp-price span { font-size: clamp(4rem, calc(var(--wh) * 0.12), 6.6rem); }
-    .ptrial-n span { font-size: clamp(8rem, calc(var(--wh) * 0.34), 16rem); }
+    .pday-n span { font-size: clamp(8rem, calc(var(--wh) * 0.34), 16rem); }
 
     .grain { display: block; position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; opacity: 0.09; }
     .grain::before { content: ''; position: absolute; inset: -60px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); animation: grain 0.9s steps(5) infinite; }

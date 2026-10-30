@@ -8,7 +8,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, trial, personal } from '../../../data/pricing';
+import { plans, perDay, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, programs, promos } from '../../../data/content';
 import hall from '../../../assets/images/zal.jpg';
 import cutout from '../../../assets/images/trainers/lazko-cutout.webp';
@@ -22,6 +22,7 @@ const cardio = zones.find((z) => z.id === 'cardio')!;
 const group = zones.find((z) => z.id === 'group')!;
 const lazko = trainers.find((t) => t.photo.includes('lazko'))!;
 const others = trainers.filter((t) => t !== lazko);
+const fromDay = perDay(plans[0].month, 30);
 const friend = promos.find((p) => p.slug === '1-plus-1')!;
 const tradein = promos.find((p) => p.slug === 'trade-in')!;
 const planInfo = plans.map((p) => ({
@@ -46,7 +47,7 @@ const allFeatures = [
         <nav aria-label="Разделы">
           <a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#trenery">Тренеры</a><a href="#zayavka">Контакты</a>
         </nav>
-        <a class="bn-pill bn-pill-s" href="#zayavka" data-lead={trial.title} data-block="08_header">День за 1 ₽</a>
+        <a class="bn-pill bn-pill-s" href="#tarify" data-block="08_header">Выбрать карту</a>
       </div>
     </header>
 
@@ -55,10 +56,10 @@ const allFeatures = [
       <section class="bn-hero bn-w" aria-labelledby="bn-h1">
         <p class="bn-eyebrow">Фитнес-клуб в Хабаровске</p>
         <h1 id="bn-h1">Зал. Кардио. Групповые. SPA.</h1>
-        <p class="bn-sub">Всё в одном клубе на {site.address.short}. Первый день за 1&nbsp;₽, дальше от {num(day.month)}&nbsp;₽ в&nbsp;месяц.</p>
+        <p class="bn-sub">Всё в одном клубе на {site.address.short}. Безлимит от {fromDay}&nbsp;₽ в&nbsp;день, это {num(day.month)}&nbsp;₽ в&nbsp;месяц.</p>
         <div class="bn-hero-cta">
-          <a class="bn-pill" href="#zayavka" data-lead={trial.title} data-block="08_hero">Записаться за 1 ₽</a>
-          <a class="bn-more" href="#tarify">Смотреть тарифы<Icon name="chev1" /></a>
+          <a class="bn-pill" href="#tarify" data-block="08_hero">Выбрать карту</a>
+          <a class="bn-more" href="#zayavka" data-lead="Заявка с сайта" data-block="08_hero_lead">Оставить заявку<Icon name="chev1" /></a>
         </div>
       </section>
 
@@ -94,11 +95,11 @@ const allFeatures = [
             <p class="t-foot">{site.rating.text} на Яндекс Картах<Icon name="chev1" /></p>
           </a>
 
-          <article class="t t-trial" data-in style="--d:0ms">
-            <p class="t-k">Пробный день</p>
-            <p class="t-trial-n">1<span>₽</span></p>
-            <p class="t-trial-p">{trial.text.split('.')[0]}. Без обязательств.</p>
-            <a class="bn-pill bn-pill-w" href="#zayavka" data-lead={trial.title} data-block="08_trial_tile">Записаться</a>
+          <article class="t t-offer" data-in style="--d:0ms">
+            <p class="t-k">Безлимит в день от</p>
+            <p class="t-offer-n">{fromDay}<span>₽</span></p>
+            <p class="t-offer-p">{day.name}: {num(day.month)}&nbsp;₽ в&nbsp;месяц. Зал и кардиозона {day.hours}.</p>
+            <a class="bn-pill bn-pill-w" href="#tarify" data-block="08_offer_tile">Выбрать карту</a>
           </article>
 
           <article class="t t-price" data-in style="--d:80ms" data-price>
@@ -185,7 +186,7 @@ const allFeatures = [
       <!-- Тарифы -->
       <section class="bn-sec bn-w" id="tarify" aria-labelledby="bn-p">
         <div class="bn-head">
-          <h2 id="bn-p">Выберите абонемент.<br /><span>Вступительного взноса нет.</span></h2>
+          <h2 id="bn-p">Выберите абонемент.<br /><span>От {fromDay} ₽ в день.</span></h2>
           <div class="bn-seg bn-seg-l" role="radiogroup" aria-label="Период оплаты" data-period style="--n:2">
             <span class="bn-seg-th" aria-hidden="true"></span>
             <button type="button" role="radio" aria-checked="true" data-v="m">Месяц</button>
@@ -216,12 +217,12 @@ const allFeatures = [
         </div>
         <div class="bn-grid bn-g3">
           <article class="t t-wide" data-in>
-            <span class="t-wide-n" aria-hidden="true">1 ₽</span>
+            <span class="t-wide-n" aria-hidden="true">{fromDay} ₽</span>
             <div>
-              <h3>Не уверены? Начните с пробного дня.</h3>
-              <p>{trial.text}</p>
+              <h3>Не знаете, какой тариф выбрать?</h3>
+              <p>{day.name} стоит {num(day.month)}&nbsp;₽ в&nbsp;месяц, это {fromDay}&nbsp;₽ в&nbsp;день. Администратор перезвонит и поможет с выбором.</p>
             </div>
-            <a class="bn-pill" href="#zayavka" data-lead={trial.title} data-block="08_trial_wide">Записаться за 1 ₽</a>
+            <a class="bn-pill" href="#zayavka" data-lead="Заявка с сайта" data-block="08_offer_wide">Оставить заявку</a>
           </article>
           <article class="t t-mini" data-in style="--d:80ms">
             <p class="t-k">Trade-in</p>
@@ -281,7 +282,7 @@ const allFeatures = [
       <section class="bn-sec bn-w" id="zayavka" aria-labelledby="bn-l">
         <div class="t t-lead" data-in>
           <div class="t-lead-l">
-            <p class="bn-eyebrow">Пробный день за 1 ₽</p>
+            <p class="bn-eyebrow">Первый визит</p>
             <h2 id="bn-l">Приходите посмотреть клуб.</h2>
             <ol class="t-steps">
               <li><b>1</b>Оставьте имя и телефон</li>
@@ -290,12 +291,12 @@ const allFeatures = [
             </ol>
             <ul class="bn-list">
               <li><a href={site.phone.href}><span class="bn-ic bn-ic-o"><Icon name="phone" /></span><span>Позвонить<small>{site.phone.display}</small></span><Icon name="chev1" /></a></li>
-              <li><a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener"><span class="bn-ic bn-ic-g"><Icon name="wa" /></span><span>WhatsApp<small>Ответим в часы работы</small></span><Icon name="chev1" /></a></li>
+              <li><a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener"><span class="bn-ic bn-ic-g"><Icon name="wa" /></span><span>WhatsApp<small>Ответим в часы работы</small></span><Icon name="chev1" /></a></li>
               <li><a href={telegramLink('concept_08')} target="_blank" rel="noopener"><span class="bn-ic bn-ic-b"><Icon name="tg" /></span><span>Telegram-бот<small>@{site.telegramBot}</small></span><Icon name="chev1" /></a></li>
             </ul>
           </div>
           <div class="t-lead-r">
-            <LeadForm block="08_final" id="bn" title="Записаться на пробный день" />
+            <LeadForm block="08_final" id="bn" />
           </div>
         </div>
       </section>
@@ -534,13 +535,13 @@ const allFeatures = [
   .bn-stars span :global(svg) { position: absolute; inset: 0; width: 18px; height: 18px; color: #e3e3e8; }
   .bn-stars span :global(svg:last-child) { color: #ff9f0a; clip-path: inset(0 calc(100% - var(--f)) 0 0); }
 
-  /* Пробный день */
-  .t-trial { background: var(--acc); color: #fff; }
-  .t-trial .t-k { color: rgb(255 255 255 / 0.85); }
-  .t-trial-n { font-size: clamp(5rem, 3rem + 5vw, 7.6rem); font-weight: 800; line-height: 0.9; letter-spacing: -0.06em; display: flex; align-items: flex-start; gap: 6px; }
-  .t-trial-n span { font-size: 0.38em; letter-spacing: -0.02em; margin-top: 0.14em; }
-  .t-trial-p { color: rgb(255 255 255 / 0.92); font-size: 0.98rem; line-height: 1.38; }
-  .t-trial .bn-pill { margin-top: auto; align-self: flex-start; min-height: 44px; }
+  /* Цена дня */
+  .t-offer { background: var(--acc); color: #fff; }
+  .t-offer .t-k { color: rgb(255 255 255 / 0.85); }
+  .t-offer-n { font-size: clamp(5rem, 3rem + 5vw, 7.6rem); font-weight: 800; line-height: 0.9; letter-spacing: -0.06em; display: flex; align-items: flex-start; gap: 6px; }
+  .t-offer-n span { font-size: 0.38em; letter-spacing: -0.02em; margin-top: 0.14em; }
+  .t-offer-p { color: rgb(255 255 255 / 0.92); font-size: 0.98rem; line-height: 1.38; }
+  .t-offer .bn-pill { margin-top: auto; align-self: flex-start; min-height: 44px; }
 
   /* Цена с переключателем */
   .bn-seg { position: relative; display: grid; grid-template-columns: repeat(var(--n), 1fr); padding: 3px; border-radius: 12px; background: #eeeef0; --i: 0; }
@@ -579,7 +580,7 @@ const allFeatures = [
     .t-video { grid-column: 1 / span 4; grid-row: 1 / span 2; }
     .t-open { grid-column: 5 / span 2; grid-row: 1; }
     .t-rate { grid-column: 5 / span 2; grid-row: 2; }
-    .t-trial { grid-column: 1 / span 2; }
+    .t-offer { grid-column: 1 / span 2; }
     .t-price { grid-column: 3 / span 2; }
     .t-map { grid-column: 5 / span 2; }
     .t-open .t-hours li { padding: 5px 10px; font-size: 0.85rem; }

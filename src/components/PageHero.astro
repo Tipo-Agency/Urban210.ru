@@ -1,26 +1,34 @@
 ---
+// Первый экран внутренней страницы: хлебные крошки, H1, подзаголовок, кнопки, фото. Добавляет разметку BreadcrumbList.
 import { Image } from 'astro:assets';
 import { img } from '../data/images';
-interface Props { title: string; lead?: string; crumbs?: { href: string; label: string }[]; image?: string; alt?: string }
-const { title, lead, crumbs = [], image, alt = '' } = Astro.props;
+import { SITE_URL } from '../data/site';
+interface Props { title: string; lead?: string; crumbs?: { href: string; label: string }[]; image?: string; alt?: string; org?: boolean; position?: string }
+const { title, lead, crumbs = [], image, alt = '', org = false, position = '50% 40%' } = Astro.props;
+const trail = [{ href: '/', label: 'Главная' }, ...crumbs];
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: trail.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.label, item: SITE_URL + c.href })),
+};
 ---
-<header class="page-hero">
-  <div class="wrap">
-    {crumbs.length > 0 && (
+<section class="f5-page-hero">
+  <div class:list={['f5-page-card', org && 'is-org', image && 'has-media']}>
+    <div style="display:grid;gap:22px">
       <nav aria-label="Хлебные крошки">
-        <ol class="crumbs">
-          <li><a href="/">Главная</a></li>
-          {crumbs.map((c, i) => <li>{i === crumbs.length - 1 ? <span aria-current="page">{c.label}</span> : <a href={c.href}>{c.label}</a>}</li>)}
+        <ol class="f5-crumbs">
+          {trail.map((c, i) => <li>{i === trail.length - 1 ? <span aria-current="page">{c.label}</span> : <a href={c.href}>{c.label}</a>}</li>)}
         </ol>
       </nav>
-    )}
-    <h1>{title}</h1>
-    {lead && <p class="lead">{lead}</p>}
-    {Astro.slots.has('default') && <div class="actions"><slot /></div>}
+      <h1>{title}</h1>
+      {lead && <p class="f5-page-lead">{lead}</p>}
+      {Astro.slots.has('default') && <div class="f5-page-actions"><slot /></div>}
+    </div>
     {image && (
-      <div class="page-hero-media">
-        <Image src={img(image)} alt={alt} widths={[480, 828, 1280, 1600]} sizes="(min-width: 1360px) 1312px, 100vw" loading="eager" fetchpriority="high" format="webp" quality={60} />
+      <div class="f5-page-media">
+        <Image src={img(image)} alt={alt} widths={[480, 800, 1200]} sizes="(min-width: 980px) 46vw, 100vw" loading="eager" fetchpriority="high" format="webp" quality={60} style={`object-position:${position}`} />
       </div>
     )}
   </div>
-</header>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+</section>

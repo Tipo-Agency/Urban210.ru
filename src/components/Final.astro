@@ -1,27 +1,33 @@
 ---
-// Финальный блок с формой. Якорь #zayavka: сюда ведут кнопки, если JS не загрузился.
+// Блок заявки: оранжевая карточка, три шага и форма. Якорь #zayavka: сюда ведут кнопки, если JS не загрузился.
 import LeadForm from './LeadForm.astro';
-import Icon from './Icon.astro';
-import { site, whatsappLink, telegramLink } from '../data/site';
-interface Props { title?: string; text?: string; goal?: string; block?: string; button?: string; formTitle?: string }
+import { site, messengerLinks } from '../data/site';
+interface Props { title?: string; goal?: string; block?: string; button?: string; formTitle?: string; steps?: [string, string][] }
 const {
-  title = 'Первый день за 1 ₽',
-  text = 'Приходите, потренируйтесь, загляните в раздевалки и SPA. Понравится — оформите абонемент без вступительного взноса.',
-  goal, block = 'final', button, formTitle,
+  title = 'Оставьте заявку, подберём карту',
+  goal = 'Заявка на карту', block = 'final', button = 'Отправить заявку', formTitle = 'Подобрать карту',
+  steps = [
+    ['Оставьте заявку', 'Имя и телефон, больше ничего'],
+    ['Администратор перезвонит', 'В часы работы клуба, расскажет про тарифы'],
+    ['Приходите в клуб', 'Оформим карту и покажем зал'],
+  ],
 } = Astro.props;
+const messengers = messengerLinks();
 ---
-<section class="final sec on-accent" id="zayavka" data-block={block} aria-labelledby={`${block}-t`}>
-  <Icon name="chev" class="bigchev" />
-  <div class="wrap final-grid">
-    <div>
+<section class="f5-sec" id="zayavka" data-block={block} aria-labelledby={`${block}-t`}>
+  <div class="f5-lead">
+    <div class="f5-lead-txt">
       <h2 id={`${block}-t`}>{title}</h2>
-      <p class="lead" style="margin-top:22px;max-width:40ch">{text}</p>
-      <div class="alt-contacts">
-        <a class="link" href={site.phone.href}>{site.phone.display}</a>
-        <a class="link" href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a>
-        <a class="link" href={telegramLink('site_final')} target="_blank" rel="noopener">Telegram</a>
+      <ol class="f5-steps">
+        {steps.map(([b, s]) => <li><b>{b}</b><span>{s}</span></li>)}
+      </ol>
+      <div class="f5-lead-alt">
+        <a class="f5-pill f5-pill-wht" href={site.phone.href}>{site.phone.display}</a>
+        {messengers.map((m) => <a class="f5-pill f5-pill-wht" href={m.href} target="_blank" rel="noopener">{m.label}</a>)}
       </div>
     </div>
-    <LeadForm goal={goal} block={block} id={block} button={button} title={formTitle} />
+    <div class="f5-form">
+      <LeadForm block={block} id={block} goal={goal} title={formTitle} button={button} />
+    </div>
   </div>
 </section>

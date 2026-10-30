@@ -15,7 +15,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, reasons } from '../../../data/content';
 import cutout from '../../../assets/images/trainers/lazko-cutout.webp';
 
@@ -33,9 +33,11 @@ const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
 const rating = site.rating.value.toString().replace('.', ',');
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const z = Object.fromEntries(zones.map((x) => [x.id, x]));
-const [trialPromo, tradein, friend] = [promos.find((p) => p.slug === '1-rubl')!, promos.find((p) => p.slug === 'trade-in')!, promos.find((p) => p.slug === '1-plus-1')!];
+const [tradein, friend] = [promos.find((p) => p.slug === 'trade-in')!, promos.find((p) => p.slug === '1-plus-1')!];
+const dayRate = perDay(plans[0].month, 30);
+const shownReasons = reasons.filter((r) => !r.title.startsWith('Нет вступ'));
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
-const ribbon = ['Вступительного взноса нет', `Пробный день ${trial.price} ₽`, 'Парковка на 50 мест', `Пн–Пт ${site.hours[0].time}`, `Сб–Вс ${site.hours[1].time}`, `${rating} на Яндекс Картах`, site.facts.machines];
+const ribbon = [`${plans[0].name} от ${dayRate} ₽ в день`, 'Парковка на 50 мест', `Пн–Пт ${site.hours[0].time}`, `Сб–Вс ${site.hours[1].time}`, `${rating} на Яндекс Картах`, site.facts.machines];
 const roman = ['I', 'II', 'III', 'IV'];
 const ranks = [{ r: 'III', m: 'bronze' }, { r: 'II', m: 'silver' }, { r: 'I', m: 'gold' }];
 
@@ -81,7 +83,7 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
           <a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#trenery">Тренеры</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Адрес</a>
         </nav>
         <a class="fk-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="fk-btn fk-btn-s" href="#zayavka" data-lead={trial.title} data-block="21_header">1 ₽ пробный<span class="fk-hide-s">&nbsp;день</span></a>
+        <a class="fk-btn fk-btn-s" href="#zayavka" data-lead="Заявка с сайта" data-block="21_header"><span class="fk-hide-s">Оставить заявку</span><span class="fk-hide-l">Заявка</span></a>
       </div>
     </header>
 
@@ -96,10 +98,10 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
             <span class="l l2">к первому</span>
             <span class="l l3">дню?</span>
           </h1>
-          <p class="fk-lead">Первый день в Urban210 за 1&nbsp;₽. Тренажёрный зал, кардио, групповые и SPA в Железнодорожном районе. Вступительного взноса нет.</p>
+          <p class="fk-lead">Urban210 от {dayRate}&nbsp;₽ в&nbsp;день по дневной карте. Тренажёрный зал, кардио, групповые и SPA в Железнодорожном районе.</p>
           <div class="fk-cta">
-            <a class="fk-btn" href="#zayavka" data-lead={trial.title} data-block="21_hero">Записаться за 1 ₽<Icon name="chev" /></a>
-            <a class="fk-link" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+            <a class="fk-btn" href="#tarify" data-block="21_hero">Выбрать карту<Icon name="chev" /></a>
+            <a class="fk-link" href="#zayavka" data-lead="Заявка с сайта" data-block="21_hero">Оставить заявку</a>
           </div>
         </div>
 
@@ -112,7 +114,7 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
           <svg class="fk-st fk-st3"><use href="#fk-star" /></svg>
           <span class="fk-medal">
             <span class="fk-medal-rib"></span>
-            <span class="fk-medal-disc"><b>1&nbsp;₽</b><small>пробный<br />день</small></span>
+            <span class="fk-medal-disc"><b>{dayRate}&nbsp;₽</b><small>в&nbsp;день</small></span>
           </span>
           <span class="fk-rate"><svg><use href="#fk-rosette" /></svg><b>{rating}</b><small>Яндекс Карты<br />{site.rating.text}</small></span>
           <span class="fk-banner"><span>Александр Лазько, координатор зала</span></span>
@@ -131,10 +133,10 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
     <section class="fk-sec fk-w" aria-labelledby="fk-norm-h">
       <div class="fk-head">
         <p class="fk-over">Нормы клуба</p>
-        <h2 id="fk-norm-h" class="fk-h2"><span class="b">Четыре причины</span> <span class="r">прийти сегодня</span></h2>
+        <h2 id="fk-norm-h" class="fk-h2"><span class="b">Три причины</span> <span class="r">прийти сегодня</span></h2>
       </div>
       <ol class="fk-norms">
-        {reasons.map((r, i) => (
+        {shownReasons.map((r, i) => (
           <li data-rise style={`transition-delay:${i * 80}ms`}>
             <span class={`fk-badge fk-badge-${i}`} aria-hidden="true">
               <svg class="fk-badge-ros"><use href="#fk-rosette" /></svg>
@@ -211,7 +213,7 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
       <div class="fk-w">
         <div class="fk-head">
           <p class="fk-over">Тарифы</p>
-          <h2 id="fk-price-h" class="fk-h2"><span class="b">Три разряда</span> <span class="r">без взносов</span></h2>
+          <h2 id="fk-price-h" class="fk-h2"><span class="b">Три разряда</span> <span class="r">от {dayRate}&nbsp;₽ в&nbsp;день</span></h2>
         </div>
         <div class="fk-plans">
           {plans.map((p, i) => (
@@ -235,20 +237,20 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
           ))}
         </div>
 
-        <div class="fk-trial" data-rise>
+        <div class="fk-day" data-rise>
           <div class="tr-medal" aria-hidden="true">
             <span class="tr-rib"></span>
             <span class="tr-disc">
               <svg class="tr-wreath" viewBox="0 0 200 200"><use href="#fk-laurel" /></svg>
-              <b>1<i>₽</i></b>
+              <b>{dayRate}<i>₽</i></b>
             </span>
           </div>
           <div class="tr-tx">
-            <p class="fk-over">Значок новичка</p>
-            <h3>Пробный день</h3>
-            <p>{trial.text}</p>
-            <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-            <a class="fk-btn fk-btn-or" href="#zayavka" data-lead={trial.title} data-block="21_trial">{trialPromo.cta}<Icon name="chev" /></a>
+            <p class="fk-over">Цена дня</p>
+            <h3>{plans[0].name}</h3>
+            <p>{rub(plans[0].month)} в месяц, это {dayRate}&nbsp;₽ в&nbsp;день. Тренажёрный зал и кардиозона {plans[0].hours}.</p>
+            <ul>{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+            <a class="fk-btn fk-btn-or" href="#zayavka" data-lead="Заявка с сайта" data-block="21_day">Оставить заявку<Icon name="chev" /></a>
           </div>
         </div>
 
@@ -326,7 +328,7 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
       <div class="fk-w fi-in">
         <div class="fi-tx">
           <p class="fk-ribbon-k fk-ribbon-or"><span>Готов к первому дню?</span></p>
-          <h2 id="fk-final-h" class="fk-h2"><span class="b">Старт</span> <span class="r">за 1 ₽</span></h2>
+          <h2 id="fk-final-h" class="fk-h2"><span class="b">Старт</span> <span class="r">сегодня</span></h2>
           <dl class="fi-facts">
             <div><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}<br />{site.district}</dd></div>
             <div><dt>Часы</dt><dd>{site.hours.map((h) => <>{`${h.days} ${h.time}`}<br /></>)}</dd></div>
@@ -335,7 +337,7 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
           </dl>
         </div>
         <div class="fi-form">
-          <span class="fi-medal" aria-hidden="true"><svg><use href="#fk-rosette" /></svg><b>1 ₽</b></span>
+          <span class="fi-medal" aria-hidden="true"><svg><use href="#fk-rosette" /></svg><b>{dayRate} ₽</b></span>
           <LeadForm id="fk" block="21_final" />
         </div>
       </div>
@@ -470,10 +472,12 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
   .fk-tel { display: none; font-weight: 650; text-decoration: none; font-size: 0.98rem; white-space: nowrap; }
   .fk-top .fk-btn { margin-left: auto; }
   .fk-hide-s { display: none; }
+  .fk-hide-l { display: inline; }
   @media (min-width: 1100px) {
     .fk-nav, .fk-tel { display: flex; }
     .fk-top .fk-btn { margin-left: 0; }
     .fk-hide-s { display: inline; }
+    .fk-hide-l { display: none; }
   }
 
   /* Лучи */
@@ -583,7 +587,7 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
   .fk-badge-3 .fk-badge-ros { color: var(--ink); }
   .fk-badge-in { width: 72%; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; background: var(--paper-3); box-shadow: inset 0 0 0 3px var(--gold); font-family: var(--fn); font-size: 1.5rem; color: var(--ink); }
   @media (min-width: 900px) {
-    .fk-norms { grid-template-columns: repeat(4, 1fr); gap: 36px; }
+    .fk-norms { grid-template-columns: repeat(3, 1fr); gap: 36px; }
     .fk-norms li { grid-template-columns: 1fr; justify-items: start; gap: 16px; padding: 34px 24px 30px; border-radius: 26px; background: var(--paper-3); box-shadow: inset 0 0 0 2px var(--paper-2); }
     .fk-norms li:nth-child(even) { translate: 0 40px; }
     .fk-norms p { grid-column: auto; }
@@ -685,7 +689,7 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
     .pc-medal { width: 112px; top: -56px; }
   }
 
-  .fk-trial { position: relative; margin-top: clamp(80px, 10vw, 130px); display: grid; gap: 10px; justify-items: center; }
+  .fk-day { position: relative; margin-top: clamp(80px, 10vw, 130px); display: grid; gap: 10px; justify-items: center; }
   .tr-medal { position: relative; display: grid; justify-items: center; transform-origin: 50% 0; }
   .tr-rib { width: 120px; height: 150px; background: repeating-linear-gradient(90deg, var(--red) 0 26px, var(--paper-3) 26px 32px, var(--blue) 32px 58px, var(--paper-3) 58px 64px, var(--red) 64px 90px, var(--paper-3) 90px 96px, var(--blue) 96px 120px); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%); }
   .tr-disc { position: relative; margin-top: -60px; width: min(78vw, 330px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 34% 28%, #ffd8a0, var(--or) 42%, #d9420f 80%); box-shadow: inset 0 0 0 10px #ff8a50, inset 0 0 0 14px #b8370c, 0 12px 0 rgb(100 40 10 / 0.25); display: grid; place-items: center; }
@@ -700,7 +704,7 @@ const rosette = `<symbol id="fk-rosette" viewBox="0 0 100 100"><polygon points="
   .tr-tx li { border: 2px solid var(--blue); color: var(--blue); border-radius: 999px; padding: 5px 14px 4px; font-size: 0.88rem; font-weight: 650; }
   .tr-tx .fk-btn { max-width: 100%; text-align: left; font-size: 1.28rem; padding: 0 22px; white-space: nowrap; }
   @media (min-width: 900px) {
-    .fk-trial { grid-template-columns: 0.9fr 1.1fr; align-items: center; gap: 0; justify-items: stretch; }
+    .fk-day { grid-template-columns: 0.9fr 1.1fr; align-items: center; gap: 0; justify-items: stretch; }
     .tr-medal { justify-self: end; margin-right: -60px; z-index: 2; }
     .tr-disc { width: 400px; }
     .tr-disc b { font-size: 190px; }

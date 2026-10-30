@@ -1,5 +1,13 @@
 ---
-// URBAN цветом текста, 210 и шеврон оранжевым, как в логотипе клуба.
+// Логотип в шапке и подвале. Чтобы поставить файл клиента, положите его в src/assets/brand/logo.svg (или .png):
+// он подхватится сам. Пока файла нет, рисуем текстовый знак URBAN210 с шевроном.
+import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
+interface Props { size?: 'md' | 'lg'; href?: string }
+const { size = 'md', href = '/' } = Astro.props;
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/brand/logo.{svg,png,webp}', { eager: true });
+const file = Object.values(files)[0]?.default;
 ---
-<a class="logo" href="/" aria-label="Urban210, на главную"><span aria-hidden="true">URBAN<b>210</b></span><Icon name="chev" /></a>
+<a class:list={['f5-logo', size === 'lg' && 'f5-logo-lg']} href={href} aria-label="Urban210, на главную">
+  {file ? <Image src={file} alt="Urban210" height={size === 'lg' ? 44 : 32} /> : <>URBAN<b>210</b><span class="f5-logo-chev"><Icon name="chev" /></span></>}
+</a>

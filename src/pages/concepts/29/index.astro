@@ -3,7 +3,7 @@
 // Атмосфера бренда: медленно текущий градиент (оранжевый, бордо, почти чёрный, тёплый янтарь).
 // На десктопе после load его рисует лёгкий WebGL-шейдер (полразрешения, 30 кадров, пауза вне экрана),
 // на телефоне и без WebGL работает CSS-версия из мягких пятен (только transform).
-// Тёмные секции «закрывают» свет, а первый экран, пробный день и заявка открывают его, как окна.
+// Тёмные секции «закрывают» свет, а первый экран, цена дня и заявка открывают его, как окна.
 import mnCyr from '@fontsource-variable/manrope/files/manrope-cyrillic-wght-normal.woff2?url';
 import mnLat from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
 import { Image } from 'astro:assets';
@@ -12,7 +12,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, reasons, personalText } from '../../../data/content';
 
 const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -25,7 +25,8 @@ const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
 const rating = site.rating.value.toString().replace('.', ',');
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const z = Object.fromEntries(zones.map((x) => [x.id, x]));
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const dayPrice = perDay(plans[0].month, 30);
+const points = reasons.filter((r) => !/взнос/i.test(r.title));
 const side = promos.filter((p) => p.slug !== '1-rubl');
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
 
@@ -55,7 +56,7 @@ const ticks = [0, 6, 12, 18, 24];
           <a href="#zony">Пространство</a><a href="#tarify">Тарифы</a><a href="#komanda">Тренеры</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Контакты</a>
         </nav>
         <a class="lq-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="lq-pill lq-pill-s" href="#zayavka" data-lead={trial.title} data-block="29_header">1 ₽<span class="lq-hide-s">&nbsp;пробный день</span><Icon name="chev" /></a>
+        <a class="lq-pill lq-pill-s" href="#tarify" data-block="29_header">Выбрать карту<Icon name="chev" /></a>
       </div>
     </header>
 
@@ -75,10 +76,10 @@ const ticks = [0, 6, 12, 18, 24];
             <span class="ln"><span>в спокойном</span></span>
             <span class="ln"><span>ритме</span></span>
           </h1>
-          <p class="lq-lead">{cap(site.facts.area)}, {site.facts.machines} {site.facts.brands}, групповые программы, финская сауна и хаммам. Первый день за 1&nbsp;₽, вступительного взноса нет.</p>
+          <p class="lq-lead">{cap(site.facts.area)}, {site.facts.machines} {site.facts.brands}, групповые программы, финская сауна и хаммам. Безлимит от {dayPrice}&nbsp;₽ в день.</p>
           <div class="lq-acts">
-            <a class="lq-pill" href="#zayavka" data-lead={trial.title} data-block="29_hero">Пробный день за 1 ₽<Icon name="chev" /></a>
-            <a class="lq-quiet" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+            <a class="lq-pill" href="#tarify" data-block="29_hero">Выбрать карту<Icon name="chev" /></a>
+            <a class="lq-quiet" href="#zayavka" data-lead="Заявка с сайта" data-block="29_hero">Оставить заявку</a>
           </div>
         </div>
 
@@ -115,7 +116,7 @@ const ticks = [0, 6, 12, 18, 24];
           </ul>
         </div>
         <ul class="lq-why">
-          {reasons.map((r) => (
+          {points.map((r) => (
             <li data-lq>
               <h3>{r.title}</h3>
               <p>{r.text}</p>
@@ -157,7 +158,7 @@ const ticks = [0, 6, 12, 18, 24];
     <section class="lq-dark lq-sec" id="tarify" aria-labelledby="lq-price-h">
       <div class="lq-w">
         <div class="lq-price-head" data-lq>
-          <h2 id="lq-price-h" class="lq-h2">Три тарифа <span class="soft">без вступительного взноса</span></h2>
+          <h2 id="lq-price-h" class="lq-h2">Три тарифа <span class="soft">от {dayPrice}&nbsp;₽ в день</span></h2>
           <p class="lq-p">Цена за месяц. При оплате за год выходит дешевле, считаем в рублях за день.</p>
         </div>
         <div class="lq-plans">
@@ -181,16 +182,16 @@ const ticks = [0, 6, 12, 18, 24];
       </div>
     </section>
 
-    <!-- Пробный день: снова окно в свет -->
-    <section class="lq-trial" data-sky aria-labelledby="lq-trial-h">
+    <!-- Цена дня: снова окно в свет -->
+    <section class="lq-offer" data-sky aria-labelledby="lq-offer-h">
       <div class="lq-sky lq-sky-mid" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><span class="lq-grain"></span></div>
-      <div class="lq-w lq-trial-in">
-        <div class="lq-drop" data-lq aria-hidden="true"><b>1</b><span>₽</span></div>
-        <div class="lq-trial-tx" data-lq>
-          <h2 id="lq-trial-h" class="lq-h2">Пробный день</h2>
-          <p class="lq-p lq-p-ink">{trial.text}</p>
-          <ul class="lq-terms">{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-          <a class="lq-pill lq-pill-dark" href="#zayavka" data-lead={trial.title} data-block="29_trial">{trialPromo.cta}<Icon name="chev" /></a>
+      <div class="lq-w lq-offer-in">
+        <div class="lq-drop" data-lq aria-hidden="true"><b>{dayPrice}</b><span>₽</span></div>
+        <div class="lq-offer-tx" data-lq>
+          <h2 id="lq-offer-h" class="lq-h2">Столько стоит день в зале</h2>
+          <p class="lq-p lq-p-ink">{plans[0].name}: {rub(plans[0].month)} в месяц, {plans[0].hours}. Безлимит в зал и кардиозону.</p>
+          <ul class="lq-terms">{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+          <a class="lq-pill lq-pill-dark" href="#zayavka" data-lead="Заявка с сайта" data-block="29_offer">Оставить заявку<Icon name="chev" /></a>
         </div>
       </div>
       <div class="lq-w lq-side">
@@ -256,7 +257,7 @@ const ticks = [0, 6, 12, 18, 24];
       <div class="lq-sky lq-sky-end" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><span class="lq-grain"></span></div>
       <div class="lq-w lq-final-in">
         <div class="lq-final-tx" data-lq>
-          <h2 id="lq-final-h" class="lq-h1 lq-h1-final">Приходите <br />за&nbsp;1&nbsp;₽</h2>
+          <h2 id="lq-final-h" class="lq-h1 lq-h1-final">Зал от&nbsp;{dayPrice}&nbsp;₽ <br />в день</h2>
           <dl class="lq-facts">
             <div><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}<br />{site.district}</dd></div>
             <div><dt>Часы</dt><dd>{site.hours.map((h) => <>{`${h.days} ${h.time}`}<br /></>)}</dd></div>
@@ -609,7 +610,7 @@ void main(){
   .lq-why h3 { font-weight: 500; font-size: 1.22rem; letter-spacing: -0.02em; line-height: 1.25; }
   .lq-why p { margin-top: 10px; color: var(--soft); font-size: 0.98rem; }
   @media (min-width: 700px) { .lq-why { grid-template-columns: 1fr 1fr; gap: 40px 48px; } }
-  @media (min-width: 1100px) { .lq-why { grid-template-columns: repeat(4, 1fr); } }
+  @media (min-width: 1100px) { .lq-why { grid-template-columns: repeat(3, 1fr); } }
 
   /* ---------- Пространство ---------- */
   .lq-frame {
@@ -682,9 +683,9 @@ void main(){
     :global(.js) .lq .pl-hot[data-lq].on { transform: translateY(-24px); }
   }
 
-  /* ---------- Пробный день ---------- */
-  .lq-trial { padding: clamp(96px, 12vw, 180px) 0 clamp(72px, 9vw, 120px); }
-  .lq-trial-in { display: grid; gap: 44px; align-items: center; }
+  /* ---------- Цена дня ---------- */
+  .lq-offer { padding: clamp(96px, 12vw, 180px) 0 clamp(72px, 9vw, 120px); }
+  .lq-offer-in { display: grid; gap: 44px; align-items: center; }
   .lq-drop {
     position: relative; justify-self: center; width: min(78vw, 400px); aspect-ratio: 1; border-radius: 50%;
     display: flex; align-items: flex-start; justify-content: center; padding-top: 22%; gap: 4px;
@@ -692,19 +693,19 @@ void main(){
     box-shadow: inset 0 2px 2px rgb(255 255 255 / 0.55), inset 0 -30px 60px rgb(90 15 28 / 0.4), inset 0 0 0 1px rgb(255 240 230 / 0.2), 0 60px 120px -40px rgb(0 0 0 / 0.6);
     -webkit-backdrop-filter: blur(22px) saturate(1.6); backdrop-filter: blur(22px) saturate(1.6);
   }
-  .lq-drop b { font-weight: 200; font-size: clamp(9rem, 40vw, 15rem); line-height: 0.82; letter-spacing: -0.08em; }
+  .lq-drop b { font-weight: 200; font-size: clamp(6.5rem, 28vw, 11rem); line-height: 0.82; letter-spacing: -0.08em; }
   .lq-drop span { font-weight: 300; font-size: clamp(2.6rem, 9vw, 4rem); line-height: 1; margin-top: 0.3em; }
-  .lq-trial-tx { display: grid; gap: 20px; justify-items: start; max-width: 520px; }
-  .lq-trial-tx .lq-h2 { color: #fff4ec; }
+  .lq-offer-tx { display: grid; gap: 20px; justify-items: start; max-width: 520px; }
+  .lq-offer-tx .lq-h2 { color: #fff4ec; }
   .lq-terms { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
   .lq-terms li { padding: 7px 14px; border-radius: 999px; font-size: 0.86rem; font-weight: 600; background: rgb(20 8 6 / 0.32); border: 1px solid rgb(255 236 222 / 0.22); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
-  .lq-trial-tx .lq-pill { margin-top: 8px; }
+  .lq-offer-tx .lq-pill { margin-top: 8px; }
   .lq-side { display: grid; gap: 16px; margin-top: clamp(56px, 8vw, 104px); }
   .sd { padding: 26px 28px 18px; border-radius: 26px; background: rgb(16 8 7 / 0.5); border: 1px solid rgb(255 236 222 / 0.14); -webkit-backdrop-filter: blur(20px) saturate(1.3); backdrop-filter: blur(20px) saturate(1.3); }
   .sd h3 { font-weight: 500; font-size: 1.25rem; letter-spacing: -0.02em; }
   .sd p { margin-top: 8px; font-size: 0.96rem; color: rgb(255 240 230 / 0.8); }
   @media (min-width: 900px) {
-    .lq-trial-in { grid-template-columns: 1fr 1fr; gap: 80px; }
+    .lq-offer-in { grid-template-columns: 1fr 1fr; gap: 80px; }
     .lq-drop { justify-self: end; }
     .lq-side { grid-template-columns: 1fr 1fr; gap: 20px; }
   }

@@ -10,14 +10,15 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial } from '../../../data/pricing';
+import { plans, perDay, rub } from '../../../data/pricing';
 import { reviews, trainers, zones, programs, promos } from '../../../data/content';
 import coach from '../../../assets/images/trainers/lazko-cutout.webp';
 
 const rating = site.rating.value.toString().replace('.', ',');
 const fmt = (n: number) => String(n);
+const fromDay = perDay(plans[0].month, 30);
 const tags = programs.flatMap((p) => p.items);
-const ticker = ['Хабаровск', 'Железнодорожный район', 'пр. 60-летия Октября, 210', 'с 6:30 по будням', 'пробный день за 1 ₽', 'парковка на 50 мест'];
+const ticker = ['Хабаровск', 'Железнодорожный район', 'пр. 60-летия Октября, 210', 'с 6:30 по будням', `от ${fromDay} ₽ в день`, 'парковка на 50 мест'];
 const crew = ['/images/community/13.jpg', '/images/community/3.jpg', '/images/community/2.jpg', '/images/community/11.jpg', '/images/community/9.jpg', '/images/community/15.jpg'];
 const tel = site.phone.display.replace('+7 (4212) ', '');
 const tabs = Array.from({ length: 6 });
@@ -31,7 +32,7 @@ const spa = zones.find((z) => z.id === 'spa')!;
         <a href="#zones">Зал</a><a href="#groups">Группы</a><a href="#price">Цены</a><a href="#crew">Свои</a><a href="#come">Адрес</a>
       </nav>
       <a class="rn-tel" href={site.phone.href}>{site.phone.display}</a>
-      <a class="rn-btn sm" href="#come" data-lead={trial.title} data-block="10_header">1<span class="rn-rub">₽</span> пробный</a>
+      <a class="rn-btn sm" href="#price" data-block="10_header">Выбрать карту</a>
     </header>
 
     <section class="rn-hero" aria-labelledby="rn-h">
@@ -40,8 +41,8 @@ const spa = zones.find((z) => z.id === 'spa')!;
         <h1 id="rn-h"><span>Наш</span> <span>район.</span> <span>Наш <mark>зал.</mark></span></h1>
         <p class="rn-lead">Фитнес-клуб на проспекте 60-летия Октября, 210. {site.facts.machines}, групповые, сауна и хаммам. Открываемся в 6:30, у входа бесплатная парковка на 50 машин.</p>
         <div class="rn-cta">
-          <a class="rn-btn" href="#come" data-lead={trial.title} data-block="10_hero">Пробный день за 1<span class="rn-rub">₽</span><Icon name="chev" /></a>
-          <a class="rn-under" href="#price">цены от {fmt(plans[0].month)} ₽</a>
+          <a class="rn-btn" href="#price" data-block="10_hero">Выбрать карту<Icon name="chev" /></a>
+          <a class="rn-under" href="#price">от {fromDay} ₽ в день</a>
         </div>
       </div>
 
@@ -52,7 +53,7 @@ const spa = zones.find((z) => z.id === 'spa')!;
           <span class="rn-tape t1"></span><span class="rn-tape t2"></span>
         </div>
         <Image class="rn-coach" src={coach} alt="" widths={[300, 460, 620]} sizes="(min-width: 1000px) 22vw, 46vw" loading="eager" format="webp" quality={55} />
-        <span class="rn-sticker rn-round" style="--r:-12deg"><b>1<span class="rn-rub">₽</span></b>пробный<br />день</span>
+        <span class="rn-sticker rn-round" style="--r:-12deg"><b>{fromDay}<span class="rn-rub">₽</span></b>в день,<br />дневная</span>
         <span class="rn-sticker rn-rate" style="--r:4deg"><b>{rating}</b>Яндекс Карты<br />{site.rating.text}</span>
         <span class="rn-hand rn-hand-coach">Александр Лазько,<br />координатор зала</span>
         <svg class="rn-arrow a-coach" viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10c30 2 62 12 78 38 6 10 9 20 10 32" /><path d="M82 66l14 16 10-20" /></svg>
@@ -115,7 +116,7 @@ const spa = zones.find((z) => z.id === 'spa')!;
     <section class="rn-sec rn-price" id="price" aria-labelledby="rn-p">
       <div class="rn-head">
         <h2 id="rn-p">Цены <mark>на столбе</mark></h2>
-        <p>Без вступительного взноса. Цена висит прямо тут, не надо звонить и узнавать.</p>
+        <p>Цена висит прямо тут, не надо звонить и узнавать.</p>
       </div>
       <div class="rn-flyers">
         {plans.map((p, i) => (
@@ -138,15 +139,15 @@ const spa = zones.find((z) => z.id === 'spa')!;
         ))}
       </div>
 
-      <div class="rn-trial">
-        <span class="rn-sticker rn-big" style="--r:-8deg" aria-hidden="true"><b>1<span class="rn-rub">₽</span></b>за день</span>
-        <div class="rn-trial-tx">
-          <h3>{trial.title}</h3>
-          <p>{trial.text} Посмотришь зал, раздевалки и сауну, а потом решишь.</p>
-          <a class="rn-btn" href="#come" data-lead={trial.title} data-block="10_trial">Записаться<Icon name="chev" /></a>
+      <div class="rn-offer">
+        <span class="rn-sticker rn-big" style="--r:-8deg" aria-hidden="true"><b>{fromDay}<span class="rn-rub">₽</span></b>за день</span>
+        <div class="rn-offer-tx">
+          <h3>Зал от {fromDay} ₽ в день</h3>
+          <p>{plans[0].name} за {rub(plans[0].month)} в месяц: зал и кардиозона {plans[0].hours}. Не знаешь, что выбрать? Администратор подскажет.</p>
+          <a class="rn-btn" href="#come" data-lead="Заявка с сайта" data-block="10_offer">Оставить заявку<Icon name="chev" /></a>
         </div>
         <ul class="rn-promos">
-          {promos.slice(1).map((p, i) => (
+          {promos.filter((p) => ['trade-in', '1-plus-1'].includes(p.slug)).map((p, i) => (
             <li><a class="rn-sticker rn-promo" href={`/promo/${p.slug}/`} style={`--r:${i ? 3 : -2}deg`}><b>{p.title}</b><span>{p.short}</span></a></li>
           ))}
         </ul>
@@ -204,7 +205,7 @@ const spa = zones.find((z) => z.id === 'spa')!;
       <div class="rn-come-in">
         <div class="rn-come-tx">
           <h2 id="rn-f">Заходи <mark>по-соседски</mark></h2>
-          <p class="rn-lead">Оставь телефон, администратор перезвонит и запишет на пробный день. С собой форма, сменка, полотенце и паспорт.</p>
+          <p class="rn-lead">Оставь телефон, администратор перезвонит и поможет выбрать абонемент. С собой форма, сменка, полотенце и паспорт.</p>
           <div class="rn-sign" aria-label="Адрес">
             <span>{site.address.locality}</span>
             <b>пр. 60-летия Октября</b>
@@ -216,13 +217,13 @@ const spa = zones.find((z) => z.id === 'spa')!;
             <div><dt>Парковка</dt><dd>50 мест, бесплатно</dd></div>
             <div><dt>Звонок</dt><dd><a href={site.phone.href}>{site.phone.display}</a></dd></div>
           </dl>
-          <p class="rn-msg"><a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a><a href={telegramLink('concept_10')} target="_blank" rel="noopener"><Icon name="tg" />Telegram</a><a href={site.maps.twoGis} target="_blank" rel="noopener"><Icon name="pin" />2ГИС</a></p>
+          <p class="rn-msg"><a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a><a href={telegramLink('concept_10')} target="_blank" rel="noopener"><Icon name="tg" />Telegram</a><a href={site.maps.twoGis} target="_blank" rel="noopener"><Icon name="pin" />2ГИС</a></p>
         </div>
         <div class="rn-come-form">
           <span class="rn-tape t1"></span><span class="rn-tape t2"></span>
           <span class="rn-hand rn-hand-form">сюда</span>
           <svg class="rn-arrow a-form" viewBox="0 0 110 80" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 8c10 34 40 56 86 58" /><path d="M78 52l18 14-18 12" /></svg>
-          <LeadForm id="rn" block="10_final" title="Пробный день за 1 ₽" />
+          <LeadForm id="rn" block="10_final" />
         </div>
       </div>
     </section>
@@ -503,19 +504,19 @@ const spa = zones.find((z) => z.id === 'spa')!;
   .rn-flyer.hot .rn-tabs:hover span:not(.gone) { color: var(--white); }
   @media (min-width: 960px) { .rn-flyers { grid-template-columns: repeat(3, 1fr); gap: 36px; align-items: start; } .rn-flyer:nth-child(2) { margin-top: 40px; } }
 
-  .rn-trial { position: relative; display: grid; gap: 30px; margin-top: clamp(72px, 8vw, 120px); padding: clamp(30px, 4vw, 56px); border: 3px solid var(--ink); background: var(--white); }
+  .rn-offer { position: relative; display: grid; gap: 30px; margin-top: clamp(72px, 8vw, 120px); padding: clamp(30px, 4vw, 56px); border: 3px solid var(--ink); background: var(--white); }
   .rn-big { width: clamp(150px, 18vw, 230px); aspect-ratio: 1; border-radius: 50%; background: var(--or); font-weight: 800; text-transform: uppercase; font-size: 0.95rem; align-content: center; border: 4px solid var(--ink); justify-self: start; }
   .rn-big b { font: 400 clamp(3.4rem, 2.4rem + 3vw, 5.6rem)/0.9 var(--mono); letter-spacing: -0.06em; }
   .rn-big b .rn-rub { font-size: 0.5em; }
-  .rn-trial-tx { display: grid; gap: 14px; justify-items: start; align-content: center; }
-  .rn-trial h3 { font-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.6rem); }
-  .rn-trial p { max-width: 46ch; color: #2c2824; }
+  .rn-offer-tx { display: grid; gap: 14px; justify-items: start; align-content: center; }
+  .rn-offer h3 { font-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.6rem); }
+  .rn-offer p { max-width: 46ch; color: #2c2824; }
   .rn-promos { list-style: none; display: grid; gap: 18px; align-content: center; }
   .rn-promo { display: grid; gap: 4px; place-items: start; text-align: left; padding: 16px 18px; background: var(--ink); color: var(--paper); text-decoration: none; }
   .rn-promo b { font: 400 1.05rem/1.15 var(--mono); color: var(--or); text-transform: uppercase; letter-spacing: -0.03em; }
   .rn-promo span { font-size: 0.92rem; }
   @media (min-width: 1100px) {
-    .rn-trial { grid-template-columns: auto 1fr 0.8fr; align-items: center; gap: 48px; }
+    .rn-offer { grid-template-columns: auto 1fr 0.8fr; align-items: center; gap: 48px; }
     .rn-big { margin: -80px 0 -40px -30px; }
   }
 

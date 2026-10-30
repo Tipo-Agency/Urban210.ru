@@ -11,7 +11,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, personalText } from '../../../data/content';
 
 const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -30,7 +30,7 @@ const photoZones = [
 ];
 const tradein = promos.find((p) => p.slug === 'trade-in')!;
 const friend = promos.find((p) => p.slug === '1-plus-1')!;
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const dayPrice = perDay(plans[0].month, 30);
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
 const weekday = site.hours[0];
 const weekend = site.hours[1];
@@ -64,7 +64,7 @@ const weekend = site.hours[1];
           <a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#trenery">Тренеры</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Контакты</a>
         </nav>
         <a class="sv-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="sv-go sv-go-s" href="#zayavka" data-lead={trial.title} data-block="31_header"><span>1 ₽ пробный<span class="sv-hide-s">&nbsp;день</span></span></a>
+        <a class="sv-go sv-go-s" href="#tarify" data-block="31_header"><span>Выбрать карту</span></a>
       </div>
     </header>
 
@@ -74,11 +74,11 @@ const weekend = site.hours[1];
         <div class="sv-w sv-first-in">
           <div class="sv-first-tx">
             <p class="sv-kick">Фитнес-клуб в Хабаровске</p>
-            <h1 id="sv-h1" class="sv-h1"><span>Первый</span><span>день</span><span>за 1 ₽</span></h1>
-            <p class="sv-intro">Тренажёрный зал, кардио, групповые и SPA на {site.address.short}. Вступительного взноса нет.</p>
+            <h1 id="sv-h1" class="sv-h1"><span>Зал</span><span>от {dayPrice} ₽</span><span>в день</span></h1>
+            <p class="sv-intro">Тренажёрный зал, кардио, групповые и SPA на {site.address.short}. {plans[0].name}: {rub(plans[0].month)} в месяц.</p>
             <div class="sv-acts">
-              <a class="sv-go" href="#zayavka" data-lead={trial.title} data-block="31_hero"><span>Записаться за 1 ₽</span></a>
-              <a class="sv-link" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+              <a class="sv-go" href="#tarify" data-block="31_hero"><span>Выбрать карту</span></a>
+              <a class="sv-link" href="#zayavka" data-lead="Заявка с сайта" data-block="31_hero">Оставить заявку</a>
             </div>
           </div>
           <div class="sv-mark" aria-hidden="true">
@@ -129,7 +129,7 @@ const weekend = site.hours[1];
         <div class="sv-w">
           <div class="sv-head">
             <h2 id="sv-ph" class="sv-h2">Три абонемента</h2>
-            <p class="sv-note">Помесячно или за год. Вступительного взноса нет ни в одном.</p>
+            <p class="sv-note">Помесячно или за год. Безлимит от {dayPrice} ₽ в день.</p>
           </div>
           <div class="sv-plans">
             {plans.map((p, i) => (
@@ -148,13 +148,13 @@ const weekend = site.hours[1];
             ))}
           </div>
 
-          <div class="sv-trial">
-            <p class="sv-one" aria-hidden="true">1 ₽</p>
-            <div class="sv-trial-tx">
-              <h3>{trial.title}</h3>
-              <p>{trial.text}</p>
-              <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-              <a class="sv-go" href="#zayavka" data-lead={trial.title} data-block="31_trial"><span>{trialPromo.cta}</span></a>
+          <div class="sv-offer">
+            <p class="sv-one" aria-hidden="true">{dayPrice} ₽</p>
+            <div class="sv-offer-tx">
+              <h3>Столько стоит день в зале</h3>
+              <p>{plans[0].name}: {rub(plans[0].month)} в месяц, {plans[0].hours}. Безлимит в зал и кардиозону.</p>
+              <ul>{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+              <a class="sv-go" href="#zayavka" data-lead="Заявка с сайта" data-block="31_offer"><span>Оставить заявку</span></a>
             </div>
           </div>
 
@@ -218,7 +218,7 @@ const weekend = site.hours[1];
       <section class="sv-blk sv-blk-line sv-end" id="zayavka" aria-labelledby="sv-eh" data-sec="заявка" data-aim>
         <div class="sv-w sv-end-in">
           <div class="sv-end-tx">
-            <h2 id="sv-eh" class="sv-h2">Приходите на&nbsp;пробный день</h2>
+            <h2 id="sv-eh" class="sv-h2">Оставьте заявку, подберём карту</h2>
             <dl class="sv-addr">
               <div><dt>Адрес</dt><dd>{site.address.short}<br />{site.district}</dd></div>
               <div><dt>Часы</dt><dd>{weekday.days} {weekday.time}<br />{weekend.days} {weekend.time}</dd></div>
@@ -226,7 +226,7 @@ const weekend = site.hours[1];
               <div><dt>Парковка</dt><dd>{site.parking.replace('Бесплатная парковка', 'Бесплатно')}</dd></div>
             </dl>
             <p class="sv-msg">
-              <a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a>
+              <a href={whatsappLink('Здравствуйте! Хочу выбрать карту в Urban210')} target="_blank" rel="noopener">WhatsApp</a>
               <a href={telegramLink('site_31')} target="_blank" rel="noopener">Telegram</a>
               <a href={site.maps.yandex} target="_blank" rel="noopener">Яндекс Карты</a>
               <a href={site.maps.twoGis} target="_blank" rel="noopener">2ГИС</a>
@@ -479,12 +479,12 @@ const weekend = site.hours[1];
   .sv-plan > .sv-go { margin-top: auto; }
   .sv-plan > :nth-last-child(2) { margin-bottom: var(--s5); }
 
-  .sv-trial { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s6); align-items: end; margin-top: var(--s8); }
-  .sv-one { font-size: clamp(9rem, 2rem + 24vw, 23rem); font-weight: 700; line-height: 0.76; letter-spacing: -0.07em; white-space: nowrap; margin-left: -0.04em; }
-  .sv-trial-tx h3 { font-size: var(--t-l); font-weight: 700; line-height: 1; letter-spacing: -0.04em; }
-  .sv-trial-tx p { margin-top: var(--s3); font-size: var(--t-m); line-height: 1.4; }
-  .sv-trial-tx ul { list-style: none; margin: var(--s3) 0 var(--s4); color: var(--mute); }
-  .sv-trial-tx li { font-size: 1rem; line-height: 1.6; }
+  .sv-offer { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s6); align-items: end; margin-top: var(--s8); }
+  .sv-one { font-size: clamp(6.5rem, 1.5rem + 16vw, 16rem); font-weight: 700; line-height: 0.76; letter-spacing: -0.07em; white-space: nowrap; margin-left: -0.04em; }
+  .sv-offer-tx h3 { font-size: var(--t-l); font-weight: 700; line-height: 1; letter-spacing: -0.04em; }
+  .sv-offer-tx p { margin-top: var(--s3); font-size: var(--t-m); line-height: 1.4; }
+  .sv-offer-tx ul { list-style: none; margin: var(--s3) 0 var(--s4); color: var(--mute); }
+  .sv-offer-tx li { font-size: 1rem; line-height: 1.6; }
   .sv-offers { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s6); margin-top: var(--s8); padding-top: var(--s4); border-top: 1px solid var(--line); }
   .sv-offer h3 { font-size: var(--t-m); font-weight: 650; letter-spacing: -0.02em; line-height: 1.2; }
   .sv-offer p { margin: var(--s2) 0 var(--s2); color: var(--mute); max-width: 34em; }
@@ -539,7 +539,7 @@ const weekend = site.hours[1];
     .sv-tel { margin-left: auto; }
   }
   @media (max-width: 900px) {
-    .sv-first-in, .sv-head, .sv-trial, .sv-rev, .sv-end-in { grid-template-columns: 1fr; }
+    .sv-first-in, .sv-head, .sv-offer, .sv-rev, .sv-end-in { grid-template-columns: 1fr; }
     .sv-head { gap: var(--s3); margin-bottom: var(--s6); }
     .sv-chain { flex-direction: column; gap: var(--s6); }
     .sv-zone + .sv-zone { margin-left: 0; }
@@ -574,7 +574,7 @@ const weekend = site.hours[1];
     .sv-cut { --d: 48px; }
     .sv-price b { font-size: 4.5rem; }
     .sv-cut-t { --d: 48px; aspect-ratio: 1; }
-    .sv-trial { margin-top: var(--s7); gap: var(--s4); }
+    .sv-offer { margin-top: var(--s7); gap: var(--s4); }
     .sv-offers { grid-template-columns: 1fr; gap: var(--s5); margin-top: var(--s7); }
     .sv-pt { flex-direction: column; align-items: flex-start; gap: var(--s2); margin-top: var(--s6); }
     .sv-addr { grid-template-columns: 1fr; gap: var(--s3); margin-top: var(--s5); }

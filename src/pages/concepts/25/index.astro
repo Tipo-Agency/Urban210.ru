@@ -12,7 +12,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, reasons, programs } from '../../../data/content';
 
 const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -24,7 +24,8 @@ const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
 const rating = site.rating.value.toString().replace('.', ',');
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const z = Object.fromEntries(zones.map((x) => [x.id, x]));
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const dayPrice = perDay(plans[0].month, 30);
+const points = reasons.filter((r) => !/взнос/i.test(r.title));
 const sidePromos = promos.filter((p) => p.slug !== '1-rubl');
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
 const layers = [
@@ -53,7 +54,7 @@ const cursorTone = ['red', 'or', 'wh'];
           <a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#komanda">Тренеры</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Адрес</a>
         </nav>
         <a class="ap-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="ap-btn ap-btn-s" href="#zayavka" data-lead={trial.title} data-block="25_header">День за 1 ₽<Icon name="chev" /></a>
+        <a class="ap-btn ap-btn-s" href="#tarify" data-block="25_header">Выбрать карту<Icon name="chev" /></a>
       </div>
     </header>
 
@@ -90,13 +91,13 @@ const cursorTone = ['red', 'or', 'wh'];
         </div>
 
         <div class="ap-offer">
-          <p class="ap-lead">Первый день в Urban210 за&nbsp;1&nbsp;₽. Дальше подписка от {num(plans[0].month)}&nbsp;₽ в месяц. Вступительного взноса нет.</p>
+          <p class="ap-lead">Безлимит в зал от&nbsp;{dayPrice}&nbsp;₽ в день. {plans[0].name}: {num(plans[0].month)}&nbsp;₽ в месяц.</p>
           <div class="ap-cta">
             <span class="ap-cta-sel">
-              <a class="ap-btn" href="#zayavka" data-lead={trial.title} data-block="25_hero">Первый день за 1 ₽<Icon name="chev" /></a>
+              <a class="ap-btn" href="#tarify" data-block="25_hero">Выбрать карту<Icon name="chev" /></a>
               <span class="ap-cursor ap-cursor-wh ap-cur-you" aria-hidden="true"><svg><use href="#ap-cur" /></svg><b>Вы</b></span>
             </span>
-            <a class="ap-link" href="#tarify">Тарифы</a>
+            <a class="ap-link" href="#zayavka" data-lead="Заявка с сайта" data-block="25_hero">Оставить заявку</a>
           </div>
         </div>
       </div>
@@ -106,7 +107,7 @@ const cursorTone = ['red', 'or', 'wh'];
           <span><i>Пн–Пт</i>06:30–23:30</span>
           <span><i>Сб–Вс</i>07:30–22:30</span>
           <span><i>Парковка</i>50 мест бесплатно</span>
-          <span><i>Взнос</i>0 ₽</span>
+          <span><i>Безлимит</i>от {dayPrice} ₽ в день</span>
           <span><i>Тренажёры</i>{site.facts.machines}</span>
         </div>
       </div>
@@ -117,7 +118,7 @@ const cursorTone = ['red', 'or', 'wh'];
       <div class="ap-w ap-prog-in">
         <h2 id="ap-prog-h" class="ap-h2 ap-tilt" data-p style="--x:-40px">Программа <em>клуба</em></h2>
         <ol class="ap-points">
-          {reasons.map((r, i) => (
+          {points.map((r, i) => (
             <li data-p style={`--y:24px;--d:${i * 80}ms`}>
               <span class="ap-pn" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
               <div>
@@ -177,7 +178,7 @@ const cursorTone = ['red', 'or', 'wh'];
       <div class="ap-w">
         <div class="ap-shead" data-m>
           <h2 id="ap-price-h" class="ap-h2 ap-tilt" data-p style="--x:-40px">Выбери <em>подписку</em></h2>
-          <p class="ap-note" data-p style="--d:120ms">Вступительного взноса нет. Заморозка 30 дней в году бесплатно.</p>
+          <p class="ap-note" data-p style="--d:120ms">Безлимит от {dayPrice}&nbsp;₽ в день. Заморозка 30 дней в году бесплатно.</p>
         </div>
         <div class="ap-plans" data-m>
           {plans.map((p, i) => (
@@ -204,12 +205,12 @@ const cursorTone = ['red', 'or', 'wh'];
 
       <div class="ap-try" data-m>
         <div class="ap-w ap-try-in">
-          <p class="ap-one" aria-hidden="true" data-p style="--x:-60px"><span>1</span><span>₽</span></p>
+          <p class="ap-one" aria-hidden="true" data-p style="--x:-60px"><span>{dayPrice}</span><span>₽</span></p>
           <div class="ap-try-tx" data-p style="--y:30px;--d:150ms">
-            <h3>Пробный день</h3>
-            <p>{trial.text}</p>
-            <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-            <a class="ap-btn ap-btn-k" href="#zayavka" data-lead={trial.title} data-block="25_trial">{trialPromo.cta}<Icon name="chev" /></a>
+            <h3>в день</h3>
+            <p>{plans[0].name}: {rub(plans[0].month)} в месяц, {plans[0].hours}. Безлимит в зал и кардиозону.</p>
+            <ul>{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+            <a class="ap-btn ap-btn-k" href="#zayavka" data-lead="Заявка с сайта" data-block="25_offer">Оставить заявку<Icon name="chev" /></a>
           </div>
         </div>
       </div>
@@ -282,7 +283,7 @@ const cursorTone = ['red', 'or', 'wh'];
       <span class="ap-final-beam" aria-hidden="true"></span>
       <div class="ap-w ap-final-in">
         <div class="ap-final-tx">
-          <h2 id="ap-final-h" class="ap-h2 ap-final-h" data-p style="--x:-50px"><span>Твой ход.</span> <span>Первый день</span> <span class="k">за 1 ₽</span></h2>
+          <h2 id="ap-final-h" class="ap-h2 ap-final-h" data-p style="--x:-50px"><span>Твой ход.</span> <span>Безлимит</span> <span class="k">от {dayPrice} ₽ в день</span></h2>
           <dl class="ap-facts">
             <div><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}<br />{site.district}</dd></div>
             <div><dt>Часы</dt><dd>{site.hours.map((h) => <>{`${h.days} ${h.time}`}<br /></>)}</dd></div>
@@ -539,7 +540,7 @@ const cursorTone = ['red', 'or', 'wh'];
   .ap-points p { font-size: 1rem; line-height: 1.5; color: var(--muted); max-width: 46ch; }
   @media (min-width: 1000px) {
     .ap-prog-in { gap: 72px; }
-    .ap-points { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .ap-points { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
     .ap-points li { grid-template-columns: 1fr; gap: 22px; align-content: start; }
     .ap-points li { padding: 26px 24px 28px; }
     .ap-points li:nth-child(even) { transform: translateY(40px); }
@@ -618,7 +619,7 @@ const cursorTone = ['red', 'or', 'wh'];
 
   .ap-try { position: relative; margin-top: clamp(80px, 10vw, 140px); background: var(--red); color: var(--wh); overflow: clip; transform: skewY(-3deg); }
   .ap-try-in { transform: skewY(3deg); display: grid; gap: 18px; padding-block: clamp(60px, 8vw, 110px); }
-  .ap-one { position: relative; font-family: var(--fd); line-height: 0.8; font-size: 52vw; letter-spacing: -0.04em; display: flex; align-items: flex-start; color: var(--ink); text-shadow: 0.025em 0 var(--or), -0.02em 0 var(--wh); }
+  .ap-one { position: relative; font-family: var(--fd); line-height: 0.8; font-size: 34vw; letter-spacing: -0.04em; display: flex; align-items: flex-start; color: var(--ink); text-shadow: 0.025em 0 var(--or), -0.02em 0 var(--wh); }
   .ap-one span:last-child { font-size: 0.42em; margin: 0.12em 0 0 0.06em; }
   .ap-try-tx { display: grid; gap: 14px; justify-items: start; }
   .ap-try-tx h3 { font-family: var(--fd); font-weight: 400; text-transform: uppercase; font-size: clamp(2.2rem, 9vw, 4.4rem); line-height: 0.95; margin: 0; }
@@ -627,7 +628,7 @@ const cursorTone = ['red', 'or', 'wh'];
   .ap-try-tx li { border: 1px solid rgb(255 255 255 / 0.6); padding: 5px 10px; font-size: 0.86rem; font-weight: 600; }
   @media (min-width: 1000px) {
     .ap-try-in { grid-template-columns: 6fr 6fr; align-items: center; gap: 48px; }
-    .ap-one { font-size: clamp(18rem, 30vw, 28rem); }
+    .ap-one { font-size: clamp(12rem, 20vw, 19rem); }
   }
 
   .ap-side { display: grid; gap: 14px; padding-block: clamp(64px, 8vw, 110px) 0; }

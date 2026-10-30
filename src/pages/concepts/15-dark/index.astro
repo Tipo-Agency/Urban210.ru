@@ -11,7 +11,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, reasons } from '../../../data/content';
 import cutout from '../../../assets/images/trainers/lazko-cutout.webp';
 
@@ -19,9 +19,11 @@ const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, '\u00a0');
 const rating = site.rating.value.toString().replace('.', ',');
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const z = Object.fromEntries(zones.map((x) => [x.id, x]));
-const [trialPromo, tradein, friend] = [promos.find((p) => p.slug === '1-rubl')!, promos.find((p) => p.slug === 'trade-in')!, promos.find((p) => p.slug === '1-plus-1')!];
+const [tradein, friend] = [promos.find((p) => p.slug === 'trade-in')!, promos.find((p) => p.slug === '1-plus-1')!];
+const dayRate = perDay(plans[0].month, 30);
+const shownReasons = reasons.filter((r) => !r.title.startsWith('Нет вступ'));
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
-const ticker = ['Вступительного взноса нет', `Пробный день ${trial.price} ₽`, 'Парковка на 50 мест', 'Пн–Пт 06:30–23:30', 'Сб–Вс 07:30–22:30', `${rating} на Яндекс Картах`, site.facts.machines];
+const ticker = [`${plans[0].name} от ${dayRate} ₽ в день`, 'Парковка на 50 мест', 'Пн–Пт 06:30–23:30', 'Сб–Вс 07:30–22:30', `${rating} на Яндекс Картах`, site.facts.machines];
 const shapes = ['circle', 'tri', 'square', 'half'];
 const planSkin = ['paper', 'ink', 'red'];
 ---
@@ -34,7 +36,7 @@ const planSkin = ['paper', 'ink', 'red'];
           <a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#komanda">Команда</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Адрес</a>
         </nav>
         <a class="ag-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="ag-btn ag-btn-s" href="#zayavka" data-lead={trial.title} data-block="15_header">1 ₽ пробный<span class="ag-hide-s">&nbsp;день</span></a>
+        <a class="ag-btn ag-btn-s" href="#zayavka" data-lead="Заявка с сайта" data-block="15_header"><span class="ag-hide-s">Оставить заявку</span><span class="ag-hide-l">Заявка</span></a>
       </div>
     </header>
 
@@ -48,10 +50,10 @@ const planSkin = ['paper', 'ink', 'red'];
             <span class="l l2">записался</span>
             <span class="l l3">в зал<i>?</i></span>
           </h1>
-          <p class="ag-lead">Первый день в Urban210 за 1&nbsp;₽. Тренажёрный зал, кардио, групповые и SPA в Железнодорожном районе. Вступительного взноса нет.</p>
+          <p class="ag-lead">Urban210 от {dayRate}&nbsp;₽ в&nbsp;день по дневной карте. Тренажёрный зал, кардио, групповые и SPA в Железнодорожном районе.</p>
           <div class="ag-cta">
-            <a class="ag-btn" href="#zayavka" data-lead={trial.title} data-block="15_hero">Записаться за 1 ₽<Icon name="chev" /></a>
-            <a class="ag-link" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+            <a class="ag-btn" href="#tarify" data-block="15_hero">Выбрать карту<Icon name="chev" /></a>
+            <a class="ag-link" href="#zayavka" data-lead="Заявка с сайта" data-block="15_hero">Оставить заявку</a>
           </div>
         </div>
 
@@ -78,9 +80,9 @@ const planSkin = ['paper', 'ink', 'red'];
 
     <!-- Лозунги клуба -->
     <section class="ag-sec ag-w ag-slog" aria-labelledby="ag-slog-h" data-m>
-      <h2 id="ag-slog-h" class="ag-h2"><span class="l">Четыре причины</span> <span class="l r">прийти сегодня</span></h2>
+      <h2 id="ag-slog-h" class="ag-h2"><span class="l">Три причины</span> <span class="l r">прийти сегодня</span></h2>
       <ol class="ag-reasons">
-        {reasons.map((r, i) => (
+        {shownReasons.map((r, i) => (
           <li data-p style={`--d:${i * 90}ms;--x:${-40 + i * 6}px;--y:40px`}>
             <span class={`ag-shape ${shapes[i]}`} aria-hidden="true"></span>
             <h3>{r.title}</h3>
@@ -144,7 +146,7 @@ const planSkin = ['paper', 'ink', 'red'];
     <!-- Тарифы -->
     <section class="ag-sec ag-prices" id="tarify" aria-labelledby="ag-price-h">
       <div class="ag-w">
-        <h2 id="ag-price-h" class="ag-h2" data-m><span class="l" data-p style="--x:-60px;--y:30px">Три тарифа.</span> <span class="l r" data-p style="--x:60px;--y:-30px;--d:120ms">Ноль взносов.</span></h2>
+        <h2 id="ag-price-h" class="ag-h2" data-m><span class="l" data-p style="--x:-60px;--y:30px">Три тарифа.</span> <span class="l r" data-p style="--x:60px;--y:-30px;--d:120ms">От {dayRate}&nbsp;₽ в&nbsp;день.</span></h2>
         <div class="ag-plans" data-m>
           {plans.map((p, i) => (
             <article class={`pl pl-${planSkin[i]}`} data-p style={`--x:${(i - 1) * 60}px;--y:${80 - i * 20}px;--d:${i * 110}ms`}>
@@ -162,14 +164,14 @@ const planSkin = ['paper', 'ink', 'red'];
           ))}
         </div>
 
-        <div class="ag-trial" data-m>
+        <div class="ag-day" data-m>
           <span class="tr-wedge" data-p style="--x:-260px;--y:90px" aria-hidden="true"></span>
-          <div class="tr-sun" data-p style="--x:140px;--y:-100px;--s:.5;--d:120ms" aria-hidden="true"><b>1</b><span>₽</span></div>
+          <div class="tr-sun" data-p style="--x:140px;--y:-100px;--s:.5;--d:120ms" aria-hidden="true"><b>{dayRate}</b><span>₽<small>в день</small></span></div>
           <div class="tr-tx" data-p style="--y:30px;--d:220ms">
-            <h3>Пробный день</h3>
-            <p>{trial.text}</p>
-            <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-            <a class="ag-btn" href="#zayavka" data-lead={trial.title} data-block="15_trial">{trialPromo.cta}<Icon name="chev" /></a>
+            <h3>{plans[0].name}</h3>
+            <p>{rub(plans[0].month)} в месяц, это {dayRate}&nbsp;₽ в&nbsp;день. Тренажёрный зал и кардиозона {plans[0].hours}.</p>
+            <ul>{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+            <a class="ag-btn" href="#zayavka" data-lead="Заявка с сайта" data-block="15_day">Оставить заявку<Icon name="chev" /></a>
           </div>
         </div>
 
@@ -235,7 +237,7 @@ const planSkin = ['paper', 'ink', 'red'];
       <span class="fi-sun" data-p style="--x:200px;--y:-160px;--s:.6;--d:100ms" aria-hidden="true"></span>
       <div class="ag-w fi-in">
         <div class="fi-tx">
-          <h2 id="ag-final-h" class="ag-h2"><span class="l" data-p style="--x:-60px;--y:30px;--d:150ms">Первый шаг</span> <span class="l" data-p style="--x:60px;--y:-30px;--d:250ms">за 1 ₽</span></h2>
+          <h2 id="ag-final-h" class="ag-h2"><span class="l" data-p style="--x:-60px;--y:30px;--d:150ms">Первый шаг</span> <span class="l" data-p style="--x:60px;--y:-30px;--d:250ms">сегодня</span></h2>
           <dl class="fi-facts">
             <div><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}<br />{site.district}</dd></div>
             <div><dt>Часы</dt><dd>{site.hours.map((h) => <>{`${h.days} ${h.time}`}<br /></>)}</dd></div>
@@ -376,10 +378,12 @@ const planSkin = ['paper', 'ink', 'red'];
   .ag-tel { display: none; font-weight: 650; text-decoration: none; font-size: 0.98rem; white-space: nowrap; }
   .ag-top .ag-btn { margin-left: auto; }
   .ag-hide-s { display: none; }
+  .ag-hide-l { display: inline; }
   @media (min-width: 1100px) {
     .ag-nav, .ag-tel { display: flex; }
     .ag-top .ag-btn { margin-left: 0; }
     .ag-hide-s { display: inline; }
+    .ag-hide-l { display: none; }
   }
 
   /* Первый экран */
@@ -458,7 +462,7 @@ const planSkin = ['paper', 'ink', 'red'];
   .ag-shape.square { background: var(--red); transform: rotate(45deg) scale(0.78); }
   .ag-shape.half { background: var(--ink); border-radius: 48px 48px 0 0; height: 24px; margin-top: 12px; }
   @media (min-width: 900px) {
-    .ag-reasons { grid-template-columns: repeat(4, 1fr); border-bottom: 3px solid var(--ink); }
+    .ag-reasons { grid-template-columns: repeat(3, 1fr); border-bottom: 3px solid var(--ink); }
     .ag-reasons li { grid-template-columns: 1fr; padding: 30px 28px 36px; border-bottom: 0; border-left: 3px solid var(--ink); align-content: start; gap: 18px; }
     .ag-reasons li:first-child { border-left: 0; padding-left: 0; }
     .ag-reasons p { grid-column: auto; }
@@ -564,21 +568,22 @@ const planSkin = ['paper', 'ink', 'red'];
     .pl-ink[data-p] { --y0: -24px; }
   }
 
-  .ag-trial { position: relative; margin-top: clamp(56px, 8vw, 110px); display: grid; gap: 20px; align-items: center; min-height: 380px; }
+  .ag-day { position: relative; margin-top: clamp(56px, 8vw, 110px); display: grid; gap: 20px; align-items: center; min-height: 380px; }
   .tr-wedge { position: absolute; left: -30%; top: 22%; width: 110%; height: 120px; background: var(--ink); clip-path: polygon(0 0, 100% 50%, 0 100%); z-index: 0; }
   .tr-sun { position: relative; z-index: 1; width: min(78vw, 420px); aspect-ratio: 1; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; gap: 4px; justify-self: center; }
-  .tr-sun b { font-family: var(--fd); font-weight: 900; font-size: min(62vw, 340px); line-height: 0.7; padding-top: 0.07em; }
-  .tr-sun span { font-family: var(--fd); font-weight: 900; font-size: min(22vw, 120px); line-height: 1; align-self: flex-end; margin-bottom: 18%; }
+  .tr-sun b { font-family: var(--fd); font-weight: 900; font-size: min(54vw, 290px); line-height: 0.7; padding-top: 0.07em; }
+  .tr-sun span { font-family: var(--fd); font-weight: 900; font-size: min(20vw, 108px); line-height: 1; align-self: flex-end; margin-bottom: 20%; display: flex; flex-direction: column; }
+  .tr-sun small { font-size: 0.34em; line-height: 1; text-transform: uppercase; letter-spacing: 0.02em; }
   .tr-tx { position: relative; z-index: 1; background: var(--cream); border: 3px solid var(--ink); padding: 26px 24px; display: grid; gap: 14px; justify-items: start; }
   .tr-tx h3 { font-family: var(--fd); font-weight: 900; text-transform: uppercase; font-size: clamp(3rem, 12vw, 5rem); line-height: 0.85; margin: 0; }
   .tr-tx p { font-size: 1.05rem; line-height: 1.5; max-width: 44ch; }
   .tr-tx ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
   .tr-tx li { border: 2px solid var(--ink); padding: 4px 10px 3px; font-size: 0.88rem; font-weight: 600; }
   @media (min-width: 900px) {
-    .ag-trial { grid-template-columns: 0.9fr 1fr; gap: 0; }
+    .ag-day { grid-template-columns: 0.9fr 1fr; gap: 0; }
     .tr-sun { width: min(36vw, 500px); justify-self: end; margin-right: -40px; }
-    .tr-sun b { font-size: min(30vw, 410px); }
-    .tr-sun span { font-size: 140px; }
+    .tr-sun b { font-size: min(25vw, 340px); }
+    .tr-sun span { font-size: 124px; }
     .tr-tx { padding: 44px 44px 40px; max-width: 620px; }
     .tr-wedge { left: -8%; top: 40%; width: 70%; height: 150px; }
   }

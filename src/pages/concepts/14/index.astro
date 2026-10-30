@@ -16,7 +16,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, programs } from '../../../data/content';
 import hero from '../../../assets/images/hero.jpg';
 import hall from '../../../assets/images/zal.jpg';
@@ -41,6 +41,7 @@ const cams = [
   { key: 'spa', title: z('spa').title, text: z('spa').text, image: null, alt: '', href: z('spa').href },
 ];
 const [day, full, all] = plans;
+const dayRate = perDay(day.month, 30);
 const rows: [string, string, string, string][] = [
   ['Время', 'с 6:30 до 16:00', 'Всё время работы', 'Всё время работы'],
 ];
@@ -56,8 +57,7 @@ const marks: [string, number, number, number][] = [
 const tradein = promos.find((p) => p.slug === 'trade-in')!;
 const friend = promos.find((p) => p.slug === '1-plus-1')!;
 const ticker = [
-  `${trial.title} для новых гостей`,
-  'Вступительного взноса нет',
+  `${day.name} от ${dayRate} ₽ в день`,
   ...site.hours.map((h) => `${h.days} ${h.time}`),
   site.parking,
   `${rating} на Яндекс Картах, ${site.rating.text}`,
@@ -88,7 +88,7 @@ const heroM = await getImage({ src: hall, widths: [480, 780, 1100], sizes: '100v
         <a href="#obzor">Обзор</a><a href="#tablo">Тарифы</a><a href="#sostav">Состав</a><a href="#intervyu">Отзывы</a>
       </nav>
       <a class="sb-tel" href={site.phone.href}>{site.phone.display}</a>
-      <a class="btn-p btn-p-s" href="#zayavka" data-lead={trial.title} data-block="14_header"><span class="cta-l">1 ₽ первый день</span><span class="cta-s">1 ₽ день</span><Icon name="chev" /></a>
+      <a class="btn-p btn-p-s" href="#zayavka" data-lead="Заявка с сайта" data-block="14_header"><span class="cta-l">Оставить заявку</span><span class="cta-s">Заявка</span><Icon name="chev" /></a>
     </header>
 
     <!-- Логотип канала в углу -->
@@ -112,12 +112,12 @@ const heroM = await getImage({ src: hall, widths: [480, 780, 1100], sizes: '100v
             <p class="tags"><span class="tag tag-o">Эксклюзив</span><span class="tag tag-d">{site.city}</span></p>
             <h1 id="ef-h1">
               <span class="pl pl-w"><span>Ваш выход</span></span>
-              <span class="pl pl-o"><span>Пробный день за 1 ₽</span></span>
+              <span class="pl pl-o"><span>От {dayRate} ₽ в день</span></span>
             </h1>
-            <p class="pl pl-d eh-sub"><span>Фитнес-клуб Urban210, {site.address.short}. Полный доступ в зал на целый день, дальше от {num(day.month)}&nbsp;₽ в&nbsp;месяц без вступительного взноса.</span></p>
+            <p class="pl pl-d eh-sub"><span>Фитнес-клуб Urban210, {site.address.short}. {day.name} за {rub(day.month)} в&nbsp;месяц: зал и кардиозона {day.hours}.</span></p>
             <div class="eh-cta">
-              <a class="btn-p" href="#zayavka" data-lead={trial.title} data-block="14_hero">Записаться за 1 ₽<Icon name="chev" /></a>
-              <a class="btn-g" href="#tablo">Табло тарифов</a>
+              <a class="btn-p" href="#tablo" data-block="14_hero">Выбрать карту<Icon name="chev" /></a>
+              <a class="btn-g" href="#zayavka" data-lead="Заявка с сайта" data-block="14_hero">Оставить заявку</a>
             </div>
           </div>
 
@@ -152,7 +152,7 @@ const heroM = await getImage({ src: hall, widths: [480, 780, 1100], sizes: '100v
             ['60+', '', `тренажёров ${site.facts.brands}`],
             ['60', 'кг', 'свободные веса до'],
             ['50', '', 'мест бесплатной парковки'],
-            ['0', '₽', 'вступительный взнос'],
+            [String(dayRate), '₽', 'в день по дневной карте'],
           ].map(([v, u, l], i) => (
             <div class="fact" data-wipe style={`--d:${i * 70}ms`}><b>{v}<small>{u}</small></b><span>{l}</span></div>
           ))}
@@ -207,17 +207,17 @@ const heroM = await getImage({ src: hall, widths: [480, 780, 1100], sizes: '100v
           <div class="sh" data-wipe>
             <span class="tag tag-o">Табло</span>
             <h2 class="pl pl-w" id="ef-tablo"><span>Тарифы</span></h2>
-            <p class="pl pl-d"><span>Три карты, без вступительного взноса</span></p>
+            <p class="pl pl-d"><span>Три карты, дневная от {dayRate} ₽ в день</span></p>
           </div>
 
           <div class="excl" data-wipe>
-            <span class="tag tag-w">Эксклюзив</span>
-            <p class="excl-n"><b>1</b><span>₽</span></p>
+            <span class="tag tag-w">В день</span>
+            <p class="excl-n"><b>{dayRate}</b><span>₽</span></p>
             <div class="excl-t">
-              <h3>{trial.title}</h3>
-              <p>{trial.text}</p>
+              <h3>{day.name}: {dayRate} ₽ в день</h3>
+              <p>{rub(day.month)} в месяц. Тренажёрный зал и кардиозона {day.hours}.</p>
             </div>
-            <a class="btn-p btn-p-dark" href="#zayavka" data-lead={trial.title} data-block="14_trial">Записаться<Icon name="chev" /></a>
+            <a class="btn-p btn-p-dark" href="#zayavka" data-lead="Заявка с сайта" data-block="14_day">Оставить заявку<Icon name="chev" /></a>
           </div>
 
           <div class="board" role="table" data-wipe aria-label="Сравнение тарифов">
@@ -346,7 +346,7 @@ const heroM = await getImage({ src: hall, widths: [480, 780, 1100], sizes: '100v
             <div class="sh" data-wipe>
               <span class="tag tag-o">Программа</span>
               <h2 class="pl pl-w" id="ef-cta"><span>Выйти в эфир</span></h2>
-              <p class="pl pl-d"><span>Пробный день за 1 ₽, перезвоним и подберём время</span></p>
+              <p class="pl pl-d"><span>Перезвоним и поможем выбрать карту</span></p>
             </div>
             <ol class="tv">
               <li><span class="tv-t">06:30</span><span><b>Начало эфира</b>По будням клуб открывается в 06:30, в выходные в 07:30</span></li>
@@ -356,13 +356,13 @@ const heroM = await getImage({ src: hall, widths: [480, 780, 1100], sizes: '100v
             </ol>
             <ul class="links">
               <li><a href={site.phone.href}><Icon name="phone" />{site.phone.display}</a></li>
-              <li><a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a></li>
+              <li><a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a></li>
               <li><a href={telegramLink('concept14')} target="_blank" rel="noopener"><Icon name="tg" />Telegram</a></li>
             </ul>
           </div>
           <div class="cta-form" data-wipe>
             <span class="cta-bar" aria-hidden="true"><i class="dot"></i>В эфир</span>
-            <LeadForm id="ef" block="14_final" title="Записаться на пробный день" />
+            <LeadForm id="ef" block="14_final" />
           </div>
         </div>
       </section>

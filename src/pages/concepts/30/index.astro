@@ -11,7 +11,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, reasons, personalText } from '../../../data/content';
 import cutout from '../../../assets/images/trainers/lazko-cutout.webp';
 
@@ -25,7 +25,8 @@ const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
 const rating = site.rating.value.toString().replace('.', ',');
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const z = Object.fromEntries(zones.map((x) => [x.id, x]));
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const dayPrice = perDay(plans[0].month, 30);
+const points = reasons.filter((r) => !/взнос/i.test(r.title));
 const side = promos.filter((p) => p.slug !== '1-rubl');
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
 
@@ -77,7 +78,7 @@ function steam(n: number, seed: number) {
 }
 const fx = {
   heroA: focus(150, 7, 0.3, 560, 360), heroB: focus(150, 19, 0.32, 560, 360),
-  trialA: focus(170, 3, 0.26), trialB: focus(170, 41, 0.28),
+  offerA: focus(170, 3, 0.26), offerB: focus(170, 41, 0.28),
   finalA: focus(160, 11, 0.36, 320, 480),
   b1: burst(14, 5), b2: burst(18, 9, 64, 98), b3: burst(11, 13, 54, 98), b4: burst(22, 17, 70, 98),
   s1: streaks(70, 23), s2: streaks(60, 29),
@@ -99,7 +100,7 @@ const sfx = { zal: 'ЛЯЗГ!', cardio: 'ТУК-ТУК', group: 'РАЗ! ДВА!
           <a href="#zony">Локации</a><a href="#tarify">Цены</a><a href="#komanda">Тренеры</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Адрес</a>
         </nav>
         <a class="mg-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="mg-btn mg-btn-s" href="#zayavka" data-lead={trial.title} data-block="30_header">1 ₽<span class="mg-hide-s">&nbsp;пробный день</span></a>
+        <a class="mg-btn mg-btn-s" href="#tarify" data-block="30_header">Выбрать карту</a>
       </div>
     </header>
 
@@ -109,11 +110,11 @@ const sfx = { zal: 'ЛЯЗГ!', cardio: 'ТУК-ТУК', group: 'РАЗ! ДВА!
         <span class="tone tone-tr" aria-hidden="true"></span>
         <div class="p-title-in">
           <p class="chap"><b>Глава 1</b><span>Хабаровск, {site.address.short}</span></p>
-          <h1 id="mg-h1" class="mg-h1">Первый подход <em>за&nbsp;1&nbsp;₽</em></h1>
-          <p class="mg-lead">Фитнес-клуб Urban210: тренажёрный зал, кардио, групповые программы и SPA в {site.district === 'Железнодорожный район' ? 'Железнодорожном районе' : site.district}. Пробный день за 1&nbsp;₽, вступительного взноса нет.</p>
+          <h1 id="mg-h1" class="mg-h1">Безлимит в зал <em>от&nbsp;{dayPrice}&nbsp;₽</em> в день</h1>
+          <p class="mg-lead">Фитнес-клуб Urban210: тренажёрный зал, кардио, групповые программы и SPA в {site.district === 'Железнодорожный район' ? 'Железнодорожном районе' : site.district}. {plans[0].name}: {rub(plans[0].month)} в месяц.</p>
           <div class="mg-acts">
-            <a class="mg-btn" href="#zayavka" data-lead={trial.title} data-block="30_hero">Записаться за 1 ₽<Icon name="chev" /></a>
-            <a class="mg-btn mg-btn-line" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+            <a class="mg-btn" href="#tarify" data-block="30_hero">Выбрать карту<Icon name="chev" /></a>
+            <a class="mg-btn mg-btn-line" href="#zayavka" data-lead="Заявка с сайта" data-block="30_hero">Оставить заявку</a>
           </div>
         </div>
       </div>
@@ -137,9 +138,9 @@ const sfx = { zal: 'ЛЯЗГ!', cardio: 'ТУК-ТУК', group: 'РАЗ! ДВА!
       </div>
     </section>
 
-    <!-- Почему здесь: четыре маленькие панели -->
+    <!-- Почему здесь: три маленькие панели -->
     <section class="pg pg-why" aria-label="Почему Urban210">
-      {reasons.map((r, i) => (
+      {points.map((r, i) => (
         <article class={`pn why why-${i}`} data-mg style={`--d:${i * 80}ms`}>
           {i % 2 === 0 && <span class="tone tone-bl" aria-hidden="true"></span>}
           <h2>{r.title}</h2>
@@ -182,7 +183,7 @@ const sfx = { zal: 'ЛЯЗГ!', cardio: 'ТУК-ТУК', group: 'РАЗ! ДВА!
     <section class="pg pg-price" id="tarify" aria-labelledby="mg-price-h">
       <div class="pn p-head">
         <p class="chap"><b>Глава 3</b><span>Цена вопроса</span></p>
-        <h2 id="mg-price-h" class="mg-h2">Три тарифа. Вступительный взнос: 0&nbsp;₽</h2>
+        <h2 id="mg-price-h" class="mg-h2">Три тарифа. Безлимит от&nbsp;{dayPrice}&nbsp;₽ в день</h2>
       </div>
       {plans.map((p, i) => (
         <article class={`pn pl ${i === 1 ? 'pl-hot' : ''}`} data-mg style={`--d:${i * 90}ms`}>
@@ -199,17 +200,17 @@ const sfx = { zal: 'ЛЯЗГ!', cardio: 'ТУК-ТУК', group: 'РАЗ! ДВА!
         </article>
       ))}
 
-      <div class="pn p-trial" data-mg>
-        <svg class="lines lines-w flick" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path class="la" d={fx.trialA} /><path class="lb" d={fx.trialB} /></svg>
-        <div class="trial-burst" aria-hidden="true">
+      <div class="pn p-offer" data-mg>
+        <svg class="lines lines-w flick" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path class="la" d={fx.offerA} /><path class="lb" d={fx.offerB} /></svg>
+        <div class="offer-burst" aria-hidden="true">
           <svg viewBox="-100 -100 200 200"><path d={fx.b4} /></svg>
-          <b>1&nbsp;₽</b>
+          <b>{dayPrice}&nbsp;₽</b>
         </div>
-        <div class="box trial-box">
-          <h3>Пробный день</h3>
-          <p>{trial.text}</p>
-          <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-          <a class="mg-btn" href="#zayavka" data-lead={trial.title} data-block="30_trial">{trialPromo.cta}<Icon name="chev" /></a>
+        <div class="box offer-box">
+          <h3>Столько стоит день в зале</h3>
+          <p>{plans[0].name}: {rub(plans[0].month)} в месяц, {plans[0].hours}. Безлимит в зал и кардиозону.</p>
+          <ul>{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+          <a class="mg-btn" href="#zayavka" data-lead="Заявка с сайта" data-block="30_offer">Оставить заявку<Icon name="chev" /></a>
         </div>
       </div>
       {side.map((pr, i) => (
@@ -277,7 +278,7 @@ const sfx = { zal: 'ЛЯЗГ!', cardio: 'ТУК-ТУК', group: 'РАЗ! ДВА!
         <svg class="lines" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path class="la" d={fx.finalA} /></svg>
         <div class="final-tx">
           <p class="chap"><b>Финал</b><span>Твой ход</span></p>
-          <h2 id="mg-final-h" class="mg-h1 mg-h1-final">Приходи <em>за&nbsp;1&nbsp;₽</em></h2>
+          <h2 id="mg-final-h" class="mg-h1 mg-h1-final">Зал <em>от&nbsp;{dayPrice}&nbsp;₽</em> в день</h2>
           <dl class="facts">
             <div class="box"><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}, {site.district}</dd></div>
             <div class="box"><dt>Часы</dt><dd>{site.hours.map((h) => `${h.days} ${h.time}`).join(', ')}</dd></div>
@@ -525,9 +526,8 @@ const sfx = { zal: 'ЛЯЗГ!', cardio: 'ТУК-ТУК', group: 'РАЗ! ДВА!
   .why h2 { font-size: 1.3rem; line-height: 1.1; }
   .why p { margin-top: 10px; font-size: 0.98rem; font-weight: 500; }
   .why-1 { background: var(--or); }
-  .why-3 { background: var(--ink); color: var(--paper); }
-  @media (min-width: 700px) { .pg-why { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 1100px) { .pg-why { grid-template-columns: repeat(4, 1fr); } }
+  .why-2 { background: var(--ink); color: var(--paper); }
+  @media (min-width: 700px) { .pg-why { grid-template-columns: repeat(3, 1fr); } }
 
   /* ---------- Глава 2: зоны ---------- */
   .zn { display: block; min-height: 380px; color: var(--ink); text-decoration: none; }
@@ -582,17 +582,17 @@ const sfx = { zal: 'ЛЯЗГ!', cardio: 'ТУК-ТУК', group: 'РАЗ! ДВА!
   .pl-hot .pl-tag svg { fill: var(--paper); stroke: var(--ink); stroke-width: 4; }
   .pl-hot .pl-tag b { color: var(--ink); }
 
-  .p-trial { background: var(--ink); color: var(--ink); min-height: 460px; display: grid; align-content: center; gap: 28px; padding: 40px 18px 28px; }
-  .trial-burst { position: relative; justify-self: center; width: min(78vw, 420px); aspect-ratio: 1; display: grid; place-items: center; }
-  .trial-burst svg { position: absolute; inset: 0; fill: var(--or); stroke: var(--paper); stroke-width: 3; }
-  .trial-burst b { position: relative; font-family: var(--fd); font-weight: 400; font-size: clamp(5rem, 22vw, 9.6rem); line-height: 1; transform: rotate(-8deg); letter-spacing: -0.03em; }
-  .trial-box { position: relative; display: grid; gap: 14px; justify-items: start; padding: clamp(20px, 2.4vw, 32px); width: 100%; max-width: 540px; justify-self: center; }
-  .trial-box .mg-btn { white-space: normal; text-align: left; }
-  .trial-box h3 { font-size: clamp(1.9rem, 3vw, 2.6rem); line-height: 1; }
-  .trial-box p { font-weight: 500; }
-  .trial-box ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
-  .trial-box li { border: 2px solid var(--ink); padding: 3px 10px; font-weight: 700; font-size: 0.86rem; }
-  .trial-box .mg-btn { margin-top: 6px; }
+  .p-offer { background: var(--ink); color: var(--ink); min-height: 460px; display: grid; align-content: center; gap: 28px; padding: 40px 18px 28px; }
+  .offer-burst { position: relative; justify-self: center; width: min(78vw, 420px); aspect-ratio: 1; display: grid; place-items: center; }
+  .offer-burst svg { position: absolute; inset: 0; fill: var(--or); stroke: var(--paper); stroke-width: 3; }
+  .offer-burst b { position: relative; font-family: var(--fd); font-weight: 400; font-size: clamp(4rem, 17vw, 7.6rem); line-height: 1; transform: rotate(-8deg); letter-spacing: -0.03em; }
+  .offer-box { position: relative; display: grid; gap: 14px; justify-items: start; padding: clamp(20px, 2.4vw, 32px); width: 100%; max-width: 540px; justify-self: center; }
+  .offer-box .mg-btn { white-space: normal; text-align: left; }
+  .offer-box h3 { font-size: clamp(1.9rem, 3vw, 2.6rem); line-height: 1; }
+  .offer-box p { font-weight: 500; }
+  .offer-box ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .offer-box li { border: 2px solid var(--ink); padding: 3px 10px; font-weight: 700; font-size: 0.86rem; }
+  .offer-box .mg-btn { margin-top: 6px; }
   .promo-0, .promo-1 { padding: 26px 24px 18px; }
   .promo-0 h3, .promo-1 h3 { font-size: 1.4rem; line-height: 1.05; }
   .promo-0 p, .promo-1 p { margin-top: 10px; font-weight: 500; font-size: 0.98rem; max-width: 52ch; }
@@ -600,9 +600,9 @@ const sfx = { zal: 'ЛЯЗГ!', cardio: 'ТУК-ТУК', group: 'РАЗ! ДВА!
     .pg-price { grid-template-columns: repeat(6, 1fr); }
     .pg-price .p-head { grid-column: 1 / -1; }
     .pl { grid-column: span 2; }
-    .p-trial { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; align-items: center; padding: 48px clamp(32px, 5vw, 80px); }
-    .trial-burst { justify-self: center; }
-    .trial-box { justify-self: start; }
+    .p-offer { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; align-items: center; padding: 48px clamp(32px, 5vw, 80px); }
+    .offer-burst { justify-self: center; }
+    .offer-box { justify-self: start; }
     .promo-0, .promo-1 { grid-column: span 3; }
   }
 

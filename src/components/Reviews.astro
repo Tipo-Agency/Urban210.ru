@@ -1,22 +1,34 @@
 ---
+// Лента отзывов гостей вперемешку с фото гостей клуба.
+import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
+import { img } from '../data/images';
 import { reviews } from '../data/content';
 import { site } from '../data/site';
+interface Props { title?: string; text?: string }
+const { title = 'Здесь тренируются ваши соседи', text = 'Отзывы гостей клуба без правок по смыслу, вместе с минусами.' } = Astro.props;
+const people = ['/images/community/2.jpg', '/images/community/13.jpg', '/images/community/9.jpg', '/images/community/15.jpg'];
+const tones = ['org', 'cob', 'wht', 'org'];
+const rating = site.rating.value.toString().replace('.', ',');
 ---
-<section class="sec" style="padding-top:0" data-block="reviews" aria-labelledby="rev-t">
-  <div class="wrap">
-    <div class="head head-split">
-      <h2 id="rev-t"><span class="accent">{site.rating.value.toString().replace('.', ',')}</span> из 5 на Яндекс Картах</h2>
-      <p>{site.rating.text} на Яндекс Картах и в 2ГИС. Ниже несколько из них, без правок по смыслу, вместе с минусами. <a class="link" href={site.maps.yandexReviews} target="_blank" rel="noopener">Читать все</a></p>
+<section class="f5-sec" id="otzyvy" aria-labelledby="rev-t">
+  <div class="f5-head f5-head-row">
+    <div>
+      <h2 id="rev-t">{title}</h2>
+      <p>{text}</p>
     </div>
-    <div class="reviews">
-      {reviews.map((r) => (
-        <figure class="review" data-rise style="margin:0">
-          <span class="stars" role="img" aria-label="5 звёзд">{[1, 2, 3, 4, 5].map(() => <Icon name="star" />)}</span>
-          <blockquote>{r.text}</blockquote>
+    <p class="f5-rate-big"><b>{rating}</b><span><span class="f5-stars">{[1, 2, 3, 4, 5].map(() => <Icon name="star" />)}</span>{site.rating.text}</span></p>
+  </div>
+  <div class="f5-feed" tabindex="0" aria-label="Отзывы и фото гостей">
+    {reviews.map((r, i) => (
+      <>
+        {people[i] && <figure class="f5-feed-ph"><Image src={img(people[i])} alt="Гость клуба Urban210" widths={[320, 480]} sizes="300px" format="avif" quality={50} style="object-position:50% 20%" /></figure>}
+        <blockquote class={`f5-feed-rv t-${tones[i % tones.length]}`}>
+          <span class="f5-stars" aria-label="5 звёзд">{[1, 2, 3, 4, 5].map(() => <Icon name="star" />)}</span>
+          <p>{r.text}</p>
           <footer><b>{r.name}</b><span>{r.source}</span></footer>
-        </figure>
-      ))}
-    </div>
+        </blockquote>
+      </>
+    ))}
   </div>
 </section>

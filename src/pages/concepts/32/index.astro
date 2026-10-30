@@ -11,7 +11,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, zones, promos } from '../../../data/content';
 
 const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -26,14 +26,14 @@ const z = Object.fromEntries(zones.map((x) => [x.id, x]));
 const [weekday, weekend] = site.hours;
 const tradein = promos.find((p) => p.slug === 'trade-in')!;
 const friend = promos.find((p) => p.slug === '1-plus-1')!;
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const dayPrice = perDay(plans[0].month, 30);
 const stats = [
   { n: '60+', t: `тренажёров ${site.facts.brands}` },
   { n: '150 м²', t: 'зал групповых программ' },
   { n: '60 кг', t: 'предел свободных весов' },
   { n: '40–50 °C', t: 'хаммам в SPA-зоне' },
   { n: '50', t: 'мест бесплатной парковки' },
-  { n: '0 ₽', t: 'вступительный взнос' },
+  { n: `${dayPrice} ₽`, t: 'в день по дневной карте' },
 ];
 const zoneRows = [z.zal, z.cardio, z.group, z.spa];
 ---
@@ -52,23 +52,23 @@ const zoneRows = [z.zal, z.cardio, z.group, z.spa];
           <a href="#chasy">Часы</a><a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Адрес</a>
         </nav>
         <a class="cf-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="cf-btn cf-btn-s" href="#zayavka" data-lead={trial.title} data-block="32_header">Пробный день<span class="cf-hide-s">&nbsp;за 1 ₽</span></a>
+        <a class="cf-btn cf-btn-s" href="#tarify" data-block="32_header">Выбрать карту</a>
       </div>
     </header>
 
-    <!-- 1 ₽ -->
+    <!-- 43 ₽ в день -->
     <section class="cf-scr cf-first" aria-labelledby="cf-h1">
       <div class="cf-w cf-first-in">
         <div class="cf-first-tx">
           <p class="cf-lbl">Фитнес-клуб в Хабаровске</p>
-          <h1 id="cf-h1" class="cf-h1">Первый день в&nbsp;Urban210 стоит <span class="cf-sr">1 ₽</span></h1>
+          <h1 id="cf-h1" class="cf-h1">День безлимита в&nbsp;Urban210 стоит от <span class="cf-sr">{dayPrice} ₽</span></h1>
         </div>
-        <p class="cf-giant cf-or" aria-hidden="true" data-roll>1 ₽</p>
+        <p class="cf-giant cf-or" aria-hidden="true" data-roll>{dayPrice} ₽</p>
         <div class="cf-first-side">
-          <p class="cf-p">Полный доступ в зал и к тренажёрам на один день. Без обязательств, для новых гостей.</p>
+          <p class="cf-p">{plans[0].name}: {rub(plans[0].month)} в месяц, {plans[0].hours}. Зал, кардиозона, раздевалки и парковка.</p>
           <div class="cf-acts">
-            <a class="cf-btn" href="#zayavka" data-lead={trial.title} data-block="32_hero">Записаться за 1 ₽</a>
-            <a class="cf-link" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+            <a class="cf-btn" href="#tarify" data-block="32_hero">Выбрать карту</a>
+            <a class="cf-link" href="#zayavka" data-lead="Заявка с сайта" data-block="32_hero">Оставить заявку</a>
           </div>
         </div>
       </div>
@@ -128,7 +128,7 @@ const zoneRows = [z.zal, z.cardio, z.group, z.spa];
       <div class="cf-w">
         <div class="cf-row-h">
           <h2 id="cf-ph" class="cf-h2">Абонемент в месяц</h2>
-          <span class="cf-lbl">вступительного взноса нет</span>
+          <span class="cf-lbl">от {dayPrice} ₽ в день</span>
         </div>
         <div class="cf-plans">
           {plans.map((p, i) => (
@@ -152,10 +152,10 @@ const zoneRows = [z.zal, z.cardio, z.group, z.spa];
 
         <div class="cf-extra">
           <div class="cf-ex">
-            <p class="cf-mid" data-roll>{trial.price} ₽</p>
-            <h3>{trial.title}</h3>
-            <p>{trialPromo.terms.join('. ')}.</p>
-            <a class="cf-link" href="#zayavka" data-lead={trial.title} data-block="32_trial">{trialPromo.cta}</a>
+            <p class="cf-mid" data-roll>{dayPrice} ₽</p>
+            <h3>В день по дневной карте</h3>
+            <p>{plans[0].name}: {rub(plans[0].month)} в месяц, {plans[0].hours}.</p>
+            <a class="cf-link" href="#zayavka" data-lead="Заявка с сайта" data-block="32_offer">Оставить заявку</a>
           </div>
           <div class="cf-ex">
             <p class="cf-mid" data-roll>999 ₽</p>
@@ -223,7 +223,7 @@ const zoneRows = [z.zal, z.cardio, z.group, z.spa];
               <div><dt>Индекс</dt><dd>{site.address.postalCode}, {site.address.locality}</dd></div>
             </dl>
             <p class="cf-msg">
-              <a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a>
+              <a href={whatsappLink('Здравствуйте! Хочу выбрать карту в Urban210')} target="_blank" rel="noopener">WhatsApp</a>
               <a href={telegramLink('site_32')} target="_blank" rel="noopener">Telegram</a>
               <a href={site.maps.yandex} target="_blank" rel="noopener">Яндекс Карты</a>
               <a href={site.maps.twoGis} target="_blank" rel="noopener">2ГИС</a>
@@ -319,7 +319,7 @@ const zoneRows = [z.zal, z.cardio, z.group, z.spa];
     --scr: clamp(96px, 11vw, 160px);
     /* шкала: подписи, текст, крупный текст, заголовок; цифры: средние, широкие, гигантские */
     --t-xs: 0.875rem; --t-s: 1.0625rem; --t-m: clamp(1.1875rem, 1.05rem + 0.4vw, 1.4375rem); --t-l: clamp(1.75rem, 1.2rem + 1.6vw, 3rem);
-    --n-m: clamp(3rem, 1.6rem + 3.6vw, 5rem); --n-l: clamp(3.25rem, 0.25rem + 14.4vw, 13.25rem); --n-xl: clamp(15rem, 4rem + 36vw, 38rem);
+    --n-m: clamp(3rem, 1.6rem + 3.6vw, 5rem); --n-l: clamp(3.25rem, 0.25rem + 14.4vw, 13.25rem); --n-xl: clamp(10rem, 2.5rem + 24vw, 26rem);
     background: var(--bg); color: var(--ink); font-family: var(--f); font-size: var(--t-s); line-height: 1.5;
     font-variant-numeric: tabular-nums; overflow-x: clip;
   }
@@ -489,7 +489,7 @@ const zoneRows = [z.zal, z.cardio, z.group, z.spa];
     .cf-first { padding-block: var(--s5) var(--s7); }
     .cf-first-tx { flex-direction: column; gap: var(--s2); margin-bottom: var(--s5); }
     .cf-h1 { text-align: left; font-size: 2rem; }
-    .cf-giant { font-size: 16.5rem; }
+    .cf-giant { font-size: 10.5rem; }
     .cf-row-h { flex-direction: column; gap: var(--s1); margin-bottom: var(--s5); }
     .cf-wide { font-size: 3.4rem; }
     .cf-hours { font-size: 7.25rem; line-height: 0.8; }

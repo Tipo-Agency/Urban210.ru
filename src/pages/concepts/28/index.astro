@@ -12,7 +12,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, reasons } from '../../../data/content';
 
 const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -27,9 +27,10 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const z = Object.fromEntries(zones.map((x) => [x.id, x]));
 const tradein = promos.find((p) => p.slug === 'trade-in')!;
 const friend = promos.find((p) => p.slug === '1-plus-1')!;
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const dayPrice = perDay(plans[0].month, 30);
+const points = reasons.filter((r) => !/взнос/i.test(r.title));
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
-const h1 = 'Сначала попробуйте. Потом решите.';
+const h1 = `Безлимит в зал от ${dayPrice}\u00a0₽ в\u00a0день.`;
 const [lead, ...restReviews] = reviews;
 ---
 <Layout title="Концепция 28 «Ризограф»" description="Концепция дизайна сайта Urban210: журнал, напечатанный на ризографе флуоресцентным оранжевым и синим, с растром и сдвигом приводки." noindex bare>
@@ -53,7 +54,7 @@ const [lead, ...restReviews] = reviews;
           <a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#trenery">Тренеры</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Адрес</a>
         </nav>
         <a class="rz-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="rz-btn rz-btn-s" href="#zayavka" data-lead={trial.title} data-block="28_header">Пробный день 1 ₽</a>
+        <a class="rz-btn rz-btn-s" href="#tarify" data-block="28_header">Выбрать карту</a>
       </div>
     </header>
 
@@ -63,10 +64,10 @@ const [lead, ...restReviews] = reviews;
         <div class="rz-hero-tx">
           <p class="rz-kick">Фитнес-клуб Urban210 · {site.district}</p>
           <h1 id="rz-h1" class="rz-h1 rz-mis" data-t={h1}>{h1}</h1>
-          <p class="rz-lead">Первый день в клубе стоит 1&nbsp;₽: зал, кардио, раздевалки и душевые. Понравится, выберете тариф. Вступительного взноса нет.</p>
+          <p class="rz-lead">{plans[0].name}: {rub(plans[0].month)} в месяц. Зал, кардио, раздевалки и душевые. Нужно больше, выберете другой тариф.</p>
           <div class="rz-cta">
-            <a class="rz-btn" href="#zayavka" data-lead={trial.title} data-block="28_hero">Записаться за 1 ₽<Icon name="chev" /></a>
-            <a class="rz-link" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+            <a class="rz-btn" href="#tarify" data-block="28_hero">Выбрать карту<Icon name="chev" /></a>
+            <a class="rz-link" href="#zayavka" data-lead="Заявка с сайта" data-block="28_hero">Оставить заявку</a>
           </div>
         </div>
 
@@ -76,7 +77,7 @@ const [lead, ...restReviews] = reviews;
             <div class="pl pl-o"><Image src={img('/images/functional.jpg')} alt="" widths={[480, 640, 800]} sizes="(min-width: 1100px) 40vw, 92vw" loading="eager" fetchpriority="high" format="webp" quality={55} /></div>
             <div class="pl pl-b"><Image src={img('/images/functional.jpg')} alt="Функциональная тренировка с гантелями в Urban210" widths={[480, 640, 800]} sizes="(min-width: 1100px) 40vw, 92vw" loading="eager" format="webp" quality={55} /></div>
           </div>
-          <span class="rz-hero-rub" aria-hidden="true">1&#8202;₽</span>
+          <span class="rz-hero-rub" aria-hidden="true">{dayPrice}&#8202;₽</span>
           <figcaption>Функциональная зона. Фото клуба, печать в две краски.</figcaption>
         </figure>
       </div>
@@ -94,9 +95,9 @@ const [lead, ...restReviews] = reviews;
     <!-- Причины -->
     <section class="rz-sec rz-why" aria-labelledby="rz-why-h">
       <div class="rz-w">
-        <h2 id="rz-why-h" class="rz-h2 rz-mis" data-t="Четыре причины прийти" data-rise>Четыре причины прийти</h2>
+        <h2 id="rz-why-h" class="rz-h2 rz-mis" data-t="Три причины прийти" data-rise>Три причины прийти</h2>
         <ol class="rz-reasons">
-          {reasons.map((r, i) => (
+          {points.map((r, i) => (
             <li data-rise style={`transition-delay:${i * 70}ms`}>
               <span class="n" aria-hidden="true">{i + 1}</span>
               <h3>{r.title}</h3>
@@ -168,7 +169,7 @@ const [lead, ...restReviews] = reviews;
       <div class="rz-w">
         <div class="rz-head">
           <h2 id="rz-p-h" class="rz-h2 rz-mis" data-t="Три тарифа" data-rise>Три тарифа</h2>
-          <p>Ни одного взноса за вход. За год выходит дешевле: посчитали, сколько стоит день.</p>
+          <p>Безлимит от {dayPrice}&nbsp;₽ в день. За год выходит дешевле: посчитали, сколько стоит день.</p>
         </div>
         <div class="rz-plans">
           {plans.map((p, i) => (
@@ -191,18 +192,18 @@ const [lead, ...restReviews] = reviews;
       </div>
     </section>
 
-    <!-- Пробный день: оранжевая заливка -->
+    <!-- Цена дня: оранжевая заливка -->
     <section class="rz-flood" aria-labelledby="rz-tr-h">
-      <span class="rz-flood-rub" aria-hidden="true">1&#8202;₽</span>
+      <span class="rz-flood-rub" aria-hidden="true">{dayPrice}&#8202;₽</span>
       <div class="rz-w rz-flood-in">
         <div>
           <p class="rz-kick">Вкладка</p>
-          <h2 id="rz-tr-h" class="rz-flood-h">{trial.title}</h2>
+          <h2 id="rz-tr-h" class="rz-flood-h">От {dayPrice} ₽ в день</h2>
         </div>
         <div class="rz-flood-tx">
-          <p>{trial.text}</p>
-          <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-          <a class="rz-btn rz-btn-ink" href="#zayavka" data-lead={trial.title} data-block="28_trial">{trialPromo.cta}<Icon name="chev" /></a>
+          <p>{plans[0].name}: {rub(plans[0].month)} в месяц, {plans[0].hours}. Безлимит в зал и кардиозону.</p>
+          <ul>{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+          <a class="rz-btn rz-btn-ink" href="#zayavka" data-lead="Заявка с сайта" data-block="28_offer">Оставить заявку<Icon name="chev" /></a>
         </div>
       </div>
     </section>
@@ -433,14 +434,14 @@ const [lead, ...restReviews] = reviews;
   .rz-hero-art { position: relative; margin: 0; }
   .rz-hero-art .rz-duo { aspect-ratio: 4 / 3.4; position: relative; z-index: 1; mix-blend-mode: multiply; }
   .rz-dotsun { position: absolute; z-index: 0; width: 86%; aspect-ratio: 1; right: -14%; top: -8%; border-radius: 50%; background: radial-gradient(circle, var(--or) 0 1.6px, transparent 2px) 0 0 / 6px 6px; -webkit-mask: radial-gradient(circle, #000 30%, transparent 71%); mask: radial-gradient(circle, #000 30%, transparent 71%); }
-  .rz-hero-rub { position: absolute; z-index: 2; left: -4%; bottom: 8%; font-family: var(--fd); font-weight: 900; font-size: clamp(7rem, 38vw, 15rem); line-height: 0.8; letter-spacing: -0.06em; color: var(--or); mix-blend-mode: multiply; pointer-events: none; }
+  .rz-hero-rub { position: absolute; z-index: 2; left: -4%; bottom: 8%; font-family: var(--fd); font-weight: 900; font-size: clamp(5rem, 26vw, 10rem); line-height: 0.8; letter-spacing: -0.06em; color: var(--or); mix-blend-mode: multiply; pointer-events: none; }
   .rz-hero-art figcaption { margin-top: 10px; font-size: 0.8rem; color: var(--muted); }
   @media (min-width: 1100px) {
     .rz-hero-in { grid-template-columns: 1.25fr 1fr; gap: 64px; align-items: center; padding-block: 48px 56px; min-height: min(calc(100svh - 97px - 120px), 700px); }
     .rz-h1 { font-size: clamp(5rem, 6.4vw, 6.8rem); }
     .rz-hero-art .rz-duo { aspect-ratio: 1 / 1.05; }
     .rz-hero-art .rz-duo :global(img) { object-position: 38% 50%; }
-    .rz-hero-rub { left: -22%; bottom: 6%; font-size: 17rem; }
+    .rz-hero-rub { left: -22%; bottom: 6%; font-size: 12rem; }
   }
 
   .rz-facts { margin: 0; display: grid; grid-template-columns: 1fr 1fr; border-top: 1.5px solid var(--blue); }
@@ -474,7 +475,7 @@ const [lead, ...restReviews] = reviews;
   .rz-reasons h3 { font-family: var(--fd); font-weight: 700; font-size: 1.3rem; line-height: 1.15; margin: 0; letter-spacing: -0.02em; }
   .rz-reasons p { font-size: 0.97rem; line-height: 1.55; color: var(--muted); max-width: 40ch; }
   @media (min-width: 1100px) {
-    .rz-reasons { grid-template-columns: repeat(4, 1fr); column-gap: 32px; }
+    .rz-reasons { grid-template-columns: repeat(3, 1fr); column-gap: 32px; }
     .rz-reasons li { grid-template-columns: 1fr; gap: 14px; padding: 26px 0 0; border-top: 1.5px solid var(--blue); align-content: start; }
     .rz-reasons .n { grid-row: auto; font-size: 7rem; }
   }
@@ -534,7 +535,7 @@ const [lead, ...restReviews] = reviews;
   /* оранжевая вкладка */
   .rz-flood { position: relative; overflow: hidden; background: var(--or); color: var(--over); padding-block: clamp(64px, 9vw, 120px); }
   .rz-flood .rz-kick { color: var(--over); }
-  .rz-flood-rub { position: absolute; right: -6%; bottom: -14%; font-family: var(--fd); font-weight: 900; font-size: clamp(14rem, 70vw, 34rem); line-height: 0.8; letter-spacing: -0.07em; color: var(--blue); mix-blend-mode: multiply; opacity: 0.9; pointer-events: none; }
+  .rz-flood-rub { position: absolute; right: -6%; bottom: -14%; font-family: var(--fd); font-weight: 900; font-size: clamp(9rem, 40vw, 20rem); line-height: 0.8; letter-spacing: -0.07em; color: var(--blue); mix-blend-mode: multiply; opacity: 0.9; pointer-events: none; }
   .rz-flood-in { position: relative; display: grid; gap: 24px; }
   .rz-flood-h { margin: 14px 0 0; font-family: var(--fd); font-weight: 800; font-size: clamp(2.6rem, 11vw, 6rem); line-height: 0.95; letter-spacing: -0.045em; max-width: 9ch; }
   .rz-flood-tx { display: grid; gap: 18px; justify-items: start; max-width: 520px; }

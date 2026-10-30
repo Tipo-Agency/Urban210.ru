@@ -1,7 +1,7 @@
 ---
 // Концепция 09 «Забота»: светлый wellness для женщин. Крем, песок и мягкий персик,
 // тёплые цветные фото в арках, Yeseva One + Jost. Медленное движение: солнце встаёт за аркой,
-// бейдж пробного дня вращается, фото в арках мягко отдаляются при прокрутке.
+// бейдж с ценой дня вращается, фото в арках мягко отдаляются при прокрутке.
 import '@fontsource/yeseva-one/cyrillic-400.css';
 import '@fontsource/yeseva-one/latin-400.css';
 import '@fontsource-variable/jost/wght.css';
@@ -11,8 +11,8 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial } from '../../../data/pricing';
-import { reviews, trainers, zones, programs, promos, faqGeneral } from '../../../data/content';
+import { plans, perDay, rub } from '../../../data/pricing';
+import { reviews, trainers, zones, programs, promos } from '../../../data/content';
 
 const rating = site.rating.value.toString().replace('.', ',');
 const soft = programs.find((p) => p.group === 'Мягкий фитнес')!;
@@ -24,8 +24,8 @@ const space = [
 ];
 const team = [trainers[0], trainers[1], trainers[2]];
 const [lead, ...more] = [reviews[3], reviews[0], reviews[1]];
-const start = faqGeneral[0];
-const ring = 'пробный день · 1 рубль · пробный день · 1 рубль · ';
+const fromDay = perDay(plans[0].month, 30);
+const ring = `от ${fromDay} рублей в день · от ${fromDay} рублей в день · `;
 const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/ | /g, ' ');
 ---
 <Layout title="Концепция 09 «Забота»" description="Концепция дизайна сайта Urban210: светлый клуб с заботой, групповые программы, SPA и утренние часы." noindex bare>
@@ -40,7 +40,7 @@ const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/ | /g, ' ');
         <a href="#visit">Контакты</a>
       </nav>
       <a class="zb-tel" href={site.phone.href}>{site.phone.display}</a>
-      <a class="zb-pill sm" href="#visit" data-lead={trial.title} data-block="09_header">Пробный день<span class="zb-rub">за 1 ₽</span></a>
+      <a class="zb-pill sm" href="#price" data-block="09_header">Выбрать карту</a>
     </header>
 
     <section class="zb-hero" aria-labelledby="zb-h">
@@ -49,8 +49,8 @@ const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/ | /g, ' ');
         <h1 id="zb-h">Время для&nbsp;себя <span>с 6:30 утра</span></h1>
         <p class="zb-lead">Пилатес и растяжка, сауна и хаммам, просторный зал без очередей. Утром спокойно, а у входа бесплатная парковка на 50 мест под видеонаблюдением.</p>
         <div class="zb-cta">
-          <a class="zb-pill" href="#visit" data-lead={trial.title} data-block="09_hero">Пробный день за 1 ₽<span class="zb-pill-i"><Icon name="chev" /></span></a>
-          <a class="zb-link" href="#price">Абонементы от {fmt(plans[0].month)} ₽</a>
+          <a class="zb-pill" href="#price" data-block="09_hero">Выбрать карту<span class="zb-pill-i"><Icon name="chev" /></span></a>
+          <a class="zb-link" href="#price">От {fromDay} ₽ в день</a>
         </div>
         <p class="zb-rate"><span class="zb-stars" aria-hidden="true"><Icon name="star" /><Icon name="star" /><Icon name="star" /><Icon name="star" /><Icon name="star" /></span><b>{rating}</b> на Яндекс Картах, {site.rating.text}</p>
       </div>
@@ -63,9 +63,9 @@ const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/ | /g, ' ');
         <div class="zb-dot-photo">
           <Image src={img('/images/community/13.jpg')} alt="" widths={[240, 360]} sizes="180px" format="avif" quality={50} />
         </div>
-        <a class="zb-badge" href="#visit" data-lead={trial.title} data-block="09_badge" aria-label="Пробный день за 1 рубль">
+        <a class="zb-badge" href="#price" data-block="09_badge" aria-label={`Абонементы от ${fromDay} рублей в день`}>
           <svg viewBox="0 0 200 200" aria-hidden="true"><defs><path id="zb-ring" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" /></defs><text><textPath href="#zb-ring" textLength="484" lengthAdjust="spacing">{ring}</textPath></text></svg>
-          <b>1<span class="zb-rub">₽</span></b>
+          <b>{fromDay}<span class="zb-rub">₽</span></b>
         </a>
       </div>
     </section>
@@ -73,7 +73,7 @@ const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/ | /g, ' ');
     <ul class="zb-facts" aria-label="Коротко о клубе">
       <li><b>6:30</b><span>открываемся по будням, в выходные в {site.hours[1].time.slice(0, 5)}</span></li>
       <li><b>50</b><span>мест бесплатной парковки у входа под видеонаблюдением</span></li>
-      <li><b>0<span class="zb-rub">₽</span></b><span>вступительный взнос, платите только за абонемент</span></li>
+      <li><b>{fromDay}<span class="zb-rub">₽</span></b><span>в день по дневной карте, {fmt(plans[0].month)} ₽ в месяц</span></li>
       <li><b>150 м²</b><span>отдельный зал для групповых программ</span></li>
     </ul>
 
@@ -149,8 +149,8 @@ const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/ | /g, ' ');
         <ul class="zb-care-list">
           <li data-rise><span class="zb-ic"><Icon name="pin" /></span><div><h3>Парковка у входа</h3><p>{site.parking}. Не нужно кружить по району вечером.</p></div></li>
           <li data-rise><span class="zb-ic"><Icon name="clock" /></span><div><h3>Утро до работы</h3><p>По будням {site.hours[0].time}, в выходные {site.hours[1].time}. Успеть до работы, в обед или после.</p></div></li>
-          <li data-rise><span class="zb-ic"><Icon name="check" /></span><div><h3>Тренер рядом</h3><p>{start.a.split('. ').slice(1, 2).join('. ')}.</p></div></li>
-          <li data-rise><span class="zb-ic"><Icon name="minus" /></span><div><h3>Без вступительного взноса</h3><p>Регистрация и браслет входят в стоимость абонемента. Заморозка на 30 дней раз в год бесплатно.</p></div></li>
+          <li data-rise><span class="zb-ic"><Icon name="check" /></span><div><h3>Тренер рядом</h3><p>Тренер покажет тренажёры и технику, поможет составить первую программу.</p></div></li>
+          <li data-rise><span class="zb-ic"><Icon name="minus" /></span><div><h3>Можно заморозить</h3><p>Один раз в год на 30 дней бесплатно, достаточно позвонить администратору.</p></div></li>
         </ul>
       </div>
     </section>
@@ -158,7 +158,7 @@ const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/ | /g, ' ');
     <section class="zb-sec zb-price" id="price" aria-labelledby="zb-p">
       <div class="zb-head">
         <h2 id="zb-p">Абонементы</h2>
-        <p>Цена за месяц и за год, без скрытых платежей. За год выходит дешевле.</p>
+        <p>Цена за месяц и за год. За год выходит дешевле.</p>
       </div>
       <div class="zb-plans">
         {plans.map((p) => (
@@ -179,17 +179,17 @@ const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/ | /g, ' ');
         ))}
       </div>
 
-      <div class="zb-trial" data-rise>
-        <div class="zb-trial-num" aria-hidden="true">1<span class="zb-rub">₽</span></div>
-        <div class="zb-trial-tx">
-          <h3>{trial.title}</h3>
-          <p>{trial.text} Посмотрите раздевалки, SPA-зону и группы, а потом решите.</p>
+      <div class="zb-offer" data-rise>
+        <div class="zb-offer-num" aria-hidden="true">{fromDay}<span class="zb-rub">₽</span></div>
+        <div class="zb-offer-tx">
+          <h3>От {fromDay} ₽ в день</h3>
+          <p>{plans[0].name}: {rub(plans[0].month)} в месяц, зал и кардиозона {plans[0].hours}. Администратор поможет выбрать тариф.</p>
         </div>
-        <a class="zb-pill" href="#visit" data-lead={trial.title} data-block="09_trial">Записаться<span class="zb-pill-i"><Icon name="chev" /></span></a>
+        <a class="zb-pill" href="#visit" data-lead="Заявка с сайта" data-block="09_offer">Оставить заявку<span class="zb-pill-i"><Icon name="chev" /></span></a>
       </div>
 
       <ul class="zb-promos">
-        {promos.slice(1).map((p) => (
+        {promos.filter((p) => ['trade-in', '1-plus-1'].includes(p.slug)).map((p) => (
           <li><a href={`/promo/${p.slug}/`}><b>{p.title}</b><span>{p.short}</span><Icon name="chev" /></a></li>
         ))}
       </ul>
@@ -233,14 +233,14 @@ const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/ | /g, ' ');
       <div class="zb-visit-in">
         <div class="zb-visit-tx">
           <h2 id="zb-v">Приходите познакомиться</h2>
-          <p class="zb-lead">Оставьте телефон, администратор перезвонит и подберёт удобное время для пробного дня. Возьмите форму, сменную обувь и паспорт.</p>
+          <p class="zb-lead">Оставьте телефон, администратор перезвонит, поможет выбрать абонемент и подберёт удобное время. Возьмите форму, сменную обувь и паспорт.</p>
           <dl class="zb-contacts">
             <div class="wide"><dt>Адрес</dt><dd>{site.address.locality}, {site.address.short}<br />{site.district}</dd></div>
             <div><dt>Часы</dt><dd>{site.hours.map((h) => <span class="nw">{`${h.days} ${h.time}`}</span>)}</dd></div>
             <div><dt>Телефон</dt><dd><a href={site.phone.href}>{site.phone.display}</a></dd></div>
             <div><dt>Парковка</dt><dd>50 мест у входа, бесплатно</dd></div>
           </dl>
-          <p class="zb-msg"><a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a><a href={telegramLink('concept_09')} target="_blank" rel="noopener"><Icon name="tg" />Telegram</a></p>
+          <p class="zb-msg"><a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a><a href={telegramLink('concept_09')} target="_blank" rel="noopener"><Icon name="tg" />Telegram</a></p>
         </div>
         <div class="zb-visit-form">
           <LeadForm id="zb" block="09_final" />
@@ -529,15 +529,15 @@ const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/ | /g, ' ');
   .zb-plan li.no :global(svg) { color: #a8968a; }
   @media (min-width: 960px) { .zb-plans { grid-template-columns: repeat(3, 1fr); } .zb-plan.hot { transform: translateY(-14px); } }
 
-  .zb-trial { margin-top: 28px; display: grid; gap: 18px; align-items: center; padding: clamp(28px, 3.4vw, 48px); border-radius: 32px; background: var(--ink); color: var(--white); }
-  .zb-trial-num { font: 400 clamp(5rem, 4rem + 4vw, 8rem)/0.9 var(--serif); color: var(--peach); }
-  .zb-trial-num .zb-rub { font-size: 0.45em; margin-left: 6px; }
-  .zb-trial h3 { font-size: clamp(1.7rem, 1.3rem + 1.2vw, 2.4rem); margin-bottom: 10px; }
-  .zb-trial p { color: #dacbbf; max-width: 52ch; }
-  .zb-trial .zb-pill { background: var(--peach); color: var(--ink); justify-self: start; }
-  .zb-trial .zb-pill-i { background: var(--ink); color: var(--peach); }
-  .zb-trial .zb-pill:hover { background: #f7c4a8; }
-  @media (min-width: 960px) { .zb-trial { grid-template-columns: auto 1fr auto; gap: clamp(28px, 4vw, 64px); } }
+  .zb-offer { margin-top: 28px; display: grid; gap: 18px; align-items: center; padding: clamp(28px, 3.4vw, 48px); border-radius: 32px; background: var(--ink); color: var(--white); }
+  .zb-offer-num { font: 400 clamp(5rem, 4rem + 4vw, 8rem)/0.9 var(--serif); color: var(--peach); }
+  .zb-offer-num .zb-rub { font-size: 0.45em; margin-left: 6px; }
+  .zb-offer h3 { font-size: clamp(1.7rem, 1.3rem + 1.2vw, 2.4rem); margin-bottom: 10px; }
+  .zb-offer p { color: #dacbbf; max-width: 52ch; }
+  .zb-offer .zb-pill { background: var(--peach); color: var(--ink); justify-self: start; }
+  .zb-offer .zb-pill-i { background: var(--ink); color: var(--peach); }
+  .zb-offer .zb-pill:hover { background: #f7c4a8; }
+  @media (min-width: 960px) { .zb-offer { grid-template-columns: auto 1fr auto; gap: clamp(28px, 4vw, 64px); } }
 
   .zb-promos { list-style: none; display: grid; gap: 12px; margin-top: 12px; }
   .zb-promos a { display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; align-items: center; padding: 22px 26px; border-radius: 24px; border: 1px solid var(--line); text-decoration: none; transition: background-color 0.4s var(--slow); }

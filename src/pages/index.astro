@@ -1,186 +1,177 @@
 ---
+// Главная (дизайн 05 «Дружелюбный», тёмный, выбран 30.10.2026): оффер от 43 ₽ в день, сразу выбор карты и заявка,
+// дальше зоны, отзывы, тренеры, акции и свежие статьи со ссылками на внутренние страницы.
 import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
-import Cta from '../components/Cta.astro';
 import Plans from '../components/Plans.astro';
-import Faq from '../components/Faq.astro';
 import Final from '../components/Final.astro';
 import Reviews from '../components/Reviews.astro';
 import Trainers from '../components/Trainers.astro';
 import Promos from '../components/Promos.astro';
+import PostCard from '../components/PostCard.astro';
+import Faq from '../components/Faq.astro';
 import { img } from '../data/images';
 import { site } from '../data/site';
-import { plans, perDay, rub, trial } from '../data/pricing';
-import { faqGeneral, reasons, comparison, programs, zones } from '../data/content';
-import poster from '../assets/images/hero.jpg';
+import { plans, perDay, rub } from '../data/pricing';
+import { zones, programs, faqGeneral } from '../data/content';
 
-const minDay = perDay(plans[0].month, 30);
+const dayPlan = plans[0];
+const dayPrice = perDay(dayPlan.month, 30);
+const zal = zones.find((z) => z.id === 'zal')!;
+const cardio = zones.find((z) => z.id === 'cardio')!;
+const group = zones.find((z) => z.id === 'group')!;
+const spa = zones.find((z) => z.id === 'spa')!;
 
-// Слоган проявляется по словам. Слова со звёздочкой горят оранжевым.
-const manifest = 'Приходите в *6:30.* Уходите сильнее. Без очередей к тренажёрам, без вступительного *взноса,* без суеты.';
-const words = manifest.split(' ').map((w) => ({ t: w.replace(/\*/g, ''), hot: w.startsWith('*') }));
-
-const faqLd = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faqGeneral.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
-};
+// Веер на первом экране: гости целиком, без обрезанных голов
+const fan = [
+  { src: '/images/community/11.jpg', alt: 'Гостья клуба в тренажёрном зале Urban210' },
+  { src: '/images/community/13.jpg', alt: 'Гостья клуба у силовой рамы' },
+  { src: '/images/community/9.jpg', alt: 'Гость клуба после тренировки' },
+];
+const marquee = [`Безлимит от ${dayPrice} ₽ в день`, 'Парковка на 50 мест бесплатно', 'Без очередей к тренажёрам', 'С 6:30 по будням', 'Сауна и хаммам'];
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
 ---
 <Layout
-  title="Фитнес-клуб Urban210 в Хабаровске: тренажёрный зал, групповые, сауна"
-  description={`Фитнес-клуб в Железнодорожном районе Хабаровска: ${site.facts.area}, ${site.facts.machines}, групповые программы, сауна и хаммам. Абонемент от ${rub(plans[0].month)} в месяц без вступительного взноса. Пробный день за 1 ₽.`}
-  jsonld={[faqLd]}
+  title="Фитнес-клуб Urban210 в Хабаровске: тренажёрный зал от 43 ₽ в день"
+  description={`Фитнес-клуб в Железнодорожном районе Хабаровска: ${site.facts.area}, ${site.facts.machines}, групповые программы, сауна и хаммам. Безлимит от ${dayPrice} ₽ в день, карта от ${rub(dayPlan.month)} в месяц.`}
 >
-  <!-- Первый экран: чёрно-белое видео зала, шеврон бренда уезжает при прокрутке -->
-  <section class="hero" data-block="hero" aria-labelledby="hero-t">
-    <div class="hero-media">
-      <Image src={poster} alt="" widths={[640, 960, 1440, 1920]} sizes="100vw" loading="eager" fetchpriority="high" format="avif" quality={45} />
-      <video data-hero-video data-src="/video/hero-bw.mp4" muted loop playsinline preload="none" aria-hidden="true"></video>
-    </div>
-    <Icon name="chev" class="hero-chev" />
-    <div class="wrap hero-inner">
-      <p class="hero-kicker"><span class="dot" aria-hidden="true"></span>Хабаровск, {site.district}</p>
-      <h1 id="hero-t">
-        <span class="line"><span>Тренируйтесь</span></span>
-        <span class="line"><span>без очереди</span></span>
-        <span class="line"><span class="accent">к железу</span></span>
-      </h1>
-      <p class="hero-sub">{site.facts.area[0].toUpperCase() + site.facts.area.slice(1)}, {site.facts.machines} {site.facts.brands}, сауна и хаммам. Безлимит от {minDay} ₽ в день, без вступительного взноса.</p>
-      <div class="hero-cta">
-        <Cta block="hero">{trial.title}</Cta>
-        <a class="link" href="#tarify">Тарифы от {rub(plans[0].month)} в месяц</a>
-      </div>
-      <div class="hero-proof">
-        <div><p class="num">{site.rating.value.toString().replace('.', ',')}</p><p>на Яндекс Картах, {site.rating.text}</p></div>
-        <div><p class="num">6:30</p><p>открываемся по будням, до 23:30</p></div>
-        <div><p class="num">0 ₽</p><p>вступительный взнос</p></div>
-        <div><p class="num">50</p><p>мест бесплатной парковки</p></div>
-      </div>
-    </div>
-  </section>
-
-  <div class="ticker" aria-hidden="true">
-    <div class="ticker-track">
-      {[0, 1].map(() => (
-        <span>Тренажёрный зал <Icon name="chev" /> Кардиозона <Icon name="chev" /> Групповые <Icon name="chev" /> Сауна и хаммам <Icon name="chev" /> Персональные тренировки <Icon name="chev" /> Пробный день за 1 ₽ <Icon name="chev" /></span>
-      ))}
-    </div>
-  </div>
-
-  <!-- Слоган по словам -->
-  <section class="sec" aria-label="О клубе">
-    <div class="wrap">
-      <p class="manifest" data-words>
-        {words.map((w) => <><span class={w.hot ? 'w hot' : 'w'}>{w.t}</span>{' '}</>)}
-      </p>
-    </div>
-  </section>
-
-  <!-- Зоны клуба -->
-  <section class="sec" style="padding-top:0" data-block="zones" aria-labelledby="zones-t">
-    <div class="wrap">
-      <div class="head head-split">
-        <h2 id="zones-t">Два этажа для тренировок</h2>
-        <p>Внизу силовая зона, свободные веса и октагон. Наверху кардио с видом на проспект. Плюс зал групповых и SPA.</p>
-      </div>
-      <div class="zones">
-        {zones.map((z) => (
-          <a class:list={['zone', !z.image && 'zone-spa']} href={z.href} data-rise>
-            {z.image ? (
-              <Image src={img(z.image)} alt="" widths={[480, 800, 1100]} sizes="(min-width: 900px) 40vw, 78vw" format="avif" quality={50} />
-            ) : (
-              <span class="zone-art" aria-hidden="true">SPA</span>
-            )}
-            <span class="zone-go" aria-hidden="true"><Icon name="chev" /></span>
-            <span class="zone-body">
-              <h3>{z.title}</h3>
-              <p>{z.text}</p>
-            </span>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Тарифы -->
-  <section class="sec on-paper" id="tarify" data-block="price" aria-labelledby="price-t">
-    <div class="wrap">
-      <div class="head head-split">
-        <h2 id="price-t">Три тарифа, безлимит в своё время</h2>
-        <p>Цена в месяц при помесячной оплате. За год выходит дешевле. Вступительного взноса и скрытых платежей нет.</p>
-      </div>
-      <Plans block="home" />
-    </div>
-  </section>
-
-  <!-- Почему мы -->
-  <section class="sec" data-block="reasons" aria-labelledby="why-t">
-    <div class="wrap">
-      <div class="head head-split">
-        <h2 id="why-t">Почему переходят из сетевых клубов</h2>
-        <p>Сравнили с федеральными сетями по открытым ценам. Разница в деньгах и в том, сколько вы ждёте у стойки.</p>
-      </div>
-      <ul class="reasons">
-        {reasons.map((r) => (
-          <li data-rise>
-            <Icon name="chev" class="chev-n" />
-            <h3>{r.title}</h3>
-            <p>{r.text}</p>
-          </li>
-        ))}
-      </ul>
-      <div class="table-scroll" style="margin-top:56px" data-rise>
-        <table class="versus">
-          <caption class="sr">Сравнение Urban210 и сетевого клуба</caption>
-          <thead><tr>{comparison.head.map((h) => <th scope="col">{h}</th>)}</tr></thead>
-          <tbody>
-            {comparison.rows.map((r) => (
-              <tr><th scope="row">{r[0]}</th><td>{r[1]}</td><td>{r[2]}</td></tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p class="muted" style="margin-top:16px;font-size:0.9rem">{comparison.note}</p>
-    </div>
-  </section>
-
-  <!-- Групповые -->
-  <section class="sec" style="padding-top:0" data-block="group" aria-labelledby="group-t">
-    <div class="wrap split">
-      <div class="ph" data-rise>
-        <Image src={img('/images/group.jpg')} alt="Групповая тренировка в зале Urban210" widths={[400, 640, 960, 1300]} sizes="(min-width: 900px) 50vw, 100vw" format="avif" quality={40} />
-      </div>
-      <div>
-        <h2 id="group-t">Групповые без доплат</h2>
-        <p>{site.facts.groupHall[0].toUpperCase() + site.facts.groupHall.slice(1)}. Все направления входят в тариф «Всё включено», запись в приложении клуба.</p>
-        <div class="grid-2" style="margin-top:28px">
-          {programs.map((p) => (
-            <div>
-              <h3 style="font-size:1.1rem">{p.group}</h3>
-              <div class="chips" style="margin-top:10px">{p.items.map((i) => <span class="chip">{i}</span>)}</div>
-            </div>
-          ))}
+  <section class="f5-hero" aria-labelledby="f5-h">
+    <div class="f5-hero-card">
+      <div class="f5-hero-text">
+        <p class="f5-status" data-status><i></i><span>Хабаровск, {site.district}</span></p>
+        <h1 id="f5-h">Безлимит в зал <span class="f5-price-chip">от&nbsp;{dayPrice}&nbsp;₽</span> в день</h1>
+        <p class="f5-hero-lead">{dayPlan.name}: {rub(dayPlan.month)} в месяц. {site.facts.machines} {site.facts.brands}, групповые программы, сауна и хаммам.</p>
+        <div class="f5-cta">
+          <a class="f5-go" href="#cards"><span>Выбрать карту</span><i><Icon name="chev" /></i></a>
+          <a class="f5-pill f5-pill-ghost" href="#zayavka" data-lead="Заявка на карту" data-block="home_hero">Оставить заявку</a>
         </div>
-        <p style="margin-top:28px"><a class="link" href="/group/">Все направления</a></p>
+      </div>
+      <div class="f5-fan" aria-label="Гости клуба">
+        {fan.map((f, i) => (
+          <figure class={`f5-fan-card n${i}`}>
+            <Image src={img(f.src)} alt={f.alt} widths={[280, 420, 600]} sizes="(min-width: 980px) 280px, 46vw" loading={i === 1 ? 'eager' : 'lazy'} fetchpriority={i === 1 ? 'high' : undefined} format="webp" quality={60} style="object-position:50% 12%" />
+          </figure>
+        ))}
+        <span class="f5-stk f5-stk-cob" data-spin><b>{dayPrice} ₽</b>в день</span>
+        <a class="f5-stk-rate" href="#otzyvy"><Icon name="star" /><b>{site.rating.value.toString().replace('.', ',')}</b><span>{site.rating.text}</span></a>
+      </div>
+      <div class="f5-marquee" aria-hidden="true">
+        <div class="f5-marquee-track">
+          {[0, 1].map(() => marquee.map((m) => <span>{m}<Icon name="chev" /></span>))}
+        </div>
       </div>
     </div>
+    <ul class="f5-facts">
+      <li><Icon name="clock" /><div><b>{site.hours[0].days} {site.hours[0].time}</b><span>{site.hours[1].days} {site.hours[1].time}</span></div></li>
+      <li><Icon name="pin" /><div><b>{site.address.short}</b><span>{site.district}</span></div></li>
+      <li><span class="f5-p">P</span><div><b>Парковка на 50 мест</b><span>бесплатно, под видеонаблюдением</span></div></li>
+    </ul>
   </section>
 
-  <Promos />
+  <Plans block="home" />
 
-  <section class="sec" data-block="trainers" aria-labelledby="tr-t">
-    <div class="wrap">
-      <div class="head head-split">
-        <h2 id="tr-t">Тренеры</h2>
-        <p>Поставят технику, соберут программу под цель и проследят за прогрессом. Первая персональная тренировка бесплатно при покупке подписки.</p>
+  <Final block="home_final" />
+
+  <section class="f5-sec" id="zones" aria-labelledby="f5-z">
+    <div class="f5-head f5-head-row">
+      <div>
+        <h2 id="f5-z">Что внутри клуба</h2>
+        <p>{site.facts.area} на двух этажах. Места хватает даже вечером.</p>
       </div>
-      <Trainers />
-      <p style="margin-top:28px"><a class="link" href="/personal/">Персональные тренировки</a></p>
+      <a class="f5-pill f5-pill-wht" href="/zones/">Все зоны клуба</a>
+    </div>
+    <div class="f5-bento">
+      <a class="f5-zone f5-zone-big" href="/zal/" data-rise>
+        <Image src={img(zal.image!)} alt="Тренажёрный зал Urban210 с панорамными окнами" widths={[480, 800, 1100]} sizes="(min-width: 980px) 56vw, 92vw" format="avif" quality={50} />
+        <div class="f5-zone-txt">
+          <span class="f5-tag">Главный зал</span>
+          <h3>{zal.title}</h3>
+          <p>{zal.text}</p>
+        </div>
+        <span class="f5-arrow"><Icon name="chev" /></span>
+      </a>
+      <a class="f5-zone f5-zone-photo" href="/zones/cardio/" data-rise>
+        <Image src={img(cardio.image!)} alt="Беговые дорожки Technogym в кардиозоне" widths={[400, 700]} sizes="(min-width: 980px) 40vw, 92vw" format="avif" quality={50} />
+        <div class="f5-zone-txt">
+          <h3>{cardio.title}</h3>
+          <p>{cardio.text}</p>
+        </div>
+        <span class="f5-arrow"><Icon name="chev" /></span>
+      </a>
+      <a class="f5-zone f5-zone-spa" href="/spa/" data-rise>
+        <span class="f5-stk f5-stk-org f5-spa-stk" data-spin><b>40–50 °C</b>хаммам</span>
+        <h3>{spa.title}</h3>
+        <p>{spa.text}</p>
+        <span class="f5-mini">В тарифе «Всё включено»</span>
+        <span class="f5-arrow"><Icon name="chev" /></span>
+      </a>
+      <div class="f5-zone f5-zone-group" data-rise>
+        <div class="f5-group-txt">
+          <h3>{group.title}</h3>
+          <p>{group.text}</p>
+          <ul class="f5-chips">
+            {programs.flatMap((p) => p.items).map((it) => <li>{it}</li>)}
+          </ul>
+          <a class="f5-pill f5-pill-wht" href="/group/">Направления и запись</a>
+        </div>
+        <div class="f5-group-ph">
+          <Image src={img('/images/group.jpg')} alt="Групповая тренировка в зале 150 м²" widths={[400, 700]} sizes="(min-width: 980px) 34vw, 92vw" format="avif" quality={50} />
+          <Image src={img('/images/group-strength.jpg')} alt="Силовая групповая тренировка с гантелями" widths={[300, 500]} sizes="(min-width: 980px) 18vw, 44vw" format="avif" quality={45} />
+        </div>
+      </div>
     </div>
   </section>
 
   <Reviews />
-  <Faq items={faqGeneral} text="Не нашли ответ? Позвоните, администратор ответит в часы работы клуба." />
-  <Final />
+
+  <section class="f5-sec" id="team" aria-labelledby="f5-t">
+    <div class="f5-head f5-head-row">
+      <div>
+        <h2 id="f5-t">Тренеры помогут начать</h2>
+        <p>Покажут тренажёры, поставят технику и составят первую программу.</p>
+      </div>
+      <a class="f5-pill f5-pill-wht" href="/personal/">Персональные тренировки</a>
+    </div>
+    <Trainers />
+  </section>
+
+  <section class="f5-sec" aria-labelledby="f5-promo">
+    <div class="f5-head f5-head-row">
+      <div><h2 id="f5-promo">Акции</h2></div>
+      <a class="f5-pill f5-pill-wht" href="/promo/">Все акции</a>
+    </div>
+    <Promos />
+  </section>
+
+  <section class="f5-sec" aria-labelledby="f5-blog">
+    <div class="f5-head f5-head-row">
+      <div>
+        <h2 id="f5-blog">Блог о тренировках</h2>
+        <p>Как начать, худеть и набирать без вреда, что выбрать в Хабаровске.</p>
+      </div>
+      <a class="f5-pill f5-pill-wht" href="/blog/">Все статьи</a>
+    </div>
+    <ul class="f5-posts">{posts.map((p) => <li><PostCard post={p} /></li>)}</ul>
+  </section>
+
+  <Faq items={faqGeneral} />
 </Layout>
+
+<script>
+  // Статус «открыто сейчас» по времени Хабаровска
+  const st = document.querySelector<HTMLElement>('[data-status]');
+  if (st) {
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Vladivostok' }));
+    const d = now.getDay();
+    const m = now.getHours() * 60 + now.getMinutes();
+    const [o, c] = d === 0 || d === 6 ? [450, 1350] : [390, 1410];
+    const open = m >= o && m < c;
+    const pad = (x: number) => `${Math.floor(x / 60)}:${String(x % 60).padStart(2, '0')}`;
+    st.classList.toggle('open', open);
+    st.querySelector('span')!.textContent = open ? `Открыто сейчас, до ${pad(c)}` : `Сейчас закрыто, откроемся в ${pad(o)}`;
+  }
+  // Веер фото раскрывается после загрузки
+  requestAnimationFrame(() => document.querySelector('.f5-fan')?.classList.add('is-open'));
+</script>

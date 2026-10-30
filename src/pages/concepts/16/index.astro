@@ -1,6 +1,6 @@
 ---
 // Концепция 16 «Игрок»: интерфейс игры. HUD-рамки с уголками, полосы характеристик, выбор класса вместо тарифов,
-// тренеры как напарники, пробный день как демо-доступ за 1 ₽, всплывающие достижения.
+// тренеры как напарники, дневная карта как стартовый уровень, всплывающие достижения.
 // Все цифры из src/data: часы, цены, зоны и перки тарифов. Движение: HUD «загружается», полосы заполняются. Без звука.
 import '@fontsource-variable/tektur/standard.css';
 import { Image } from 'astro:assets';
@@ -9,7 +9,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos } from '../../../data/content';
 import cutout from '../../../assets/images/trainers/lazko-cutout.webp';
 
@@ -61,12 +61,12 @@ const zoneCards = [
   { ...z.group, photo: '/images/group.jpg', alt: 'Групповая тренировка' },
   { ...z.spa, photo: null, alt: '' },
 ];
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
-const quests = promos.filter((p) => p.slug !== '1-rubl');
+const dayRate = perDay(plans[0].month, 30);
+const quests = promos.filter((p) => ['trade-in', '1-plus-1'].includes(p.slug));
 const personalLine = `${personal.pack} тренировок · ${rub(personal.price)}`;
 const initials = (n: string) => n.split(' ').map((w) => w[0]).join('');
 ---
-<Layout title="Концепция 16 «Игрок»" description="Концепция дизайна сайта Urban210: интерфейс игры, выбор класса вместо тарифов, напарники и демо-доступ за 1 ₽." noindex bare>
+<Layout title="Концепция 16 «Игрок»" description={`Концепция дизайна сайта Urban210: интерфейс игры, выбор класса вместо тарифов, напарники и дневная карта от ${dayRate} ₽ в день.`} noindex bare>
   <div class="gm">
     <header class="gm-top">
       <div class="gm-w gm-top-in">
@@ -79,7 +79,7 @@ const initials = (n: string) => n.split(' ').map((w) => w[0]).join('');
           <a href="#baza"><kbd>5</kbd>База</a>
         </nav>
         <p class="gm-status" data-status><i></i><span data-status-t>{site.hours[0].days} {site.hours[0].time}</span></p>
-        <a class="gm-btn gm-btn-s" href="#baza" data-lead={trial.title} data-block="16_header">Демо за 1 ₽</a>
+        <a class="gm-btn gm-btn-s" href="#baza" data-lead="Заявка с сайта" data-block="16_header">Оставить заявку</a>
       </div>
     </header>
 
@@ -93,9 +93,9 @@ const initials = (n: string) => n.split(' ').map((w) => w[0]).join('');
         <div class="gm-hero-tx">
           <p class="gm-label boot" style="--b:0ms"><span>Фитнес-клуб</span>Хабаровск · {site.district}</p>
           <h1 id="gm-h1" class="gm-h1"><span class="boot" style="--b:80ms">Нажми</span> <span class="boot acc" style="--b:180ms">старт</span></h1>
-          <p class="gm-lead boot" style="--b:260ms">Зал, кардио, групповые и SPA в одном клубе. Первый уровень на целый день стоит 1&nbsp;₽, дальше от {num(plans[0].month)}&nbsp;₽ в&nbsp;месяц.</p>
+          <p class="gm-lead boot" style="--b:260ms">Зал, кардио, групповые и SPA в одном клубе. Первый уровень от {dayRate}&nbsp;₽ в&nbsp;день: {plans[0].name.toLowerCase()} за {rub(plans[0].month)} в&nbsp;месяц.</p>
           <ul class="gm-menu" aria-label="Главное меню">
-            <li class="boot" style="--b:340ms"><a class="is-sel" href="#baza" data-lead={trial.title} data-block="16_hero"><kbd>A</kbd><b>Новая игра</b><span>Демо-доступ за 1 ₽</span><Icon name="chev1" /></a></li>
+            <li class="boot" style="--b:340ms"><a class="is-sel" href="#baza" data-lead="Заявка с сайта" data-block="16_hero"><kbd>A</kbd><b>Новая игра</b><span>Оставить заявку</span><Icon name="chev1" /></a></li>
             <li class="boot" style="--b:400ms"><a href="#klassy"><kbd>B</kbd><b>Выбор класса</b><span>3 тарифа от {num(plans[0].month)} ₽</span><Icon name="chev1" /></a></li>
             <li class="boot" style="--b:460ms"><a href="#baza"><kbd>C</kbd><b>Карта</b><span>{site.address.short}</span><Icon name="chev1" /></a></li>
           </ul>
@@ -122,7 +122,7 @@ const initials = (n: string) => n.split(' ').map((w) => w[0]).join('');
           </div>
           <div><dt>Будни</dt><dd><b>{site.hours[0].time}</b></dd><small>{site.hours[1].days}: {site.hours[1].time}</small></div>
           <div><dt>Парковка</dt><dd><b>50</b> мест</dd><small>Бесплатная, под видеонаблюдением</small></div>
-          <div><dt>Вступительный взнос</dt><dd><b>0</b> ₽</dd><small>Платите только за тариф</small></div>
+          <div><dt>{plans[0].name}</dt><dd><b>{dayRate}</b> ₽ в день</dd><small>{rub(plans[0].month)} в месяц</small></div>
         </dl>
       </div>
     </section>
@@ -165,7 +165,7 @@ const initials = (n: string) => n.split(' ').map((w) => w[0]).join('');
         <div class="gm-head" data-m>
           <p class="gm-tag">Абонементы</p>
           <h2 id="gm-cls-h" class="gm-h2">Выбери класс</h2>
-          <p class="gm-head-p">Три класса без вступительного взноса. Полосы посчитаны по часам доступа, зонам и перкам каждого тарифа.</p>
+          <p class="gm-head-p">Три класса, от {dayRate}&nbsp;₽ в&nbsp;день. Полосы посчитаны по часам доступа, зонам и перкам каждого тарифа.</p>
         </div>
         <div class="gm-cls">
           {classes.map((c) => (
@@ -210,18 +210,18 @@ const initials = (n: string) => n.split(' ').map((w) => w[0]).join('');
           ))}
         </div>
 
-        <!-- Демо -->
+        <!-- Стартовый уровень: дневная карта -->
         <div class="gm-demo hud" data-m>
           <div class="demo-l">
-            <p class="gm-tag">Для новых гостей</p>
-            <h3>Демо-доступ за <span>1&nbsp;₽</span></h3>
-            <p>{trial.text}</p>
-            <ul class="demo-terms">{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-            <a class="gm-btn" href="#baza" data-lead={trial.title} data-block="16_demo">Начать демо<Icon name="chev" /></a>
+            <p class="gm-tag">Стартовый класс</p>
+            <h3>{plans[0].name}: <span>{dayRate}&nbsp;₽</span> в день</h3>
+            <p>{rub(plans[0].month)} в месяц: тренажёрный зал и кардиозона {plans[0].hours}.</p>
+            <ul class="demo-terms">{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+            <a class="gm-btn" href="#baza" data-lead="Заявка с сайта" data-block="16_day">Оставить заявку<Icon name="chev" /></a>
           </div>
           <div class="demo-r" aria-hidden="true">
             <span class="demo-ring"></span>
-            <span class="demo-num">1<small>₽</small></span>
+            <span class="demo-num" data-day-rate={dayRate}>{dayRate}<small>₽</small></span>
             <span class="demo-cap">Уровень 1 · один день</span>
           </div>
         </div>
@@ -312,13 +312,13 @@ const initials = (n: string) => n.split(' ').map((w) => w[0]).join('');
             <div><dt>Связь</dt><dd><a href={site.phone.href}>{site.phone.display}</a></dd></div>
           </dl>
           <p class="fn-links">
-            <a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a>
+            <a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a>
             <a href={telegramLink('site_16')} target="_blank" rel="noopener"><Icon name="tg" />Telegram</a>
             <a href={site.maps.yandex} target="_blank" rel="noopener"><Icon name="pin" />Маршрут</a>
           </p>
         </div>
         <div class="fn-r">
-          <LeadForm id="gm" block="16_final" title="Демо-доступ за 1 ₽" button="Начать за 1 ₽" />
+          <LeadForm id="gm" block="16_final" />
         </div>
       </div>
     </section>
@@ -327,7 +327,7 @@ const initials = (n: string) => n.split(' ').map((w) => w[0]).join('');
       <div class="gm-w">
         <div class="gm-foot-top">
           <a class="gm-logo gm-logo-l" href="/concepts/16/">URBAN210<Icon name="chev" /></a>
-          <p class="gm-foot-cta">Продолжение в зале. <a href="#baza" data-lead={trial.title} data-block="16_footer">Демо-доступ за 1 ₽<Icon name="chev1" /></a></p>
+          <p class="gm-foot-cta">Продолжение в зале. <a href="#baza" data-lead="Заявка с сайта" data-block="16_footer">Оставить заявку<Icon name="chev1" /></a></p>
         </div>
         <div class="gm-foot-cols">
           <div><p class="gm-tag">Клуб</p><p>{site.address.locality}, {site.address.street}<br />{site.district}</p><p>{site.hours.map((h) => <>{`${h.days}: ${h.time}`}<br /></>)}</p></div>
@@ -405,10 +405,11 @@ const initials = (n: string) => n.split(' ').map((w) => w[0]).join('');
   };
   const ach: Record<string, [string, string]> = {
     lokacii: ['Исследователь', 'Зал, кардио, групповые и SPA в одном клубе'],
-    klassy: ['Без вступительного взноса', 'Платите только за выбранный класс'],
+    klassy: ['Свободный выбор', 'Месяц или год, дневная карта или полный доступ'],
     otzyvy: ['Народное признание', `${document.querySelector('.gm-score b')?.textContent || ''} из 5, больше 2000 отзывов`],
   };
-  setTimeout(() => toast('start', 'Первый визит', 'Демо-доступ за 1 ₽ уже ждёт'), 1200);
+  const dayRate = document.querySelector<HTMLElement>('[data-day-rate]')?.dataset.dayRate;
+  setTimeout(() => toast('start', 'Первый визит', `Дневная карта от ${dayRate} ₽ в день`), 1200);
   if ('IntersectionObserver' in window) {
     const so = new IntersectionObserver((es) => es.forEach((e) => {
       if (!e.isIntersecting) return;

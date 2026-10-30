@@ -1,8 +1,6 @@
 ---
-// Кнопка заявки: открывает форму в окне. Без JS ведёт к форме внизу страницы.
-import Icon from './Icon.astro';
-interface Props { goal?: string; block?: string; variant?: 'dark' | 'light'; wide?: boolean; class?: string }
-const { goal = 'Пробный день за 1 ₽', block = '', variant, wide, class: cls } = Astro.props;
-const classes = ['btn', variant && `btn-${variant}`, wide && 'btn-wide', cls].filter(Boolean).join(' ');
+// Кнопка заявки: открывает форму в окне с нужной целью. Без JS ведёт к блоку заявки.
+interface Props { goal?: string; block?: string; variant?: 'org' | 'ink' | 'wht' | 'ghost'; class?: string }
+const { goal = 'Заявка с сайта', block = '', variant = 'org', class: cls } = Astro.props;
 ---
-<a class={classes} href="#zayavka" data-lead={goal} data-block={block}><slot /><Icon name="chev" class="chev" /></a>
+<a class:list={['f5-pill', `f5-pill-${variant}`, cls]} href="#zayavka" data-lead={goal} data-block={block}><slot /></a>

@@ -15,7 +15,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos } from '../../../data/content';
 
 const CYR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -42,8 +42,8 @@ const group = zones.find((z) => z.id === 'group')!;
 const spa = zones.find((z) => z.id === 'spa')!;
 const tradein = promos.find((p) => p.slug === 'trade-in')!;
 const friend = promos.find((p) => p.slug === '1-plus-1')!;
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
 const roman = ['I', 'II', 'III', 'IV'];
+const dayRate = perDay(plans[0].month, 30);
 const personalLine = `${personal.pack} тренировок, ${rub(personal.price)}`;
 const mast = 'URBAN210'.split('');
 const year = new Date().getFullYear();
@@ -62,10 +62,10 @@ const bars: { x: number; w: number }[] = [];
 
 const contents = [
   { n: '04', href: '#zony', t: 'Зоны клуба', s: 'Зал, кардио, групповые, SPA' },
-  { n: '12', href: '#abonementy', t: 'Абонементы', s: 'Три карты и день за 1 ₽' },
+  { n: '12', href: '#abonementy', t: 'Абонементы', s: `Три карты, от ${dayRate} ₽ в день` },
   { n: '18', href: '#komanda', t: 'Команда', s: 'Тренеры клуба' },
   { n: '22', href: '#golosa', t: 'Голоса', s: 'Отзывы гостей' },
-  { n: '26', href: '#zapis', t: 'Запись', s: 'Пробный день и адрес' },
+  { n: '26', href: '#zapis', t: 'Запись', s: 'Заявка и адрес' },
 ];
 const planMeta = [
   { p: day, tag: 'Утро и день' },
@@ -88,7 +88,7 @@ const planMeta = [
           <a href="#zony">Зоны</a><a href="#abonementy">Абонементы</a><a href="#komanda">Команда</a><a href="#golosa">Отзывы</a><a href="#zapis">Контакты</a>
         </nav>
         <a class="cv-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="cv-btn cv-btn-s" href="#zapis" data-lead={trial.title} data-block="17_bar">Пробный день · 1 ₽</a>
+        <a class="cv-btn cv-btn-s" href="#zapis" data-lead="Заявка с сайта" data-block="17_bar">Оставить заявку</a>
       </div>
     </header>
 
@@ -103,11 +103,11 @@ const planMeta = [
             <p class="cv-issue">Выпуск № 210 <span>Осень {year}</span></p>
             <div class="cv-top-r">
               <a class="cv-tel" href={site.phone.href}>{site.phone.display}</a>
-              <a class="cv-btn cv-btn-s" href="#zapis" data-lead={trial.title} data-block="17_header">Пробный день · 1 ₽</a>
+              <a class="cv-btn cv-btn-s" href="#zapis" data-lead="Заявка с сайта" data-block="17_header">Оставить заявку</a>
             </div>
           </div>
           <p class="cv-dateline" aria-hidden="true">
-            <span>Хабаровск</span><span class="d-only">Железнодорожный район</span><span class="d-only">Зал · Кардио · Групповые · SPA</span><span>Цена номера 1 ₽</span>
+            <span>Хабаровск</span><span class="d-only">Железнодорожный район</span><span class="d-only">Зал · Кардио · Групповые · SPA</span><span>Цена дня {dayRate} ₽</span>
           </p>
           <p class="cv-mast" aria-hidden="true">
             {mast.map((ch, i) => <span class="cv-mast-l"><span style={`--i:${i}`}>{ch}</span></span>)}<span class="cv-mast-l cv-mast-chev"><span style="--i:8"><Icon name="chev" /></span></span>
@@ -117,7 +117,7 @@ const planMeta = [
         <div class="cv-w cv-cover-grid">
           <div class="cv-hl">
             <p class="cv-kick">Главная тема номера</p>
-            <h1 id="cv-h1" class="cv-h1"><span class="sr">Фитнес-клуб Urban210 в Хабаровске. </span>Первый день <em>за&nbsp;1&nbsp;₽</em></h1>
+            <h1 id="cv-h1" class="cv-h1"><span class="sr">Фитнес-клуб Urban210 в Хабаровске. </span>Каждый день <em>от&nbsp;{dayRate}&nbsp;₽</em></h1>
           </div>
 
           <figure class="cv-cover-ph">
@@ -128,10 +128,10 @@ const planMeta = [
           </figure>
 
           <div class="cv-hb">
-            <p class="cv-dek">{trial.text}</p>
+            <p class="cv-dek">{day.name} за {rub(day.month)} в месяц: тренажёрный зал и кардиозона {day.hours}. Это около {dayRate}&nbsp;₽ в&nbsp;день.</p>
             <div class="cv-cta">
-              <a class="cv-btn" href="#zapis" data-lead={trial.title} data-block="17_hero">Записаться <Icon name="chev" /></a>
-              <a class="cv-link" href="#abonementy">Абонементы от {rub(day.month)}</a>
+              <a class="cv-btn" href="#abonementy" data-block="17_hero">Выбрать карту <Icon name="chev" /></a>
+              <a class="cv-link" href="#zapis" data-lead="Заявка с сайта" data-block="17_hero">Оставить заявку</a>
             </div>
             <p class="cv-line cv-line-l"><b>1300 м²</b><span>{site.facts.machines} {site.facts.brands}, {site.facts.freeWeights}</span></p>
           </div>
@@ -169,8 +169,8 @@ const planMeta = [
               <p class="cv-letter-lead">Клуб, в котором есть место. Тренажёрам, дорожкам, тишине после работы.</p>
               <div class="cv-letter-txt">
                 <p class="cv-drop">Urban210 стоит на {site.address.short}, в Железнодорожном районе Хабаровска. Это {site.facts.area}: {site.facts.machines} {site.facts.brands}, {site.facts.freeWeights}, {site.facts.groupHall}, финская сауна и хаммам.</p>
-                <p>По будням открываемся в 06:30 и работаем до 23:30, в выходные с 07:30 до 22:30. Вступительного взноса нет, у входа бесплатная парковка на 50 мест.</p>
-                <p>Начать проще всего с одного дня: он стоит 1 ₽, и за него можно увидеть клуб целиком.</p>
+                <p>По будням открываемся в 06:30 и работаем до 23:30, в выходные с 07:30 до 22:30. У входа бесплатная парковка на 50 мест.</p>
+                <p>Начать проще всего с дневной карты: {rub(day.month)} в месяц, около {dayRate} ₽ в день.</p>
               </div>
               <p class="cv-sign">Редакция Urban210</p>
             </div>
@@ -257,7 +257,7 @@ const planMeta = [
           <div class="cv-folio"><span>URBAN210</span><span>Абонементы</span><span>12</span></div>
           <div class="cv-pr-head">
             <h2 id="cv-pr-h" class="cv-h2 cv-h2-xl" data-rise>Абонементы <em>сезона</em></h2>
-            <p class="cv-pr-note" data-rise>Цены за месяц и за год. Вступительного взноса нет, регистрация и браслет входят в стоимость.</p>
+            <p class="cv-pr-note" data-rise>Цены за месяц и за год. Дневная карта выходит около {dayRate}&nbsp;₽ в&nbsp;день.</p>
           </div>
           <div class="cv-plans">
             {planMeta.map(({ p, tag }, i) => (
@@ -277,15 +277,15 @@ const planMeta = [
           </div>
         </div>
 
-        <div class="cv-gift" id="probnyj">
+        <div class="cv-gift" id="dnevnaya">
           <div class="cv-w cv-gift-grid">
-            <p class="cv-gift-n" data-rise aria-hidden="true">1<span>₽</span></p>
+            <p class="cv-gift-n" data-rise aria-hidden="true">{dayRate}<span>₽</span></p>
             <div class="cv-gift-txt" data-rise>
-              <p class="cv-kick">Подарок номера</p>
-              <h3>{trial.title}</h3>
-              <p>{trialPromo.text}</p>
-              <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-              <a class="cv-btn cv-btn-i" href="#zapis" data-lead={trial.title} data-block="17_gift">{trialPromo.cta} <Icon name="chev" /></a>
+              <p class="cv-kick">Цена номера</p>
+              <h3>{day.name}: {dayRate}&nbsp;₽ в&nbsp;день</h3>
+              <p>{rub(day.month)} в месяц. Тренажёрный зал и кардиозона {day.hours}, без вечерних часов.</p>
+              <ul>{day.features.map((t) => <li>{t}</li>)}</ul>
+              <a class="cv-btn cv-btn-i" href="#zapis" data-lead="Заявка с сайта" data-block="17_day">Оставить заявку <Icon name="chev" /></a>
             </div>
           </div>
         </div>
@@ -364,17 +364,17 @@ const planMeta = [
           <div class="cv-folio"><span>URBAN210</span><span>Запись</span><span>26</span></div>
           <div class="cv-join-grid">
             <div class="cv-join-l">
-              <h2 id="cv-j-h" class="cv-h2 cv-h2-xl" data-rise>Приходите <em>на&nbsp;один день</em></h2>
-              <p class="cv-join-lead" data-rise>Оставьте имя и телефон. Администратор перезвонит, подберёт время и встретит вас в клубе.</p>
+              <h2 id="cv-j-h" class="cv-h2 cv-h2-xl" data-rise>Приходите <em>в&nbsp;клуб</em></h2>
+              <p class="cv-join-lead" data-rise>Оставьте имя и телефон. Администратор перезвонит, поможет выбрать карту и встретит вас в клубе.</p>
               <dl class="cv-join-dl" data-rise>
                 <div><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}<br /><a href={site.maps.yandex} target="_blank" rel="noopener">Открыть на карте</a></dd></div>
                 <div><dt>Часы</dt><dd>{site.hours.map((h) => <>{`${h.days} ${h.time}`}<br /></>)}</dd></div>
-                <div><dt>Телефон</dt><dd><a href={site.phone.href}>{site.phone.display}</a><br /><a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a> · <a href={telegramLink('concept17')} target="_blank" rel="noopener">Telegram</a></dd></div>
+                <div><dt>Телефон</dt><dd><a href={site.phone.href}>{site.phone.display}</a><br /><a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a> · <a href={telegramLink('concept17')} target="_blank" rel="noopener">Telegram</a></dd></div>
                 <div><dt>Парковка</dt><dd>{site.parking}</dd></div>
               </dl>
             </div>
             <div class="cv-join-form" data-rise>
-              <LeadForm id="cv-form" block="17_final" title="Запись на пробный день" />
+              <LeadForm id="cv-form" block="17_final" />
             </div>
           </div>
         </div>

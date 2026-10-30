@@ -23,7 +23,7 @@ const faq = [
 ---
 <Layout title="Тренажёрный зал в Хабаровске, Железнодорожный район" description={`Тренажёрный зал Urban210: ${site.facts.area}, ${site.facts.machines} ${site.facts.brands}, свободные веса, кардиозона с Technogym Skillrun, октагон. Без очередей, с 6:30 до 23:30, бесплатная парковка.`} image="/og.jpg">
   <PageHero title="Тренажёрный зал в Хабаровске" lead={`${site.facts.area[0].toUpperCase() + site.facts.area.slice(1)}, ${site.facts.machines} ${site.facts.brands}, свободные веса и кардиозона. Тренируйтесь без очередей с 6:30 до 23:30.`} crumbs={[{ href: '/zal/', label: 'Тренажёрный зал' }]} image="/images/zal.jpg" alt="Тренажёрный зал Urban210 с панорамными окнами">
-    <Cta block="zal_hero">Пробный день за 1 ₽</Cta>
+    <Cta block="zal_hero">Оставить заявку</Cta>
   </PageHero>
   <section class="sec" style="padding-top:0" data-block="zal_zones" aria-label="Что внутри">
     <div class="wrap stack">
@@ -36,5 +36,5 @@ const faq = [
     </div>
   </section>
   <Faq items={faq} title="Вопросы о зале" />
-  <Final title="Посмотрите зал вживую за 1 ₽" block="final_zal" />
+  <Final title="Посмотрите зал вживую" block="final_zal" />
 </Layout>

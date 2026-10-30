@@ -3,7 +3,7 @@ import '../styles/global.css';
 import Logo from '../components/Logo.astro';
 import Icon from '../components/Icon.astro';
 import LeadDialog from '../components/LeadDialog.astro';
-import { site, nav, SITE_URL, whatsappLink, telegramLink } from '../data/site';
+import { site, nav, SITE_URL, messengerLinks } from '../data/site';
 import { plans } from '../data/pricing';
 
 interface Props {
@@ -21,15 +21,17 @@ const path = Astro.url.pathname;
 const canonical = SITE_URL + path;
 const fullTitle = path === '/' ? title : `${title} | Urban210`;
 const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const messengers = messengerLinks();
+const year = new Date().getFullYear();
 
 const YM_ID = import.meta.env.PUBLIC_YM_ID || '108422317';
 const CT_ID = import.meta.env.PUBLIC_CALLTOUCH_ID || '';
 const CT_SITE = import.meta.env.PUBLIC_CALLTOUCH_SITE_ID || '';
 
-// schema.org: клуб как ExerciseGym. Только факты из src/data/site.ts.
+// schema.org: клуб как HealthClub и SportsActivityLocation. Только факты из src/data/site.ts.
 const gym = {
   '@context': 'https://schema.org',
-  '@type': ['ExerciseGym', 'LocalBusiness'],
+  '@type': ['HealthClub', 'SportsActivityLocation'],
   '@id': SITE_URL + '/#club',
   name: site.fullName,
   url: SITE_URL + '/',
@@ -37,6 +39,8 @@ const gym = {
   telephone: site.phone.href.replace('tel:', ''),
   email: site.email,
   priceRange: `${plans[0].month}–${plans[2].month} ₽ в месяц`,
+  currenciesAccepted: 'RUB',
+  areaServed: `${site.city}, ${site.district}`,
   address: {
     '@type': 'PostalAddress',
     streetAddress: site.address.street,
@@ -47,7 +51,7 @@ const gym = {
   },
   geo: { '@type': 'GeoCoordinates', latitude: site.address.lat, longitude: site.address.lng },
   openingHoursSpecification: site.hours.map((h) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: h.schema.days, opens: h.schema.opens, closes: h.schema.closes })),
-  sameAs: [site.instagram, site.maps.yandex, site.maps.twoGis],
+  ...(messengers.length ? { sameAs: messengers.map((m) => m.href) } : {}),
   parentOrganization: { '@type': 'Organization', name: site.legal.name, taxID: site.legal.inn },
 };
 ---
@@ -63,7 +67,7 @@ const gym = {
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="/icon.png" />
     <link rel="apple-touch-icon" href="/apple-icon.png" />
-    <meta name="theme-color" content="#0f0c0a" />
+    <meta name="theme-color" content="#000000" />
     <meta property="og:type" content={type} />
     <meta property="og:locale" content="ru_RU" />
     <meta property="og:site_name" content="Urban210" />
@@ -72,7 +76,7 @@ const gym = {
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL(image, SITE_URL).href} />
     <meta name="twitter:card" content="summary_large_image" />
-    {!bare && <link rel="preload" href="/fonts/unbounded-cyrillic-700.woff2" as="font" type="font/woff2" crossorigin />}
+    {!bare && <link rel="preload" href="/fonts/geologica-cyrillic.woff2" as="font" type="font/woff2" crossorigin />}
     <script type="application/ld+json" set:html={JSON.stringify(gym)} />
     {jsonld.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
     <script is:inline>
@@ -84,86 +88,83 @@ const gym = {
   <body data-ym={YM_ID} data-ct-site={CT_SITE}>
     <a class="skip" href="#main">К содержанию</a>
 
-    {!bare && <>
-    <header class="header" data-header>
-      <div class="wrap">
-        <Logo />
-        <nav class="nav" aria-label="Основное меню">
-          {nav.map((n) => <a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a>)}
-        </nav>
-        <a class="header-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="btn" href="#zayavka" data-lead="Пробный день за 1 ₽" data-block="header">Пробный день за 1 ₽<Icon name="chev" class="chev" /></a>
-        <button class="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="menu" data-burger><i></i><i></i></button>
-      </div>
-    </header>
-
-    <div class="menu" id="menu" data-menu>
-      <nav aria-label="Меню">
-        {[{ href: '/', label: 'Главная' }, ...nav, { href: '/blog/', label: 'Блог' }].map((n, i) => (
-          <a href={n.href} style={`transition-delay:${Math.min(i * 0.05, 0.4)}s`} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a>
-        ))}
-      </nav>
-      <div class="menu-foot">
-        <a href={site.phone.href}>{site.phone.display}</a>
-        <p class="muted">{site.address.short} · {site.hours.map((h) => `${h.days} ${h.time}`).join(', ')}</p>
-        <a class="btn" href="#zayavka" data-lead="Пробный день за 1 ₽" data-block="menu">Пробный день за 1 ₽<Icon name="chev" class="chev" /></a>
-      </div>
-    </div>
-    </>}
-
-    <main id="main">
-      <slot />
-    </main>
-
-    {!bare && <footer class="footer">
-      <div class="wrap">
-        <div class="footer-top">
-          <div>
-            <h2>Клуб</h2>
-            <p>{site.address.locality}, {site.address.street}<br />{site.district}</p>
-            <p class="muted" style="margin-top:10px">{site.hours.map((h) => `${h.days}: ${h.time}`).join(' · ')}</p>
-            <p style="margin-top:14px"><a href={site.phone.href} style="font-weight:650;font-size:1.15rem">{site.phone.display}</a></p>
+    {bare ? (
+      <main id="main"><slot /></main>
+    ) : (
+      <div class="f5">
+        <header class="f5-top" data-header>
+          <div class="f5-bar">
+            <Logo />
+            <nav class="f5-nav" aria-label="Основное меню">
+              {nav.map((n) => <a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a>)}
+            </nav>
+            <a class="f5-tel" href={site.phone.href}>{site.phone.display}</a>
+            <a class="f5-pill f5-pill-org f5-top-cta" href="/price/#cards">Выбрать карту</a>
+            <button class="f5-burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="menu" data-burger><i></i><i></i></button>
           </div>
-          <div>
-            <h2>Клуб и цены</h2>
-            <ul>
-              {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
-            </ul>
-          </div>
-          <div>
-            <h2>Ещё</h2>
-            <ul>
-              <li><a href="/personal/">Персональные тренировки</a></li>
-              <li><a href="/virtual-tour/">3D-тур по клубу</a></li>
-              <li><a href="/blog/">Блог</a></li>
-              <li><a href="/rules/">Правила клуба</a></li>
-              <li><a href="/oferta/">Договор-оферта</a></li>
-              <li><a href="/policy/">Политика конфиденциальности</a></li>
-            </ul>
-          </div>
-          <div>
-            <h2>На связи</h2>
-            <ul>
-              <li><a href={whatsappLink('Здравствуйте! Вопрос по клубу Urban210')} target="_blank" rel="noopener">WhatsApp</a></li>
-              <li><a href={telegramLink('site_footer')} target="_blank" rel="noopener">Telegram-бот</a></li>
-              <li><a href={site.instagram} target="_blank" rel="noopener">Instagram</a></li>
-              <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
-              <li><a href={site.maps.yandexReviews} target="_blank" rel="noopener">Отзывы на Яндекс Картах</a></li>
-            </ul>
+        </header>
+
+        <div class="f5-menu" id="menu" data-menu>
+          <nav aria-label="Меню">
+            {[{ href: '/', label: 'Главная' }, ...nav].map((n) => (
+              <a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a>
+            ))}
+          </nav>
+          <div class="f5-menu-foot">
+            <a class="f5-foot-tel" href={site.phone.href}>{site.phone.display}</a>
+            <p>{site.address.short} · {site.hours.map((h) => `${h.days} ${h.time}`).join(', ')}</p>
+            <a class="f5-pill f5-pill-org" href="#zayavka" data-lead="Заявка с сайта" data-block="menu">Оставить заявку</a>
           </div>
         </div>
-        <div class="footer-big" aria-hidden="true">URBAN<b>210</b><Icon name="chev" /></div>
-        <div class="footer-bottom">
-          <span>© {new Date().getFullYear()} {site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn}</span>
-          <span>Фитнес-клуб в Хабаровске</span>
-        </div>
+
+        <main id="main">
+          <slot />
+        </main>
+
+        <footer class="f5-foot">
+          <div class="f5-foot-card">
+            <div class="f5-foot-grid">
+              <div>
+                <Logo size="lg" />
+                <p class="f5-foot-addr">{site.address.locality}, {site.address.street}<br />{site.district}</p>
+                <a class="f5-foot-tel" href={site.phone.href}>{site.phone.display}</a>
+              </div>
+              <div>
+                <h2>Часы работы</h2>
+                <ul>{site.hours.map((h) => <li><b>{h.days}</b> {h.time}</li>)}</ul>
+                <p class="f5-foot-note">{site.parking}</p>
+              </div>
+              <div>
+                <h2>Клуб</h2>
+                <ul>
+                  {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+                  <li><a href="/personal/">Персональные тренировки</a></li>
+                  <li><a href="/virtual-tour/">3D-тур</a></li>
+                </ul>
+              </div>
+              <div>
+                <h2>На связи</h2>
+                <ul>
+                  <li><a href={site.phone.href}>{site.phone.display}</a></li>
+                  {messengers.map((m) => <li><a href={m.href} target="_blank" rel="noopener">{m.label}</a></li>)}
+                  <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+                  <li><a href="/contacts/">Как добраться</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="f5-foot-bottom">
+              <span>© {year} {site.legal.name}, ИНН {site.legal.inn}, ОГРН {site.legal.ogrn}</span>
+              <span><a href="/policy/">Политика конфиденциальности</a> · <a href="/oferta/">Договор-оферта</a> · <a href="/rules/">Правила клуба</a></span>
+            </div>
+          </div>
+        </footer>
       </div>
-    </footer>}
+    )}
 
     <div class="mbar" data-mbar>
       <a class="ic" href={site.phone.href} aria-label="Позвонить"><Icon name="phone" /></a>
-      <a class="ic" href={whatsappLink('Здравствуйте! Вопрос по клубу Urban210')} target="_blank" rel="noopener" aria-label="WhatsApp"><Icon name="wa" /></a>
-      <a class="btn" href="#zayavka" data-lead="Заявка с сайта" data-block="mobile_bar">Оставить заявку<Icon name="chev" class="chev" /></a>
+      {messengers.slice(0, 1).map((m) => <a class="ic" href={m.href} target="_blank" rel="noopener" aria-label={m.label}><Icon name={m.id === 'telegram' ? 'tg' : 'chev'} /></a>)}
+      <a class="btn" href="#zayavka" data-lead="Заявка с сайта" data-block="mobile_bar">Оставить заявку</a>
     </div>
 
     <LeadDialog />
@@ -188,6 +189,5 @@ const gym = {
         });
       </script>
     )}
-    <noscript><div><img src={`https://mc.yandex.ru/watch/${YM_ID}`} style="position:absolute;left:-9999px" alt="" /></div></noscript>
   </body>
 </html>

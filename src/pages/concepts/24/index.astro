@@ -14,7 +14,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, reasons, programs } from '../../../data/content';
 
 const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -26,8 +26,10 @@ const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
 const rating = site.rating.value.toString().replace('.', ',');
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const z = Object.fromEntries(zones.map((x) => [x.id, x]));
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
-const sidePromos = promos.filter((p) => p.slug !== '1-rubl');
+const dayRate = perDay(plans[0].month, 30);
+const sidePromos = promos.filter((p) => ['trade-in', '1-plus-1'].includes(p.slug));
+const shownReasons = reasons.filter((r) => !r.title.startsWith('Нет вступ'));
+const cascade = [...Array(4).fill(`${dayRate} ₽ в день`), `${plans[0].name}: ${rub(plans[0].month)} в месяц`];
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
 const steps = [0, 1, 2, 3, 4, 5];
 const groupTags = programs.flatMap((p) => p.items);
@@ -44,7 +46,7 @@ const groupTags = programs.flatMap((p) => p.items);
           <a href="#zony"><i>01</i>Зоны</a><a href="#tarify"><i>02</i>Тарифы</a><a href="#trenery"><i>03</i>Тренеры</a><a href="#otzyvy"><i>04</i>Отзывы</a><a href="#zayavka"><i>05</i>Адрес</a>
         </nav>
         <a class="wg-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="wg-btn wg-btn-s" href="#zayavka" data-lead={trial.title} data-block="24_header">День за 1 ₽<Icon name="chev" /></a>
+        <a class="wg-btn wg-btn-s" href="#zayavka" data-lead="Заявка с сайта" data-block="24_header">Оставить заявку<Icon name="chev" /></a>
       </div>
     </header>
 
@@ -57,7 +59,7 @@ const groupTags = programs.flatMap((p) => p.items);
         <h1 id="wg-h1" class="wg-h1">
           <span class="a">Сила</span>
           <span class="b"><i>в</i>наборе</span>
-          <span class="wg-sr">: первый день в Urban210 за 1 ₽</span>
+          <span class="wg-sr">: Urban210 от {dayRate} ₽ в день</span>
         </h1>
 
         <div class="wg-art" aria-hidden="true">
@@ -74,7 +76,7 @@ const groupTags = programs.flatMap((p) => p.items);
           </figure>
           <span class="wg-plate wg-plate-k" data-p style="--x:50px;--d:160ms"></span>
           <div class="wg-step wg-step-hero">
-            {steps.map((i) => <span style={`--i:${i}`}>1₽</span>)}
+            {steps.map((i) => <span style={`--i:${i}`}>{dayRate}₽</span>)}
           </div>
           <span class="wg-reg wg-reg-1"></span>
           <span class="wg-reg wg-reg-2"></span>
@@ -83,29 +85,29 @@ const groupTags = programs.flatMap((p) => p.items);
             <li><i>Пн–Пт</i>06:30–23:30</li>
             <li><i>Сб–Вс</i>07:30–22:30</li>
             <li><i>Яндекс</i>{rating} · {site.rating.count}</li>
-            <li><i>Взнос</i>0 ₽</li>
+            <li><i>День</i>от {dayRate} ₽</li>
           </ul>
         </div>
 
         <div class="wg-offer">
-          <p class="wg-lead">Первый день в Urban210 за&nbsp;1&nbsp;₽. Зал {site.facts.area}, {site.facts.machines} {site.facts.brands}, групповые и SPA. Вступительного взноса нет.</p>
+          <p class="wg-lead">Urban210 от&nbsp;{dayRate}&nbsp;₽ в&nbsp;день по дневной карте. Зал {site.facts.area}, {site.facts.machines} {site.facts.brands}, групповые и SPA.</p>
           <div class="wg-cta">
-            <a class="wg-btn" href="#zayavka" data-lead={trial.title} data-block="24_hero">Записаться за 1 ₽<Icon name="chev" /></a>
-            <a class="wg-link" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+            <a class="wg-btn" href="#tarify" data-block="24_hero">Выбрать карту<Icon name="chev" /></a>
+            <a class="wg-link" href="#zayavka" data-lead="Заявка с сайта" data-block="24_hero">Оставить заявку</a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Повтор со сдвигом: без взноса -->
+    <!-- Повтор со сдвигом: цена дня -->
     <section class="wg-sec wg-why" aria-labelledby="wg-why-h" data-m>
       <div class="wg-w">
         <h2 id="wg-why-h" class="wg-sr">Почему Urban210</h2>
         <div class="wg-cascade" aria-hidden="true">
-          {['Без взноса', 'Без взноса', 'Без взноса', 'Без взноса', 'Без взноса'].map((t, i) => <p style={`--i:${i}`}>{t}</p>)}
+          {cascade.map((t, i) => <p style={`--i:${i}`}>{t}</p>)}
         </div>
         <ol class="wg-reasons">
-          {reasons.map((r, i) => (
+          {shownReasons.map((r, i) => (
             <li data-p style={`--y:30px;--d:${i * 80}ms`}>
               <span class="wg-n">{String(i + 1).padStart(2, '0')}</span>
               <h3>{r.title}</h3>
@@ -175,7 +177,7 @@ const groupTags = programs.flatMap((p) => p.items);
     <section class="wg-sec wg-price" id="tarify" aria-labelledby="wg-price-h">
       <div class="wg-w">
         <header class="wg-shead" data-m>
-          <p class="wg-mono">02 / тарифы · вступительного взноса нет</p>
+          <p class="wg-mono">02 / тарифы · от {dayRate} ₽ в день</p>
           <h2 id="wg-price-h" class="wg-h2" data-p style="--x:-30px"><span>Три</span> <span class="o">тарифа</span></h2>
         </header>
         <div class="wg-plans" data-m>
@@ -199,15 +201,15 @@ const groupTags = programs.flatMap((p) => p.items);
 
         <div class="wg-try" data-m>
           <div class="wg-step wg-step-try" aria-hidden="true">
-            {steps.map((i) => <span style={`--i:${i}`}>1₽</span>)}
+            {steps.map((i) => <span style={`--i:${i}`}>{dayRate}₽</span>)}
           </div>
           <span class="wg-try-plate" data-p style="--x:-60px" aria-hidden="true"></span>
           <div class="wg-try-tx" data-p style="--y:30px;--d:180ms">
-            <p class="wg-mono">Для новых гостей</p>
-            <h3>Пробный день за 1 ₽</h3>
-            <p>{trial.text}</p>
-            <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-            <a class="wg-btn" href="#zayavka" data-lead={trial.title} data-block="24_trial">{trialPromo.cta}<Icon name="chev" /></a>
+            <p class="wg-mono">{plans[0].name}</p>
+            <h3>{dayRate}&nbsp;₽ в&nbsp;день</h3>
+            <p>{rub(plans[0].month)} в месяц. Тренажёрный зал и кардиозона {plans[0].hours}.</p>
+            <ul>{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+            <a class="wg-btn" href="#zayavka" data-lead="Заявка с сайта" data-block="24_day">Оставить заявку<Icon name="chev" /></a>
           </div>
         </div>
 
@@ -282,12 +284,12 @@ const groupTags = programs.flatMap((p) => p.items);
     <!-- Заявка -->
     <section class="wg-final" id="zayavka" aria-labelledby="wg-final-h" data-m>
       <div class="wg-step wg-step-fin" aria-hidden="true">
-        {steps.map((i) => <span style={`--i:${i}`}>1₽</span>)}
+        {steps.map((i) => <span style={`--i:${i}`}>{dayRate}₽</span>)}
       </div>
       <div class="wg-w wg-final-in">
         <div class="wg-final-tx">
           <p class="wg-mono">05 / заявка</p>
-          <h2 id="wg-final-h" class="wg-h2"><span>Начни</span> <span>набор</span> <span class="w">за 1 ₽</span></h2>
+          <h2 id="wg-final-h" class="wg-h2"><span>Начни</span> <span>набор</span> <span class="w">сегодня</span></h2>
           <dl class="wg-facts">
             <div><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}<br />{site.district}</dd></div>
             <div><dt>Часы</dt><dd>{site.hours.map((h) => <>{`${h.days} ${h.time}`}<br /></>)}</dd></div>
@@ -470,7 +472,7 @@ const groupTags = programs.flatMap((p) => p.items);
   .wg-sub { position: absolute; left: 6%; top: 42%; width: 50%; aspect-ratio: 4 / 3; transform: rotate(-3deg); }
   .wg-plate-k { right: -2%; bottom: 30%; width: 44%; height: 9px; background: var(--ink); transform: rotate(-4deg); }
   .wg-por { position: absolute; right: -4%; top: 0; width: 58%; aspect-ratio: 600 / 900; transform: rotate(3deg); }
-  .wg-step-hero { left: -1%; bottom: 0; font-size: 34vw; z-index: 3; }
+  .wg-step-hero { left: -1%; bottom: 0; font-size: 22vw; z-index: 3; }
   .wg-reg { position: absolute; width: 26px; height: 26px; z-index: 4; }
   .wg-reg::before, .wg-reg::after { content: ''; position: absolute; background: var(--ink); }
   .wg-reg::before { left: 50%; top: 0; bottom: 0; width: 1px; }
@@ -490,7 +492,7 @@ const groupTags = programs.flatMap((p) => p.items);
   @media (min-width: 700px) and (max-width: 999px) {
     .wg-art { height: 100vw; }
     .wg-por { width: 54%; }
-    .wg-step-hero { font-size: 30vw; }
+    .wg-step-hero { font-size: 19vw; }
   }
 
   @media (min-width: 1000px) {
@@ -506,7 +508,7 @@ const groupTags = programs.flatMap((p) => p.items);
     .wg-sub { left: 37%; top: 66%; width: 22%; transform: rotate(-4deg); }
     .wg-por { right: 4%; left: auto; top: 7%; width: 31%; transform: rotate(4deg); }
     .wg-plate-k { right: -3%; bottom: 52%; width: 40%; height: 14px; }
-    .wg-step-hero { left: auto; right: 9%; bottom: 3%; font-size: clamp(12rem, 22vw, 21rem); }
+    .wg-step-hero { left: auto; right: 9%; bottom: 3%; font-size: clamp(8rem, 14vw, 13.5rem); }
     .wg-reg-1 { left: 31%; top: 12%; }
     .wg-reg-2 { right: 1%; bottom: 4%; }
     .wg-vert { display: block; position: absolute; z-index: 4; right: -10px; top: 9%; writing-mode: vertical-rl; font-family: var(--fm); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; }
@@ -515,7 +517,7 @@ const groupTags = programs.flatMap((p) => p.items);
     .wg-lead { font-size: 1.12rem; }
   }
 
-  /* Каскад «Без взноса» */
+  /* Каскад «цена дня» */
   .wg-sec { position: relative; padding-block: clamp(64px, 8vw, 116px); }
   .wg-why { padding-top: clamp(48px, 6vw, 90px); overflow: clip; }
   .wg-cascade { margin-bottom: clamp(40px, 6vw, 80px); }
@@ -531,7 +533,7 @@ const groupTags = programs.flatMap((p) => p.items);
   .wg-reasons h3 { font-weight: 850; font-size: 1.6rem; line-height: 1; letter-spacing: -0.04em; margin: 0; }
   .wg-reasons p { grid-column: 2; font-size: 1rem; line-height: 1.5; color: var(--muted); max-width: 40ch; }
   @media (min-width: 900px) {
-    .wg-reasons { grid-template-columns: repeat(4, 1fr); border-bottom: 2px solid var(--ink); }
+    .wg-reasons { grid-template-columns: repeat(3, 1fr); border-bottom: 2px solid var(--ink); }
     .wg-reasons li { grid-template-columns: 1fr; border-bottom: 0; padding: 24px 24px 36px 0; align-content: start; gap: 14px; }
     .wg-reasons li + li { border-left: 1px solid var(--ink); padding-left: 24px; }
     .wg-reasons li:nth-child(2) { margin-top: 48px; border-top: 1px solid var(--ink); }
@@ -629,17 +631,17 @@ const groupTags = programs.flatMap((p) => p.items);
   }
 
   .wg-try { position: relative; margin-top: clamp(64px, 9vw, 130px); display: grid; min-height: 420px; align-items: end; }
-  .wg-step-try { left: -0.04em; top: 0; font-size: 62vw; z-index: 1; }
+  .wg-step-try { left: -0.04em; top: 0; font-size: 40vw; z-index: 1; }
   .wg-step-try span:last-child { color: var(--cy); }
   .wg-try-plate { position: absolute; z-index: 1; right: -6%; top: 26%; width: 70%; height: 34%; background: var(--or); mix-blend-mode: multiply; }
-  .wg-try-tx { position: relative; z-index: 2; margin-top: 52vw; background: var(--paper); box-shadow: inset 0 0 0 2px var(--ink); padding: 26px 22px; display: grid; gap: 14px; justify-items: start; }
+  .wg-try-tx { position: relative; z-index: 2; margin-top: 36vw; background: var(--paper); box-shadow: inset 0 0 0 2px var(--ink); padding: 26px 22px; display: grid; gap: 14px; justify-items: start; }
   .wg-try-tx h3 { font-weight: 900; font-size: clamp(2.4rem, 10vw, 4.2rem); line-height: 0.9; letter-spacing: -0.06em; margin: 0; }
   .wg-try-tx p { font-size: 1.04rem; line-height: 1.5; max-width: 44ch; }
   .wg-try-tx ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
   .wg-try-tx li { font-family: var(--fm); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid var(--ink); padding: 4px 8px; }
   @media (min-width: 1000px) {
     .wg-try { grid-template-columns: repeat(12, 1fr); min-height: 520px; align-items: center; }
-    .wg-step-try { font-size: 31rem; left: 2%; top: 50%; translate: 0 -50%; }
+    .wg-step-try { font-size: 20rem; left: 2%; top: 50%; translate: 0 -50%; }
     .wg-try-plate { left: 30%; right: auto; top: 18%; width: 40%; height: 64%; }
     .wg-try-tx { grid-column: 7 / 13; margin-top: 0; padding: 40px 40px 38px; }
   }
@@ -716,7 +718,7 @@ const groupTags = programs.flatMap((p) => p.items);
 
   /* Заявка */
   .wg-final { position: relative; background: var(--or); color: var(--ink); overflow: clip; padding: clamp(80px, 10vw, 140px) 0 clamp(80px, 10vw, 140px); border-top: 2px solid var(--ink); isolation: isolate; }
-  .wg-step-fin { right: -0.1em; bottom: -0.12em; font-size: 70vw; z-index: 0; }
+  .wg-step-fin { right: -0.1em; bottom: -0.12em; font-size: 45vw; z-index: 0; }
   .wg-step-fin span { -webkit-text-stroke-color: rgb(20 18 16 / 0.5); }
   .wg-step-fin span:last-child { color: var(--cy); }
   .wg-final-in { position: relative; z-index: 1; display: grid; gap: 48px; }
@@ -736,7 +738,7 @@ const groupTags = programs.flatMap((p) => p.items);
   @media (min-width: 1000px) {
     .wg-final-in { grid-template-columns: 1fr 480px; gap: 72px; align-items: center; }
     .wg-form { justify-self: end; }
-    .wg-step-fin { font-size: 40rem; right: 26%; bottom: -0.16em; }
+    .wg-step-fin { font-size: 26rem; right: 26%; bottom: -0.16em; }
   }
 
   /* Подвал */

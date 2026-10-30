@@ -9,13 +9,18 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink, nav } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, programs, promos } from '../../../data/content';
 
 const zal = zones.find((z) => z.id === 'zal')!;
 const cardio = zones.find((z) => z.id === 'cardio')!;
 const group = zones.find((z) => z.id === 'group')!;
 const spa = zones.find((z) => z.id === 'spa')!;
+
+// Главный оффер: дневная карта помесячно, 1 300 ₽ / 30 дней = 43 ₽ в день
+const dayPlan = plans[0];
+const dayPrice = perDay(dayPlan.month, 30);
+const lead = { goal: 'Заявка на карту', title: 'Подобрать карту', button: 'Отправить заявку' };
 
 const fan = [
   { src: '/images/community/6.jpg', alt: 'Пара после тренировки в Urban210' },
@@ -32,7 +37,7 @@ people.forEach((p, i) => {
   if (reviews[i]) feed.push({ kind: 'review', r: reviews[i], tone: tones[i % tones.length] });
 });
 
-const marquee = ['Пробный день за 1 ₽', 'Вступительного взноса нет', 'Парковка на 50 мест бесплатно', 'Без очередей к тренажёрам', 'С 6:30 по будням'];
+const marquee = [`Безлимит от ${dayPrice} ₽ в день`, 'Парковка на 50 мест бесплатно', 'Без очередей к тренажёрам', 'С 6:30 по будням', 'Сауна и хаммам'];
 const tradeIn = promos.find((p) => p.slug === 'trade-in')!;
 const onePlus = promos.find((p) => p.slug === '1-plus-1')!;
 const year = new Date().getFullYear();
@@ -43,10 +48,10 @@ const year = new Date().getFullYear();
       <div class="f5-bar">
         <a class="f5-logo" href="/concepts/05/" aria-label="Urban210, на главную">URBAN<b>210</b><span class="f5-logo-chev"><Icon name="chev" /></span></a>
         <nav class="f5-nav" aria-label="Меню">
-          <a href="#zones">Клуб</a><a href="#price">Тарифы</a><a href="#people">Отзывы</a><a href="#team">Тренеры</a><a href="#lead">Контакты</a>
+          <a href="#price">Тарифы</a><a href="#zones">Клуб</a><a href="#people">Отзывы</a><a href="#team">Тренеры</a><a href="#lead">Контакты</a>
         </nav>
         <a class="f5-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="f5-pill f5-pill-org f5-top-cta" href="#lead" data-lead={trial.title} data-block="05_header">1 ₽ первый день</a>
+        <a class="f5-pill f5-pill-org f5-top-cta" href="#price">Выбрать карту</a>
       </div>
     </header>
 
@@ -55,11 +60,11 @@ const year = new Date().getFullYear();
       <div class="f5-hero-card">
         <div class="f5-hero-text">
           <p class="f5-status" data-status><i></i><span>Хабаровск, {site.district}</span></p>
-          <h1 id="f5-h">Приходите знакомиться. Первый день <span class="f5-price-chip">за&nbsp;1&nbsp;₽</span></h1>
-          <p class="f5-hero-lead">{site.facts.machines} {site.facts.brands}, групповые программы, сауна и хаммам. Вступительного взноса нет.</p>
+          <h1 id="f5-h">Безлимит в зал <span class="f5-price-chip">от&nbsp;{dayPrice}&nbsp;₽</span> в день</h1>
+          <p class="f5-hero-lead">{dayPlan.name}: {rub(dayPlan.month)} в месяц. {site.facts.machines} {site.facts.brands}, групповые программы, сауна и хаммам.</p>
           <div class="f5-cta">
-            <a class="f5-go" href="#lead" data-lead={trial.title} data-block="05_hero"><span>Записаться за 1 ₽</span><i><Icon name="chev" /></i></a>
-            <a class="f5-pill f5-pill-ghost" href="#price">Смотреть тарифы</a>
+            <a class="f5-go" href="#price"><span>Выбрать карту</span><i><Icon name="chev" /></i></a>
+            <a class="f5-pill f5-pill-ghost" href="#lead" data-lead={lead.goal} data-block="05_hero">Оставить заявку</a>
           </div>
         </div>
         <div class="f5-fan" aria-label="Гости клуба">
@@ -68,7 +73,7 @@ const year = new Date().getFullYear();
               <Image src={img(f.src)} alt={f.alt} widths={[280, 420]} sizes="(min-width: 980px) 260px, 42vw" loading={i === 1 ? 'eager' : 'lazy'} fetchpriority={i === 1 ? 'high' : undefined} format="webp" quality={50} />
             </figure>
           ))}
-          <span class="f5-stk f5-stk-cob" data-spin><b>0 ₽</b>вступи&shy;тельный взнос</span>
+          <span class="f5-stk f5-stk-cob" data-spin><b>{dayPrice} ₽</b>в день</span>
           <a class="f5-stk-rate" href={site.maps.yandexReviews} target="_blank" rel="noopener"><Icon name="star" /><b>4,7</b><span>{site.rating.text}</span></a>
         </div>
         <div class="f5-marquee" aria-hidden="true">
@@ -82,6 +87,71 @@ const year = new Date().getFullYear();
         <li><Icon name="pin" /><div><b>{site.address.short}</b><span>{site.district}</span></div></li>
         <li><span class="f5-p">P</span><div><b>Парковка на 50 мест</b><span>бесплатно, под видеонаблюдением</span></div></li>
       </ul>
+    </section>
+
+
+
+    <!-- Тарифы -->
+    <section class="f5-sec" id="price" aria-labelledby="f5-p">
+      <div class="f5-prices">
+        <div class="f5-head f5-head-row">
+          <div>
+            <h2 id="f5-p">Выберите карту</h2>
+            <p>Безлимит в своё время: от {dayPrice} ₽ в день. Оставьте заявку, и администратор оформит карту.</p>
+          </div>
+          <fieldset class="f5-period">
+            <legend class="sr">Период оплаты</legend>
+            <input type="radio" name="f5-period" id="f5-m" checked /><label for="f5-m">Месяц</label>
+            <input type="radio" name="f5-period" id="f5-y" /><label for="f5-y">Год <em>выгоднее</em></label>
+          </fieldset>
+        </div>
+        <div class="f5-plans">
+          {plans.map((p) => (
+            <article class={`f5-plan ${p.id === 'full' ? 'is-hot' : ''}`} data-rise>
+              <div class="f5-plan-top">
+                <h3>{p.name}</h3>
+                {p.tag && <span class="f5-plan-tag">{p.tag}</span>}
+              </div>
+              <p class="f5-plan-hours">{p.hours}</p>
+              <p class="f5-plan-price">
+                <span class="pm"><b>{rub(p.month)}</b><small>в месяц</small></span>
+                <span class="py"><b>{rub(p.year)}</b><small>за 12 месяцев, {rub(Math.round(p.year / 12))} в месяц</small></span>
+              </p>
+              <p class="f5-plan-day"><span class="pm">≈ {perDay(p.month, 30)} ₽ в день</span><span class="py">≈ {perDay(p.year, 365)} ₽ в день</span></p>
+              <ul class="f5-plan-list">
+                {p.features.map((f) => <li><Icon name="check" />{f}</li>)}
+                {p.excluded?.map((f) => <li class="no"><Icon name="minus" />{f}</li>)}
+              </ul>
+              <a class={`f5-pill ${p.id === 'full' ? 'f5-pill-wht' : 'f5-pill-ink'} f5-plan-btn`} href="#lead" data-lead={`Тариф «${p.name}»`} data-block="05_price">Выбрать тариф</a>
+            </article>
+          ))}
+        </div>
+        <ul class="f5-promos">
+          <li><b>{tradeIn.title}</b><span>{tradeIn.short}. {tradeIn.terms[0]}.</span></li>
+          <li><b>{onePlus.title}</b><span>{onePlus.short}.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Заявка -->
+    <section class="f5-sec" id="lead" aria-labelledby="f5-l">
+      <div class="f5-lead">
+        <div class="f5-lead-txt">
+          <h2 id="f5-l">Оставьте заявку, подберём карту</h2>
+          <ol class="f5-steps">
+            <li><b>Оставьте заявку</b><span>Имя и телефон, больше ничего</span></li>
+            <li><b>Администратор перезвонит</b><span>В часы работы клуба, расскажет про тарифы</span></li>
+            <li><b>Приходите в клуб</b><span>Оформим карту и покажем зал</span></li>
+          </ol>
+          <div class="f5-lead-alt">
+            <a class="f5-pill f5-pill-wht" href={whatsappLink('Здравствуйте! Хочу выбрать карту в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a>
+            <a class="f5-pill f5-pill-wht" href={telegramLink('concept05')} target="_blank" rel="noopener"><Icon name="tg" />Telegram</a>
+          </div>
+        </div>
+        <div class="f5-form">
+          <LeadForm block="05_final" id="f5" goal={lead.goal} title={lead.title} button={lead.button} />
+        </div>
+      </div>
     </section>
 
     <!-- Зоны клуба -->
@@ -129,56 +199,6 @@ const year = new Date().getFullYear();
             <Image src={img('/images/group-strength.jpg')} alt="Силовая групповая тренировка с гантелями" widths={[300, 500]} sizes="(min-width: 980px) 18vw, 44vw" format="avif" quality={45} />
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- Тарифы -->
-    <section class="f5-sec" id="price" aria-labelledby="f5-p">
-      <div class="f5-prices">
-        <div class="f5-head f5-head-row">
-          <div>
-            <h2 id="f5-p">Тарифы без вступительного взноса</h2>
-            <p>Платите только за тренировки. Регистрация и браслет уже в цене.</p>
-          </div>
-          <fieldset class="f5-period">
-            <legend class="sr">Период оплаты</legend>
-            <input type="radio" name="f5-period" id="f5-m" checked /><label for="f5-m">Месяц</label>
-            <input type="radio" name="f5-period" id="f5-y" /><label for="f5-y">Год <em>выгоднее</em></label>
-          </fieldset>
-        </div>
-        <div class="f5-plans">
-          {plans.map((p) => (
-            <article class={`f5-plan ${p.id === 'full' ? 'is-hot' : ''}`} data-rise>
-              <div class="f5-plan-top">
-                <h3>{p.name}</h3>
-                {p.tag && <span class="f5-plan-tag">{p.tag}</span>}
-              </div>
-              <p class="f5-plan-hours">{p.hours}</p>
-              <p class="f5-plan-price">
-                <span class="pm"><b>{rub(p.month)}</b><small>в месяц</small></span>
-                <span class="py"><b>{rub(p.year)}</b><small>за 12 месяцев, {rub(Math.round(p.year / 12))} в месяц</small></span>
-              </p>
-              <p class="f5-plan-day"><span class="pm">≈ {perDay(p.month, 30)} ₽ в день</span><span class="py">≈ {perDay(p.year, 365)} ₽ в день</span></p>
-              <ul class="f5-plan-list">
-                {p.features.map((f) => <li><Icon name="check" />{f}</li>)}
-                {p.excluded?.map((f) => <li class="no"><Icon name="minus" />{f}</li>)}
-              </ul>
-              <a class={`f5-pill ${p.id === 'full' ? 'f5-pill-wht' : 'f5-pill-ink'} f5-plan-btn`} href="#lead" data-lead={`Тариф «${p.name}»`} data-block="05_price">Выбрать тариф</a>
-            </article>
-          ))}
-        </div>
-        <div class="f5-trial" data-rise>
-          <div class="f5-trial-num" aria-hidden="true">1<span>₽</span></div>
-          <div class="f5-trial-txt">
-            <h3>{trial.title}</h3>
-            <p>{trial.text} Нужен только паспорт.</p>
-          </div>
-          <a class="f5-go f5-go-wht" href="#lead" data-lead={trial.title} data-block="05_trial"><span>Хочу попробовать</span><i><Icon name="chev" /></i></a>
-        </div>
-        <ul class="f5-promos">
-          <li><b>{tradeIn.title}</b><span>{tradeIn.short}. {tradeIn.terms[0]}.</span></li>
-          <li><b>{onePlus.title}</b><span>{onePlus.short}.</span></li>
-        </ul>
       </div>
     </section>
 
@@ -234,26 +254,6 @@ const year = new Date().getFullYear();
       </div>
     </section>
 
-    <!-- Заявка -->
-    <section class="f5-sec" id="lead" aria-labelledby="f5-l">
-      <div class="f5-lead">
-        <div class="f5-lead-txt">
-          <h2 id="f5-l">Первый день за&nbsp;1&nbsp;₽. Остальное решите сами</h2>
-          <ol class="f5-steps">
-            <li><b>Оставьте заявку</b><span>Имя и телефон, больше ничего</span></li>
-            <li><b>Администратор перезвонит</b><span>В часы работы клуба, подберёт время</span></li>
-            <li><b>Приходите с паспортом</b><span>Полный доступ в зал на целый день</span></li>
-          </ol>
-          <div class="f5-lead-alt">
-            <a class="f5-pill f5-pill-wht" href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener"><Icon name="wa" />WhatsApp</a>
-            <a class="f5-pill f5-pill-wht" href={telegramLink('concept05')} target="_blank" rel="noopener"><Icon name="tg" />Telegram</a>
-          </div>
-        </div>
-        <div class="f5-form">
-          <LeadForm block="05_final" id="f5" />
-        </div>
-      </div>
-    </section>
 
     <footer class="f5-foot">
       <div class="f5-foot-card">
@@ -535,12 +535,6 @@ const year = new Date().getFullYear();
   .f5-prices:has(#f5-y:checked) .py { display: block; }
   .f5-prices:has(#f5-y:checked) .pm { display: none; }
 
-  .f5-trial { position: relative; overflow: hidden; display: grid; gap: 18px; margin-top: 12px; padding: 28px; border-radius: var(--r-l); background: var(--cob); color: #fff; }
-  .f5-trial-num { font-size: 7.5rem; font-weight: 800; letter-spacing: -0.07em; line-height: 0.8; color: var(--org); }
-  .f5-trial-num span { font-size: 0.5em; margin-left: 0.06em; color: #fff; }
-  .f5-trial h3 { font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.5rem); }
-  .f5-trial p { margin-top: 10px; color: rgb(255 255 255 / 0.85); max-width: 46ch; }
-  .f5-trial .f5-go { width: fit-content; }
   .f5-promos { list-style: none; display: grid; gap: 12px; margin-top: 12px; }
   .f5-promos li { display: grid; gap: 4px; padding: 20px 24px; border-radius: var(--r-m); box-shadow: inset 0 0 0 2px var(--bg); }
   .f5-promos b { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; }
@@ -550,9 +544,7 @@ const year = new Date().getFullYear();
     .f5-plan { padding: 36px; }
     .f5-plan.is-hot { transform: translateY(-12px); }
     .f5-plan.is-hot:hover { transform: translateY(-18px); }
-    .f5-trial { grid-template-columns: auto 1fr auto; align-items: center; gap: 40px; padding: 36px 48px; }
-    .f5-trial-num { font-size: 9rem; }
-    .f5-promos { grid-template-columns: 1fr 1fr; }
+        .f5-promos { grid-template-columns: 1fr 1fr; }
   }
 
   /* ---------- Люди ---------- */

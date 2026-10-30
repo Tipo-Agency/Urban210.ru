@@ -13,7 +13,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, programs } from '../../../data/content';
 
 const cyr = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -22,6 +22,7 @@ const ff = (name: string, url: string, range: string) => `@font-face{font-family
 const fonts = [ff('Sofia f', sofCyr, cyr), ff('Sofia f', sofLat, lat), ff('Jost f', jostCyr, cyr), ff('Jost f', jostLat, lat)].join('');
 
 const num = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+const dayRate = perDay(plans[0].month, 30);
 const rating = site.rating.value.toString().replace('.', ',');
 const cardio = zones.find((z) => z.id === 'cardio')!;
 const group = zones.find((z) => z.id === 'group')!;
@@ -41,7 +42,7 @@ const scenes: Scene[] = [
   {
     id: 'resepshen', t: '06:35', place: 'Ресепшен',
     title: ['Пара минут,', 'и браслет на руке'],
-    lines: ['Паспорт, анкета, ключ от шкафчика.', 'Вступительного взноса нет, браслет входит в абонемент.'],
+    lines: ['Паспорт, анкета, ключ от шкафчика.', 'Администратор поможет выбрать карту.'],
     image: '/images/reception.jpg', alt: 'Стойка ресепшена Urban210', pos: '50% 55%',
   },
   {
@@ -85,7 +86,7 @@ const minutes = scenes.map((s) => { const [h, m] = s.t.split(':').map(Number); r
         <a href="#den">Первый день</a><a href="#tarify">Тарифы</a><a href="#trenery">Тренеры</a><a href="#otzyvy">Отзывы</a>
       </nav>
       <a class="hd-tel" href={site.phone.href}>{site.phone.display}</a>
-      <a class="bt bt-acc bt-s" href="#zayavka" data-lead={trial.title} data-block="20_header">День за 1 ₽<Icon name="chev" class="chev" /></a>
+      <a class="bt bt-acc bt-s" href="#zayavka" data-lead="Заявка с сайта" data-block="20_header">Оставить заявку<Icon name="chev" class="chev" /></a>
     </header>
 
     <main>
@@ -115,7 +116,7 @@ const minutes = scenes.map((s) => { const [h, m] = s.t.split(':').map(Number); r
               <div class="sc-lines">{s.lines.map((l) => <p class="rv"><span>{l}</span></p>)}</div>
               {i === 0 && (
                 <div class="sc-cta rv"><span>
-                  <a class="bt bt-acc" href="#zayavka" data-lead={trial.title} data-block="20_hero">Пробный день за 1 ₽<Icon name="chev" class="chev" /></a>
+                  <a class="bt bt-acc" href="#tarify" data-block="20_hero">Выбрать карту<Icon name="chev" class="chev" /></a>
                   <span class="scroll-hint">Листайте, покажем весь день</span>
                 </span></div>
               )}
@@ -139,7 +140,7 @@ const minutes = scenes.map((s) => { const [h, m] = s.t.split(':').map(Number); r
         </div>
       </section>
 
-      <!-- Финальная сцена: пробный день и форма -->
+      <!-- Финальная сцена: цена дня и форма -->
       <section class="end" id="zayavka" aria-labelledby="end-h">
         <div class="end-bg" aria-hidden="true">
           <Image src={img('/images/brand/promo-bg-1.webp')} alt="" widths={[800, 1400]} sizes="100vw" format="avif" quality={45} />
@@ -148,10 +149,10 @@ const minutes = scenes.map((s) => { const [h, m] = s.t.split(':').map(Number); r
           <div class="end-txt">
             <p class="end-t"><i></i>23:30 · клуб закрывается</p>
             <h2 id="end-h">Завтра в 6:30 может начаться ваш первый день</h2>
-            <p class="end-p">{trial.text} Оставьте номер, администратор перезвонит и подберёт время.</p>
-            <p class="end-price">1<small>₽</small></p>
+            <p class="end-p">{plans[0].name}: {rub(plans[0].month)} в месяц, {plans[0].hours}. Это {dayRate}&nbsp;₽ в&nbsp;день. Оставьте номер, администратор перезвонит и поможет выбрать карту.</p>
+            <p class="end-price">{dayRate}<small>₽</small></p>
           </div>
-          <LeadForm id="f20a" block="20_end" title="Пробный день за 1 ₽" />
+          <LeadForm id="f20a" block="20_end" />
         </div>
       </section>
 
@@ -159,7 +160,7 @@ const minutes = scenes.map((s) => { const [h, m] = s.t.split(':').map(Number); r
       <section class="sct wr" id="tarify" aria-labelledby="pr-h">
         <div class="sct-head">
           <h2 id="pr-h">После первого дня</h2>
-          <p>Три тарифа, без вступительного взноса. Дальше от {num(plans[0].month)} ₽ в месяц.</p>
+          <p>Три тарифа от {rub(plans[0].month)} в месяц, это от {dayRate} ₽ в день.</p>
         </div>
         <div class="per" role="radiogroup" aria-label="Период оплаты" data-per>
           <button type="button" role="radio" aria-checked="true" data-v="m">Месяц</button>
@@ -225,10 +226,10 @@ const minutes = scenes.map((s) => { const [h, m] = s.t.split(':').map(Number); r
       <section class="sct wr ask" aria-labelledby="ask-h">
         <div class="ask-txt">
           <h2 id="ask-h">Остались вопросы? Перезвоним</h2>
-          <p>Расскажем про тарифы, расписание групповых и SPA. Или напишите в <a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a> и <a href={telegramLink('site_20')} target="_blank" rel="noopener">Telegram</a>.</p>
+          <p>Расскажем про тарифы, расписание групповых и SPA. Или напишите в <a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a> и <a href={telegramLink('site_20')} target="_blank" rel="noopener">Telegram</a>.</p>
           <p class="ask-tel"><a href={site.phone.href}>{site.phone.display}</a></p>
         </div>
-        <LeadForm id="f20b" block="20_final" title="Записаться на пробный день" />
+        <LeadForm id="f20b" block="20_final" />
       </section>
     </main>
 

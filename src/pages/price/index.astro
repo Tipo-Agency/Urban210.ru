@@ -6,7 +6,7 @@ import Promos from '../../components/Promos.astro';
 import Faq from '../../components/Faq.astro';
 import Final from '../../components/Final.astro';
 import Cta from '../../components/Cta.astro';
-import { plans, rub, trial } from '../../data/pricing';
+import { plans, perDay, rub } from '../../data/pricing';
 import { faqGeneral, personalText, comparison } from '../../data/content';
 
 const faq = [
@@ -19,9 +19,9 @@ const faq = [
 ];
 const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) };
 ---
-<Layout title="Цены на абонементы в фитнес-клуб, Хабаровск" description={`Абонемент в фитнес-клуб Urban210: от ${rub(plans[0].month)} в месяц, за год от ${rub(plans[0].year)}. Без вступительного взноса. Тренажёрный зал, групповые, сауна и хаммам. Пробный день за 1 ₽.`} jsonld={[faqLd]}>
-  <PageHero title="Цены на абонементы" lead={`Три тарифа, безлимит в выбранное время. Без вступительного взноса и скрытых платежей. Перед покупкой можно прийти на ${trial.title.toLowerCase()}.`} crumbs={[{ href: '/price/', label: 'Тарифы' }]}>
-    <Cta block="price_hero">Пробный день за 1 ₽</Cta>
+<Layout title="Цены на абонементы в фитнес-клуб, Хабаровск" description={`Абонемент в фитнес-клуб Urban210: от ${rub(plans[0].month)} в месяц, за год от ${rub(plans[0].year)}. От ${perDay(plans[0].month, 30)} ₽ в день. Тренажёрный зал, групповые, сауна и хаммам.`} jsonld={[faqLd]}>
+  <PageHero title="Цены на абонементы" lead={`Три тарифа, безлимит в выбранное время. Самый доступный выходит от ${perDay(plans[0].month, 30)} ₽ в день.`} crumbs={[{ href: '/price/', label: 'Тарифы' }]}>
+    <Cta block="price_hero">Оставить заявку</Cta>
   </PageHero>
   <section class="sec on-paper" data-block="price" aria-label="Тарифы">
     <div class="wrap"><Plans block="price_page" /></div>

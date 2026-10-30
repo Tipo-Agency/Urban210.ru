@@ -8,11 +8,13 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
-import { reviews, trainers, zones, promos, faqGeneral } from '../../../data/content';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
+import { reviews, trainers, zones, promos } from '../../../data/content';
 import coach from '../../../assets/images/trainers/lazko-cutout.webp';
 
 const stripe = Array.from({ length: 14 });
+const fromDay = perDay(plans[0].month, 30);
+const offers = promos.filter((p) => ['trade-in', '1-plus-1'].includes(p.slug));
 ---
 <Layout title="Концепция C «Импульс»" description="Концепция дизайна сайта Urban210: яркая, на шевроне бренда." noindex bare>
   <div class="cc">
@@ -25,26 +27,26 @@ const stripe = Array.from({ length: 14 });
     <section class="cc-hero" aria-labelledby="cc-h">
       <div class="cc-hero-text">
         <h1 id="cc-h">Включайся<br />в 6:30</h1>
-        <p>Фитнес-клуб в Железнодорожном районе. {site.facts.machines} {site.facts.brands}, групповые, сауна и хаммам. Без вступительного взноса.</p>
+        <p>Фитнес-клуб в Железнодорожном районе. {site.facts.machines} {site.facts.brands}, групповые, сауна и хаммам. Безлимит от {fromDay}&nbsp;₽ в день.</p>
         <div class="cc-cta">
-          <a class="cc-btn" href="#lead" data-lead={trial.title} data-block="c_hero">Пробный день за 1 ₽ <Icon name="chev" /></a>
-          <a class="cc-link" href="#price">от {rub(plans[0].month)} в месяц</a>
+          <a class="cc-btn" href="#price" data-block="c_hero">Выбрать карту <Icon name="chev" /></a>
+          <a class="cc-link" href="#lead" data-lead="Заявка с сайта" data-block="c_hero_lead">Оставить заявку</a>
         </div>
       </div>
       <div class="cc-hero-art" aria-hidden="true">
         <div class="cc-chevs"><Icon name="chev1" /><Icon name="chev1" /><Icon name="chev1" /></div>
         <Image class="cc-coach" src={coach} alt="" widths={[420, 700, 900]} sizes="(min-width: 980px) 40vw, 80vw" loading="eager" fetchpriority="high" format="webp" quality={60} />
-        <span class="cc-sticker"><b>1 ₽</b>первый<br />день</span>
+        <span class="cc-sticker"><b>{fromDay} ₽</b>в день<br />безлимит</span>
       </div>
     </section>
 
     <div class="cc-stripe" aria-hidden="true"><div>{stripe.map(() => <Icon name="chev" />)}</div></div>
 
     <section class="cc-facts" aria-label="Факты">
-      <div><b>0 ₽</b><span>вступительный взнос</span></div>
+      <div><b>1300</b><span>м² на двух этажах</span></div>
       <div><b>{site.rating.value.toString().replace('.', ',')}</b><span>Яндекс Карты, {site.rating.text}</span></div>
       <div><b>50</b><span>мест бесплатной парковки</span></div>
-      <div><b>{perDay(plans[0].month, 30)} ₽</b><span>в день за безлимит</span></div>
+      <div><b>{fromDay} ₽</b><span>в день за безлимит</span></div>
     </section>
 
     <section class="cc-sec" id="zones" aria-labelledby="cc-z">
@@ -85,7 +87,7 @@ const stripe = Array.from({ length: 14 });
     <section class="cc-sec" id="promo" aria-labelledby="cc-a">
       <h2 id="cc-a" class="cc-h2">Акции</h2>
       <div class="cc-promos">
-        {promos.map((p) => (
+        {offers.map((p) => (
           <a class="cc-promo" href={`/promo/${p.slug}/`}><h3>{p.title}</h3><p>{p.short}</p><Icon name="chev" /></a>
         ))}
       </div>
@@ -112,8 +114,8 @@ const stripe = Array.from({ length: 14 });
     <section class="cc-lead" id="lead" aria-labelledby="cc-l">
       <div>
         <h2 id="cc-l">Жми на старт</h2>
-        <p>{faqGeneral[0].a}</p>
-        <p class="cc-contact"><a href={site.phone.href}>{site.phone.display}</a> · <a href={whatsappLink('Здравствуйте! Хочу на пробный день')} target="_blank" rel="noopener">WhatsApp</a> · {site.address.short}</p>
+        <p>Оставьте телефон, администратор перезвонит, поможет выбрать карту и подберёт время. Тренер покажет тренажёры и технику, поможет составить первую программу.</p>
+        <p class="cc-contact"><a href={site.phone.href}>{site.phone.display}</a> · <a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a> · {site.address.short}</p>
       </div>
       <LeadForm block="c_final" id="c" />
     </section>
@@ -206,7 +208,7 @@ const stripe = Array.from({ length: 14 });
   .cc-note { margin-top: 24px; color: #cfc8c1; }
 
   .cc-promos { display: grid; gap: 14px; }
-  @media (min-width: 900px) { .cc-promos { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 900px) { .cc-promos { grid-template-columns: repeat(2, 1fr); } }
   .cc-promo { position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 220px; padding: 26px; background: var(--ink); color: #fff; text-decoration: none; overflow: hidden; transition: transform 0.4s var(--ease); }
   .cc-promo:first-child { background: var(--acc); color: var(--ink); }
   .cc-promo:hover { transform: translateY(-6px); }

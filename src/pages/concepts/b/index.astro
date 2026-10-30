@@ -8,7 +8,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, programs } from '../../../data/content';
 import poster from '../../../assets/images/hero.jpg';
 
@@ -19,13 +19,14 @@ const chapters = [
   { t: 'Выдох', s: 'Растяжка и пилатес в зале групповых, потом финская сауна, хаммам 40–50 °C и массажные кресла. Входят в «Всё включено».', i: '/images/stretching.jpg', href: '/spa/' },
 ];
 const quotes = reviews.map((r) => ({ q: r.text.split('. ')[0] + '.', n: r.name }));
+const fromDay = perDay(plans[0].month, 30);
 ---
 <Layout title="Концепция B «Кино»" description="Концепция дизайна сайта Urban210: тёмная, кинематографичная." noindex bare>
   <div class="cb">
     <header class="cb-top">
       <a class="cb-logo" href="/concepts/b/">URBAN<b>210</b></a>
       <nav aria-label="Меню"><a href="#ch">Клуб</a><a href="#price">Цены</a><a href="#team">Тренеры</a></nav>
-      <a class="cb-pill" href="#lead" data-lead={trial.title} data-block="b_header">Пробный день · 1 ₽</a>
+      <a class="cb-pill" href="#price" data-block="b_header">Выбрать карту</a>
     </header>
 
     <section class="cb-hero" aria-labelledby="cb-h">
@@ -37,8 +38,8 @@ const quotes = reviews.map((r) => ({ q: r.text.split('. ')[0] + '.', n: r.name }
         <p class="cb-kick">Хабаровск · {site.address.short}</p>
         <h1 id="cb-h">Сильнее<br /><em>с каждым</em> подходом</h1>
         <div class="cb-hero-row">
-          <p>{site.facts.area[0].toUpperCase() + site.facts.area.slice(1)}, {site.facts.machines}, сауна и хаммам. Без вступительного взноса.</p>
-          <a class="cb-btn" href="#lead" data-lead={trial.title} data-block="b_hero"><span>Прийти за 1 ₽</span><Icon name="chev" /></a>
+          <p>{site.facts.area[0].toUpperCase() + site.facts.area.slice(1)}, {site.facts.machines}, сауна и хаммам. От {fromDay} ₽ в день.</p>
+          <a class="cb-btn" href="#price" data-block="b_hero"><span>Выбрать карту</span><Icon name="chev" /></a>
         </div>
       </div>
       <a class="cb-scroll" href="#ch" aria-label="Листать дальше"><i></i></a>
@@ -106,9 +107,9 @@ const quotes = reviews.map((r) => ({ q: r.text.split('. ')[0] + '.', n: r.name }
       <div class="cb-lead-bg"><Image src={img('/images/reception.jpg')} alt="" widths={[640, 1280]} sizes="100vw" format="avif" quality={35} /></div>
       <div class="cb-lead-in">
         <div>
-          <h2 id="cb-l">Пробный день<br />за 1 ₽</h2>
-          <p>{trial.text}</p>
-          <p class="cb-contact"><a href={site.phone.href}>{site.phone.display}</a><a href={whatsappLink('Здравствуйте! Хочу на пробный день')} target="_blank" rel="noopener">WhatsApp</a></p>
+          <h2 id="cb-l">От {fromDay} ₽<br />в день</h2>
+          <p>{plans[0].name}: {rub(plans[0].month)} в месяц. Оставьте телефон, администратор перезвонит и поможет выбрать карту.</p>
+          <p class="cb-contact"><a href={site.phone.href}>{site.phone.display}</a><a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a></p>
         </div>
         <LeadForm block="b_final" id="b" />
       </div>

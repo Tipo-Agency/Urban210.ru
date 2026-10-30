@@ -1,37 +1,63 @@
 ---
+// Выбор карты: переключатель месяц/год и три тарифа. Каждая кнопка открывает заявку с названием тарифа.
+// Добавляет разметку Offer для тарифов.
 import Icon from './Icon.astro';
-import Cta from './Cta.astro';
-import { plans, perDay, rub, trial } from '../data/pricing';
-interface Props { block?: string }
-const { block = 'price' } = Astro.props;
+import { plans, perDay, rub } from '../data/pricing';
+import { promos } from '../data/content';
+import { SITE_URL } from '../data/site';
+interface Props { title?: string; text?: string; block?: string; promosShown?: boolean; headingLevel?: 'h1' | 'h2' }
+const { title = 'Выберите карту', text, block = 'price', promosShown = true } = Astro.props;
+const dayPrice = perDay(plans[0].month, 30);
+const extra = promos.filter((p) => p.slug !== '1-rubl');
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'OfferCatalog',
+  name: 'Абонементы фитнес-клуба Urban210',
+  itemListElement: plans.flatMap((p) => [
+    { '@type': 'Offer', name: `${p.name}, 1 месяц`, price: p.month, priceCurrency: 'RUB', url: SITE_URL + '/price/' },
+    { '@type': 'Offer', name: `${p.name}, 12 месяцев`, price: p.year, priceCurrency: 'RUB', url: SITE_URL + '/price/' },
+  ]),
+};
 ---
-<div class="trial on-accent" data-rise>
-  <p class="num">1 ₽</p>
-  <div>
-    <h3>{trial.title}</h3>
-    <p style="margin-top:8px;max-width:48ch">{trial.text}</p>
-  </div>
-  <Cta variant="dark" block={`${block}_trial`}>Записаться</Cta>
-</div>
-<div class="plans">
-  {plans.map((p) => (
-    <article class:list={['plan', p.id === 'all' && 'is-top']} data-rise>
-      <div class="plan-head">
-        <div>
-          <h3>{p.name}</h3>
-          <p class="plan-hours">{p.hours}</p>
-        </div>
-        {p.tag && <span class="plan-tag">{p.tag}</span>}
+<section class="f5-sec" id="cards" aria-labelledby={`${block}-plans-t`}>
+  <div class="f5-prices">
+    <div class="f5-head f5-head-row">
+      <div>
+        <h2 id={`${block}-plans-t`}>{title}</h2>
+        <p>{text ?? `Безлимит в своё время: от ${dayPrice} ₽ в день. Оставьте заявку, и администратор оформит карту.`}</p>
       </div>
-      <div class="plan-price">
-        <p class="num">{rub(p.month)} <small>в месяц</small></p>
-        <p class="plan-year">{rub(p.year)} за год, это {perDay(p.year, 365)} ₽ в день</p>
-      </div>
-      <ul>
-        {p.features.map((f) => <li><Icon name="check" />{f}</li>)}
-        {p.excluded?.map((f) => <li class="no"><Icon name="minus" />{f}</li>)}
+      <fieldset class="f5-period">
+        <legend class="sr">Период оплаты</legend>
+        <input type="radio" name="f5-period" id="f5-m" checked /><label for="f5-m">Месяц</label>
+        <input type="radio" name="f5-period" id="f5-y" /><label for="f5-y">Год <em>выгоднее</em></label>
+      </fieldset>
+    </div>
+    <div class="f5-plans">
+      {plans.map((p) => (
+        <article class={`f5-plan ${p.id === 'full' ? 'is-hot' : ''}`}>
+          <div class="f5-plan-top">
+            <h3>{p.name}</h3>
+            {p.tag && <span class="f5-plan-tag">{p.tag}</span>}
+          </div>
+          <p class="f5-plan-hours">{p.hours}</p>
+          <p class="f5-plan-price">
+            <span class="pm"><b>{rub(p.month)}</b><small>в месяц</small></span>
+            <span class="py"><b>{rub(p.year)}</b><small>за 12 месяцев, {rub(Math.round(p.year / 12))} в месяц</small></span>
+          </p>
+          <p class="f5-plan-day"><span class="pm">≈ {perDay(p.month, 30)} ₽ в день</span><span class="py">≈ {perDay(p.year, 365)} ₽ в день</span></p>
+          <ul class="f5-plan-list">
+            {p.features.map((f) => <li><Icon name="check" />{f}</li>)}
+            {p.excluded?.map((f) => <li class="no"><Icon name="minus" />{f}</li>)}
+          </ul>
+          <a class={`f5-pill ${p.id === 'full' ? 'f5-pill-wht' : 'f5-pill-ink'} f5-plan-btn`} href="#zayavka" data-lead={`Тариф «${p.name}»`} data-block={`${block}_${p.id}`}>Выбрать «{p.name}»</a>
+        </article>
+      ))}
+    </div>
+    {promosShown && extra.length > 0 && (
+      <ul class="f5-promos">
+        {extra.map((pr) => <li><b><a href={`/promo/${pr.slug}/`}>{pr.title}</a></b><span>{pr.short}.</span></li>)}
       </ul>
-      <Cta goal={p.name} block={`${block}_${p.id}`} variant={p.id === 'all' ? undefined : 'dark'} wide>Выбрать «{p.name}»</Cta>
-    </article>
-  ))}
-</div>
+    )}
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+</section>

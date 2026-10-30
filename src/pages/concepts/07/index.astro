@@ -12,8 +12,8 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, trial, personal } from '../../../data/pricing';
-import { reviews, trainers, zones, programs, promos, faqGeneral } from '../../../data/content';
+import { plans, perDay, personal } from '../../../data/pricing';
+import { reviews, trainers, zones, programs, faqGeneral } from '../../../data/content';
 import hall from '../../../assets/images/zal.jpg';
 
 // Числа с тонким пробелом между разрядами
@@ -44,6 +44,7 @@ const zoneRows = [
 
 // Матрица тарифов собрана из features и excluded в pricing.ts
 const [day, full, all] = plans;
+const fromDay = perDay(day.month, 30);
 const yes = '+';
 const no = '';
 const matrix: [string, string, string, string][] = [
@@ -61,10 +62,9 @@ const planCols = [day, full, all].map((p, i) => ({ p, i, cells: matrix.map((m) =
 
 const ticker = [
   'Пн–Пт 06:30–23:30', 'Сб–Вс 07:30–22:30', '4,7 на Яндекс Картах', '2000+ отзывов', 'Парковка на 50 мест',
-  'Вступительный взнос 0 ₽', 'Свободные веса до 60 кг', '60+ тренажёров', 'Хаммам 40–50 °C', 'Пробный день за 1 ₽',
+  'Без очередей к тренажёрам', 'Свободные веса до 60 кг', '60+ тренажёров', 'Хаммам 40–50 °C', `От ${fromDay} ₽ в день`,
 ];
 const rating = site.rating.value.toString().replace('.', ',');
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
 const freeze = faqGeneral.find((f) => f.q.startsWith('Можно ли заморозить'))!;
 ---
 <Layout title="Концепция 07 «Сетка»" description="Концепция дизайна сайта Urban210: швейцарская журнальная сетка." noindex bare>
@@ -79,7 +79,7 @@ const freeze = faqGeneral.find((f) => f.q.startsWith('Можно ли замор
           <a href="#zony"><span>01</span>Зоны</a><a href="#tarify"><span>02</span>Тарифы</a><a href="#trenery"><span>03</span>Тренеры</a><a href="#otzyvy"><span>04</span>Отзывы</a>
         </nav>
         <a class="sg-top-tel mono" href={site.phone.href}>{site.phone.display}</a>
-        <a class="sg-btn sg-btn-s" href="#zayavka" data-lead={trial.title} data-block="07_header">Пробный день&nbsp;1&nbsp;₽<Icon name="chev" /></a>
+        <a class="sg-btn sg-btn-s" href="#tarify" data-block="07_header">Выбрать карту<Icon name="chev" /></a>
       </div>
     </header>
 
@@ -95,15 +95,15 @@ const freeze = faqGeneral.find((f) => f.q.startsWith('Можно ли замор
           </div>
           <div class="g sg-hero-g">
             <h1 id="sg-h1" class="sg-h1">
-              <span class="r r1"><span class="m"><span>Первый</span> <span class="w2">день</span></span></span>
-              <span class="r r2"><span class="m">в&nbsp;зале</span></span>
-              <span class="r r3"><span class="m">за&nbsp;<em>1&nbsp;₽</em></span></span>
+              <span class="r r1"><span class="m"><span>Свой</span> <span class="w2">зал</span></span></span>
+              <span class="r r2"><span class="m">от&nbsp;<em>{fromDay}&nbsp;₽</em></span></span>
+              <span class="r r3"><span class="m">в&nbsp;день</span></span>
             </h1>
             <div class="sg-hero-sub">
-              <p>Больше 1300&nbsp;м², 60+ тренажёров, групповые программы и SPA. Абонемент от {num(day.month)}&nbsp;₽ в&nbsp;месяц, вступительного взноса нет.</p>
+              <p>Больше 1300&nbsp;м², 60+ тренажёров, групповые программы и SPA. {day.name}: {num(day.month)}&nbsp;₽ в&nbsp;месяц.</p>
               <div class="sg-cta">
-                <a class="sg-btn" href="#zayavka" data-lead={trial.title} data-block="07_hero">Записаться за 1 ₽<Icon name="chev" /></a>
-                <a class="sg-link mono" href="#tarify">Тарифы ↓</a>
+                <a class="sg-btn" href="#tarify" data-block="07_hero">Выбрать карту<Icon name="chev" /></a>
+                <a class="sg-link mono" href="#zayavka" data-lead="Заявка с сайта" data-block="07_hero_lead">Оставить заявку ↓</a>
               </div>
             </div>
           </div>
@@ -191,7 +191,7 @@ const freeze = faqGeneral.find((f) => f.q.startsWith('Можно ли замор
           <div class="g sg-head" data-in>
             <p class="sg-idx mono"><b>02</b>Тарифы</p>
             <h2 id="sg-p">Три тарифа. Все цены здесь</h2>
-            <p class="sg-head-n">Вступительного взноса нет. Заморозка: {freeze.a.split('.')[0].replace('Да, ', '')}.</p>
+            <p class="sg-head-n">Заморозка: {freeze.a.split('.')[0].replace('Да, ', '')}.</p>
           </div>
 
           <div class="sg-pt" data-in>
@@ -226,14 +226,14 @@ const freeze = faqGeneral.find((f) => f.q.startsWith('Можно ли замор
             ))}
           </div>
 
-          <!-- Пробный день -->
-          <div class="g sg-trial" data-in>
-            <p class="sg-trial-n" aria-hidden="true">1<span>₽</span></p>
-            <div class="sg-trial-t">
-              <p class="mono">2.4 / Пробный день</p>
-              <h3>Полный доступ в&nbsp;зал и&nbsp;к&nbsp;тренажёрам на&nbsp;один день.</h3>
-              <ul class="mono">{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-              <a class="sg-btn sg-btn-k" href="#zayavka" data-lead={trial.title} data-block="07_trial">Записаться за 1 ₽<Icon name="chev" /></a>
+          <!-- Цена дня -->
+          <div class="g sg-offer" data-in>
+            <p class="sg-offer-n" aria-hidden="true">{fromDay}<span>₽</span></p>
+            <div class="sg-offer-t">
+              <p class="mono">2.4 / {day.name}</p>
+              <h3>От {fromDay}&nbsp;₽ в&nbsp;день, {num(day.month)}&nbsp;₽ в&nbsp;месяц.</h3>
+              <ul class="mono">{day.features.map((t) => <li>{t}</li>)}</ul>
+              <a class="sg-btn sg-btn-k" href="#zayavka" data-lead="Заявка с сайта" data-block="07_offer">Оставить заявку<Icon name="chev" /></a>
             </div>
           </div>
         </div>
@@ -292,7 +292,7 @@ const freeze = faqGeneral.find((f) => f.q.startsWith('Можно ли замор
         <div class="sg-w">
           <div class="g sg-head" data-in>
             <p class="sg-idx mono"><b>05</b>Заявка</p>
-            <h2 id="sg-l">Приходите на пробный день</h2>
+            <h2 id="sg-l">Приходите знакомиться</h2>
           </div>
           <div class="g sg-lead-g">
             <ol class="sg-steps" data-in>
@@ -301,9 +301,9 @@ const freeze = faqGeneral.find((f) => f.q.startsWith('Можно ли замор
               <li><span class="mono">5.3</span>Приходите с паспортом, в спортивной форме и со сменной обувью.</li>
             </ol>
             <div class="sg-form" data-in>
-              <LeadForm block="07_final" id="sg" title="Пробный день за 1 ₽" />
+              <LeadForm block="07_final" id="sg" />
               <p class="sg-alt mono">
-                <a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a>
+                <a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a>
                 <a href={telegramLink('concept_07')} target="_blank" rel="noopener">Telegram</a>
               </p>
             </div>
@@ -665,21 +665,21 @@ const freeze = faqGeneral.find((f) => f.q.startsWith('Можно ли замор
     .sg-plan .cz { padding: 22px var(--p) 0; }
   }
 
-  /* Пробный день: оранжевая полоса с огромной единицей */
-  .sg-trial { margin-top: clamp(48px, 6vw, 96px); background: var(--sig); color: var(--ink); padding-block: 20px 26px; row-gap: 8px; overflow: hidden; }
-  .sg-trial-n { grid-column: 1 / -1; padding-inline: var(--p); margin: 0; font-size: clamp(14rem, 72vw, 34rem); font-weight: 760; line-height: 0.74; letter-spacing: -0.09em; display: flex; align-items: flex-start; }
-  .sg-trial-n span { font-size: 0.32em; letter-spacing: -0.02em; font-weight: 600; margin: 0.12em 0 0 0.22em; }
-  .sg-trial-t { grid-column: 1 / -1; padding-inline: var(--p); display: grid; gap: 18px; align-content: end; }
-  .sg-trial-t h3 { margin: 0; font-size: clamp(1.7rem, 1rem + 2vw, 2.8rem); font-weight: 650; line-height: 1; letter-spacing: -0.04em; max-width: 16ch; }
-  .sg-trial-t ul { list-style: none; border-top: 1px solid rgb(17 17 16 / 0.3); }
-  .sg-trial-t li { padding-block: 8px; border-bottom: 1px solid rgb(17 17 16 / 0.3); }
-  .sg-trial-t .sg-btn { justify-self: start; }
-  .sg-trial-t .sg-btn:hover { background: var(--paper); }
-  .sg-trial-t .sg-btn:hover :global(svg) { color: var(--sig); }
+  /* Цена дня: оранжевая полоса с огромной цифрой */
+  .sg-offer { margin-top: clamp(48px, 6vw, 96px); background: var(--sig); color: var(--ink); padding-block: 20px 26px; row-gap: 8px; overflow: hidden; }
+  .sg-offer-n { grid-column: 1 / -1; padding-inline: var(--p); margin: 0; font-size: clamp(9rem, 44vw, 26rem); font-weight: 760; line-height: 0.74; letter-spacing: -0.09em; display: flex; align-items: flex-start; }
+  .sg-offer-n span { font-size: 0.32em; letter-spacing: -0.02em; font-weight: 600; margin: 0.12em 0 0 0.22em; }
+  .sg-offer-t { grid-column: 1 / -1; padding-inline: var(--p); display: grid; gap: 18px; align-content: end; }
+  .sg-offer-t h3 { margin: 0; font-size: clamp(1.7rem, 1rem + 2vw, 2.8rem); font-weight: 650; line-height: 1; letter-spacing: -0.04em; max-width: 16ch; }
+  .sg-offer-t ul { list-style: none; border-top: 1px solid rgb(17 17 16 / 0.3); }
+  .sg-offer-t li { padding-block: 8px; border-bottom: 1px solid rgb(17 17 16 / 0.3); }
+  .sg-offer-t .sg-btn { justify-self: start; }
+  .sg-offer-t .sg-btn:hover { background: var(--paper); }
+  .sg-offer-t .sg-btn:hover :global(svg) { color: var(--sig); }
   @media (min-width: 900px) {
-    .sg-trial { padding-block: 28px 32px; }
-    .sg-trial-n { grid-column: 1 / span 6; }
-    .sg-trial-t { grid-column: 8 / span 5; }
+    .sg-offer { padding-block: 28px 32px; }
+    .sg-offer-n { grid-column: 1 / span 6; }
+    .sg-offer-t { grid-column: 8 / span 5; }
   }
 
   /* Тренеры */

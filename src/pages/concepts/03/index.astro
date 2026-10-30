@@ -11,10 +11,12 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, programs } from '../../../data/content';
 import heroImg from '../../../assets/images/hero.jpg';
 
+const dayCard = plans[0];
+const fromDay = perDay(dayCard.month, 30);
 const weekday = site.hours[0];
 const weekend = site.hours[1];
 const rating = site.rating.value.toString().replace('.', ',');
@@ -61,7 +63,7 @@ const ceiling = [
         <a href="#visit">Контакты</a>
       </nav>
       <a class="n3-tel" href={site.phone.href}>{site.phone.display}</a>
-      <a class="n3-btn n3-btn-sm" href="#visit" data-lead={trial.title} data-block="n3_header">Пробный день за 1 ₽</a>
+      <a class="n3-btn n3-btn-sm" href="#price" data-block="n3_header">Выбрать карту</a>
     </header>
 
     <!-- Первый экран -->
@@ -86,9 +88,9 @@ const ceiling = [
         <p class="n3-kick">Фитнес-клуб в Хабаровске</p>
         <h1 id="n3-h">Свет в зале<br />горит <em>до&nbsp;23:30</em></h1>
         <div class="n3-hero-row">
-          <p class="n3-hero-p">По будням с 06:30, в выходные до 22:30. Тренажёрный зал {site.facts.area}, групповые программы и SPA с хаммамом. Вступительного взноса нет.</p>
+          <p class="n3-hero-p">По будням с 06:30, в выходные до 22:30. Тренажёрный зал {site.facts.area}, групповые программы и SPA с хаммамом. Дневная карта от {fromDay}&nbsp;₽ в день.</p>
           <div class="n3-hero-cta">
-            <a class="n3-btn" href="#visit" data-lead={trial.title} data-block="n3_hero">Пробный день за 1 ₽<Icon name="chev" /></a>
+            <a class="n3-btn" href="#price" data-block="n3_hero">Выбрать карту<Icon name="chev" /></a>
             <a class="n3-ghost" href="#price">Членство от {rub(plans[0].month)}</a>
           </div>
         </div>
@@ -152,7 +154,7 @@ const ceiling = [
       <div class="n3-wrap">
         <div class="n3-head">
           <h2 id="n3-p">Членство</h2>
-          <p>Безлимит в выбранное время. Платите только за тариф: вход в клуб и браслет входят в стоимость.</p>
+          <p>Безлимит в выбранное время, при оплате за год дешевле.</p>
         </div>
         <div class="n3-plans">
           {plans.map((p) => (
@@ -173,12 +175,12 @@ const ceiling = [
           ))}
         </div>
 
-        <div class="n3-trial" data-rise>
-          <p class="n3-neon" aria-hidden="true">1<span>₽</span></p>
+        <div class="n3-offer" data-rise>
+          <p class="n3-neon" aria-hidden="true">{fromDay}<span>₽</span></p>
           <div>
-            <h3>{trial.title}</h3>
-            <p>{trial.text}</p>
-            <a class="n3-btn" href="#visit" data-lead={trial.title} data-block="n3_trial">Записаться<Icon name="chev" /></a>
+            <h3>От {fromDay}&nbsp;₽ в день</h3>
+            <p>{dayCard.name}: {rub(dayCard.month)} в месяц. Зал и кардиозона {dayCard.hours}.</p>
+            <a class="n3-btn" href="#visit" data-lead="Заявка с сайта" data-block="n3_offer">Оставить заявку<Icon name="chev" /></a>
           </div>
         </div>
       </div>
@@ -228,13 +230,13 @@ const ceiling = [
     <section class="n3-sec n3-visit" id="visit" aria-labelledby="n3-v">
       <div class="n3-wrap n3-visit-in">
         <div class="n3-visit-txt">
-          <h2 id="n3-v">Первый вечер <em>за&nbsp;1&nbsp;₽</em></h2>
+          <h2 id="n3-v">Приходите <em>вечером</em></h2>
           <p class="n3-visit-p">Оставьте телефон, администратор перезвонит и подберёт время. Покажем зал, раздевалки и SPA, тренер поможет с первой программой.</p>
           <dl class="n3-info">
             <div><dt>Адрес</dt><dd>{site.address.short}<br />{site.district}</dd></div>
             <div><dt>Часы</dt><dd>{weekday.days} {weekday.time}<br />{weekend.days} {weekend.time}</dd></div>
             <div><dt>Парковка</dt><dd>{site.parking}</dd></div>
-            <div><dt>Связь</dt><dd><a href={site.phone.href}>{site.phone.display}</a><br /><a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a> · <a href={telegramLink('n3_visit')} target="_blank" rel="noopener">Telegram</a></dd></div>
+            <div><dt>Связь</dt><dd><a href={site.phone.href}>{site.phone.display}</a><br /><a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a> · <a href={telegramLink('n3_visit')} target="_blank" rel="noopener">Telegram</a></dd></div>
           </dl>
         </div>
         <div class="n3-form">
@@ -491,15 +493,15 @@ const ceiling = [
   .n3-plan .n3-btn { margin-top: auto; }
   @media (min-width: 980px) { .n3-plans { grid-template-columns: repeat(3, 1fr); } }
 
-  .n3-trial { margin-top: 14px; display: grid; gap: 24px; align-items: center; padding: clamp(28px, 4vw, 56px); border-radius: 24px; background: radial-gradient(60% 120% at 15% 50%, rgb(var(--glow) / 0.16), transparent 70%), #070b13; box-shadow: inset 0 0 0 1px var(--line); overflow: hidden; }
-  .n3-trial h3 { font-size: clamp(2.2rem, 1.6rem + 2vw, 3.4rem); }
-  .n3-trial p:not(.n3-neon) { margin: 14px 0 28px; color: var(--mut); max-width: 44ch; }
+  .n3-offer { margin-top: 14px; display: grid; gap: 24px; align-items: center; padding: clamp(28px, 4vw, 56px); border-radius: 24px; background: radial-gradient(60% 120% at 15% 50%, rgb(var(--glow) / 0.16), transparent 70%), #070b13; box-shadow: inset 0 0 0 1px var(--line); overflow: hidden; }
+  .n3-offer h3 { font-size: clamp(2.2rem, 1.6rem + 2vw, 3.4rem); }
+  .n3-offer p:not(.n3-neon) { margin: 14px 0 28px; color: var(--mut); max-width: 44ch; }
   .n3-neon { font: 300 clamp(9rem, 6rem + 12vw, 17rem)/0.8 var(--serif); letter-spacing: -0.06em; color: #f4fbff; text-shadow: 0 0 6px rgb(var(--glow)), 0 0 24px rgb(var(--glow) / 0.9), 0 0 80px rgb(var(--glow) / 0.6), 0 0 160px rgb(var(--glow) / 0.35); padding-left: 0.04em; }
   .n3-neon span { font-size: 0.42em; margin-left: 0.08em; letter-spacing: 0; vertical-align: 0.9em; }
-  :global(.js) .n3-trial[data-rise] { opacity: 1; transform: none; }
-  :global(.js) .n3-trial[data-rise] .n3-neon { opacity: 0; }
-  :global(.js) .n3-trial[data-rise].in .n3-neon { animation: n3-on 1.4s steps(1, end) 0.2s forwards; }
-  @media (min-width: 860px) { .n3-trial { grid-template-columns: auto minmax(0, 560px); justify-content: start; gap: clamp(56px, 9vw, 140px); padding-inline: clamp(48px, 7vw, 110px); } }
+  :global(.js) .n3-offer[data-rise] { opacity: 1; transform: none; }
+  :global(.js) .n3-offer[data-rise] .n3-neon { opacity: 0; }
+  :global(.js) .n3-offer[data-rise].in .n3-neon { animation: n3-on 1.4s steps(1, end) 0.2s forwards; }
+  @media (min-width: 860px) { .n3-offer { grid-template-columns: auto minmax(0, 560px); justify-content: start; gap: clamp(56px, 9vw, 140px); padding-inline: clamp(48px, 7vw, 110px); } }
 
   /* ---------- Тренеры ---------- */
   .n3-team { list-style: none; display: grid; gap: 40px 14px; }
@@ -567,7 +569,7 @@ const ceiling = [
 
   @media (prefers-reduced-motion: reduce) {
     .n3-t, .n3-neon { animation: none !important; opacity: 1 !important; }
-    :global(.js) .n3-trial[data-rise] .n3-neon { opacity: 1; }
+    :global(.js) .n3-offer[data-rise] .n3-neon { opacity: 1; }
     .n3-rule { transform: none !important; }
   }
 </style>

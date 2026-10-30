@@ -9,10 +9,11 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
-import { reviews, trainers, zones, programs, faqGeneral } from '../../../data/content';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
+import { reviews, trainers, zones, programs } from '../../../data/content';
 import hero from '../../../assets/images/zal.jpg';
 
+const fromDay = perDay(plans[0].month, 30);
 const board = [
   { k: 'Пн–Пт', v: '06:30', w: '23:30' },
   { k: 'Сб–Вс', v: '07:30', w: '22:30' },
@@ -21,7 +22,7 @@ const stats = [
   ['1300', 'м² зала'],
   ['60+', 'тренажёров'],
   ['4,7', 'Яндекс Карты'],
-  ['0 ₽', 'вступительный'],
+  [`${fromDay} ₽`, 'в день'],
 ];
 ---
 <Layout title="Концепция A «Табло»" description="Концепция дизайна сайта Urban210: светлый спортивный плакат." noindex bare>
@@ -32,7 +33,7 @@ const stats = [
         <a href="#zones">Зал</a><a href="#price">Тарифы</a><a href="#team">Тренеры</a><a href="#lead">Контакты</a>
       </nav>
       <span class="ca-status" data-status><i></i><span>Хабаровск</span></span>
-      <a class="ca-btn" href="#lead" data-lead={trial.title} data-block="a_header">1 ₽ первый день</a>
+      <a class="ca-btn" href="#price" data-block="a_header">Выбрать карту</a>
     </header>
 
     <!-- Первый экран: плакат -->
@@ -40,10 +41,10 @@ const stats = [
       <div class="ca-hero-text">
         <p class="ca-tag">Фитнес-клуб · {site.district}</p>
         <h1 id="ca-h">Зал<br />без<br />очереди<span class="ca-dot">.</span></h1>
-        <p class="ca-lead">{site.facts.machines} {site.facts.brands}, свободные веса до 60 кг, сауна и хаммам. От {perDay(plans[0].month, 30)} ₽ в день.</p>
+        <p class="ca-lead">{site.facts.machines} {site.facts.brands}, свободные веса до 60 кг, сауна и хаммам. От {fromDay} ₽ в день.</p>
         <div class="ca-cta">
-          <a class="ca-btn big" href="#lead" data-lead={trial.title} data-block="a_hero">Пробный день за 1 ₽ <Icon name="chev" /></a>
-          <a class="ca-link" href="#price">Тарифы</a>
+          <a class="ca-btn big" href="#price" data-block="a_hero">Выбрать карту <Icon name="chev" /></a>
+          <a class="ca-link" href="#lead" data-lead="Заявка с сайта" data-block="a_hero_lead">Оставить заявку</a>
         </div>
       </div>
       <figure class="ca-hero-ph">
@@ -86,7 +87,7 @@ const stats = [
 
     <!-- Ценники -->
     <section class="ca-sec ca-price" id="price" aria-labelledby="ca-p">
-      <div class="ca-head"><h2 id="ca-p">Ценники</h2><p>Безлимит в своё время. Вступительного взноса нет.</p></div>
+      <div class="ca-head"><h2 id="ca-p">Ценники</h2><p>Безлимит в своё время, при оплате за год дешевле.</p></div>
       <div class="ca-tickets">
         {plans.map((p) => (
           <article class:list={['ca-ticket', p.id === 'all' && 'hot']}>
@@ -101,11 +102,11 @@ const stats = [
             <a class="ca-btn" href="#lead" data-lead={p.name} data-block={`a_${p.id}`}>Выбрать</a>
           </article>
         ))}
-        <article class="ca-ticket trial">
-          <header><h3>{trial.title}</h3></header>
-          <p class="ca-per"><b>1</b> ₽</p>
-          <p>{trial.text}</p>
-          <a class="ca-btn" href="#lead" data-lead={trial.title} data-block="a_trial">Записаться</a>
+        <article class="ca-ticket offer">
+          <header><h3>Не знаете, что выбрать?</h3></header>
+          <p class="ca-per"><b>{fromDay}</b> ₽ в день</p>
+          <p>Минимальная цена: {plans[0].name.toLowerCase()} за {rub(plans[0].month)} в месяц. Администратор перезвонит и поможет с выбором.</p>
+          <a class="ca-btn" href="#lead" data-lead="Заявка с сайта" data-block="a_offer">Оставить заявку</a>
         </article>
       </div>
     </section>
@@ -133,9 +134,9 @@ const stats = [
     <!-- Заявка -->
     <section class="ca-lead-sec" id="lead" aria-labelledby="ca-l">
       <div>
-        <h2 id="ca-l">Первый день<br />за 1 ₽</h2>
-        <p>{faqGeneral[0].a}</p>
-        <p class="ca-contacts"><a href={site.phone.href}>{site.phone.display}</a> · <a href={whatsappLink('Здравствуйте! Хочу на пробный день')} target="_blank" rel="noopener">WhatsApp</a> · {site.address.short}</p>
+        <h2 id="ca-l">От {fromDay} ₽<br />в день</h2>
+        <p>Оставьте телефон, администратор перезвонит, поможет выбрать карту и подберёт время. Тренер покажет тренажёры и технику, поможет составить первую программу.</p>
+        <p class="ca-contacts"><a href={site.phone.href}>{site.phone.display}</a> · <a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a> · {site.address.short}</p>
       </div>
       <LeadForm block="a_final" id="a" />
     </section>
@@ -276,7 +277,7 @@ const stats = [
   .ca-ticket .ca-btn { margin-top: auto; justify-content: center; }
   .ca-ticket.hot { background: var(--ink); color: var(--paper); --line: #f1ede6; --mut: #b9b0a7; }
   .ca-ticket.hot .ca-btn { background: var(--acc); color: #160d08; }
-  .ca-ticket.trial { background: var(--acc); color: #160d08; --mut: #3a1d10; }
+  .ca-ticket.offer { background: var(--acc); color: #160d08; --mut: #3a1d10; }
 
   .ca-quotes { display: grid; gap: 28px; }
   @media (min-width: 980px) { .ca-quotes { grid-template-columns: repeat(3, 1fr); } }

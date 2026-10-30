@@ -11,7 +11,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, nav, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, programs, zones } from '../../../data/content';
 
 const fonts = `
@@ -22,10 +22,12 @@ const fonts = `
 const rating = site.rating.value.toString().replace('.', ',');
 const hours = site.hours.map((h) => `${h.days} ${h.time}`);
 const zal = zones[0], cardio = zones[1], group = zones[2], spa = zones[3];
+const dayCard = plans[0];
+const fromDay = perDay(dayCard.month, 30);
 const cap = (t: string) => t[0].toUpperCase() + t.slice(1);
 const facts = [
   { n: rating, t: `на Яндекс Картах, ${site.rating.text}` },
-  { n: '0 ₽', t: 'вступительный взнос' },
+  { n: `${fromDay} ₽`, t: 'в день по дневной карте' },
   { n: '6:30', t: 'открываемся по будням' },
   { n: '50', t: 'мест на бесплатной парковке' },
 ];
@@ -43,7 +45,7 @@ const facts = [
         <a href="#club">Клуб</a><a href="#price">Абонементы</a><a href="#team">Тренеры</a><a href="#contacts">Контакты</a>
       </nav>
       <a class="m-tel" href={site.phone.href}>{site.phone.display}</a>
-      <a class="m-cta" href="#lead" data-lead={trial.title} data-block="01_header"><i class="m-dot" aria-hidden="true"></i><span class="m-cta-l">Пробный день за 1 ₽</span><span class="m-cta-s">День за 1 ₽</span></a>
+      <a class="m-cta" href="#price" data-block="01_header"><i class="m-dot" aria-hidden="true"></i><span class="m-cta-l">Выбрать карту</span><span class="m-cta-s">Карты</span></a>
     </header>
 
     <section class="m-hero" aria-labelledby="m-h">
@@ -53,8 +55,8 @@ const facts = [
         <div class="m-hero-side">
           <p>Более 1300 м² на двух этажах, 60+ тренажёров Technogym и Matrix, сауна и хаммам. Свободно даже вечером.</p>
           <div class="m-acts">
-            <a class="m-btn" href="#lead" data-lead={trial.title} data-block="01_hero">Пробный день за 1 ₽<Icon name="chev" /></a>
-            <a class="m-link" href="#price">Абонемент от {rub(plans[0].month)}</a>
+            <a class="m-btn" href="#price" data-block="01_hero">Выбрать карту<Icon name="chev" /></a>
+            <a class="m-link" href="#price">От {fromDay} ₽ в день</a>
           </div>
         </div>
       </div>
@@ -72,7 +74,7 @@ const facts = [
 
     <section class="m-intro" aria-label="О клубе">
       <p class="m-cap">О клубе</p>
-      <p class="m-state" data-rise>Один клуб рядом с домом. <span>Без вступительного взноса, без очередей к тренажёрам и без спешки.</span> Приходите на день за 1 ₽ и решите сами.</p>
+      <p class="m-state" data-rise>Один клуб рядом с домом. <span>Без очередей к тренажёрам и без спешки.</span> Дневная карта от {fromDay} ₽ в день.</p>
     </section>
 
     <section class="m-zones" id="club" aria-labelledby="m-z">
@@ -135,7 +137,7 @@ const facts = [
     <section class="m-price" id="price" aria-labelledby="m-p">
       <div class="m-head">
         <h2 id="m-p">Абонементы</h2>
-        <p>Без вступительного взноса. Один раз в год абонемент можно бесплатно заморозить на 30 дней.</p>
+        <p>Один раз в год абонемент можно бесплатно заморозить на 30 дней.</p>
       </div>
       <div class="m-plans">
         {plans.map((p) => (
@@ -156,13 +158,13 @@ const facts = [
         ))}
       </div>
 
-      <div class="m-trial" data-rise>
-        <p class="m-one">1 ₽</p>
+      <div class="m-offer" data-rise>
+        <p class="m-one">{fromDay} ₽</p>
         <div>
-          <h3>{trial.title}</h3>
-          <p>{trial.text}</p>
+          <h3>В день по дневной карте</h3>
+          <p>{dayCard.name}: {rub(dayCard.month)} в месяц, зал и кардиозона {dayCard.hours}.</p>
         </div>
-        <a class="m-btn" href="#lead" data-lead={trial.title} data-block="01_trial">Записаться<Icon name="chev" /></a>
+        <a class="m-btn" href="#lead" data-lead="Заявка с сайта" data-block="01_offer">Оставить заявку<Icon name="chev" /></a>
       </div>
       <p class="m-note">Персональные тренировки: {personal.pack} занятий за {rub(personal.price)}. {personal.firstFree}.</p>
     </section>
@@ -206,10 +208,10 @@ const facts = [
       </figure>
       <div class="m-lead-in">
         <p class="m-cap">Первый визит</p>
-        <h2 id="m-l">Начните<br />с одного дня</h2>
-        <p class="m-lead-p">{trial.text} Оставьте телефон, администратор перезвонит и подберёт время.</p>
+        <h2 id="m-l">Приходите<br />знакомиться</h2>
+        <p class="m-lead-p">Оставьте телефон, администратор перезвонит, поможет выбрать карту и подберёт время.</p>
         <LeadForm block="01_final" id="m01" />
-        <p class="m-alt">Удобнее написать: <a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a> или <a href={telegramLink('concept_01')} target="_blank" rel="noopener">Telegram</a></p>
+        <p class="m-alt">Удобнее написать: <a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a> или <a href={telegramLink('concept_01')} target="_blank" rel="noopener">Telegram</a></p>
       </div>
     </section>
 
@@ -436,12 +438,12 @@ const facts = [
     .m-plan:last-child { border-right: 0; padding-right: 0; }
     .m-plan.is-inv { margin-inline: 0; padding-inline: 36px; }
   }
-  .m-trial { display: grid; gap: 20px; margin-top: clamp(56px, 7vw, 104px); padding: clamp(28px, 4vw, 48px) 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .m-offer { display: grid; gap: 20px; margin-top: clamp(56px, 7vw, 104px); padding: clamp(28px, 4vw, 48px) 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
   .m-one { font-weight: 200; font-size: clamp(5.6rem, 3rem + 9vw, 12rem); letter-spacing: -0.07em; line-height: 0.8; }
-  .m-trial h3 { font-size: clamp(1.8rem, 1.3rem + 1.6vw, 2.8rem); letter-spacing: -0.045em; margin-bottom: 12px; }
-  .m-trial p:not(.m-one) { color: var(--mut); max-width: 46ch; }
-  .m-trial .m-btn { justify-self: start; }
-  @media (min-width: 960px) { .m-trial { grid-template-columns: auto 1fr auto; align-items: center; column-gap: clamp(40px, 5vw, 96px); } }
+  .m-offer h3 { font-size: clamp(1.8rem, 1.3rem + 1.6vw, 2.8rem); letter-spacing: -0.045em; margin-bottom: 12px; }
+  .m-offer p:not(.m-one) { color: var(--mut); max-width: 46ch; }
+  .m-offer .m-btn { justify-self: start; }
+  @media (min-width: 960px) { .m-offer { grid-template-columns: auto 1fr auto; align-items: center; column-gap: clamp(40px, 5vw, 96px); } }
   .m-note { margin-top: 24px; font-size: 0.92rem; color: var(--mut); }
 
   /* ---------- Тренеры ---------- */

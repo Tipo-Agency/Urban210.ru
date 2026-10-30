@@ -13,8 +13,8 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, rub, trial, personal } from '../../../data/pricing';
-import { reviews, trainers, zones, promos, reasons } from '../../../data/content';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
+import { reviews, trainers, zones, promos } from '../../../data/content';
 import chevImg from '../../../assets/images/concepts/chrome-chev.png';
 
 const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -32,7 +32,8 @@ const group = zones.find((z) => z.id === 'group')!;
 const spa = zones.find((z) => z.id === 'spa')!;
 const tradein = promos.find((p) => p.slug === 'trade-in')!;
 const friend = promos.find((p) => p.slug === '1-plus-1')!;
-const noFee = reasons[0];
+const dayCard = plans[0];
+const fromDay = perDay(dayCard.month, 30);
 const personalLine = `${personal.pack} тренировок за ${rub(personal.price)}`;
 const perMonth = (y: number) => rub(Math.round(y / 12));
 const hours = site.hours.map((h) => `${h.days} ${h.time}`);
@@ -51,7 +52,7 @@ const hours = site.hours.map((h) => `${h.days} ${h.time}`);
           <a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#komanda">Тренеры</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Контакты</a>
         </nav>
         <a class="top-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="gel gel-s" href="#zayavka" data-lead={trial.title} data-block="11_header"><span>День за 1 ₽</span></a>
+        <a class="gel gel-s" href="#tarify" data-block="11_header"><span>Выбрать карту</span></a>
       </div>
     </header>
 
@@ -73,10 +74,10 @@ const hours = site.hours.map((h) => `${h.days} ${h.time}`);
           <svg class="spark s3" viewBox="0 0 24 24"><path d="M12 0c.9 6.6 4.8 10.6 12 12-7.2 1.4-11.1 5.4-12 12-.9-6.6-4.8-10.6-12-12 7.2-1.4 11.1-5.4 12-12z" /></svg>
         </div>
         <div class="hero-foot">
-          <p class="hero-lead">Больше 1300 м², 60+ тренажёров {site.facts.brands}, групповые программы и SPA с хаммамом. Первый день за&nbsp;1&nbsp;₽, вступительного взноса нет.</p>
+          <p class="hero-lead">Больше 1300 м², 60+ тренажёров {site.facts.brands}, групповые программы и SPA с хаммамом. Дневная карта от {fromDay}&nbsp;₽ в&nbsp;день.</p>
           <div class="ctas">
-            <a class="gel" href="#zayavka" data-lead={trial.title} data-block="11_hero"><span>Первый день за 1 ₽</span><Icon name="chev" /></a>
-            <a class="steel" href="#tarify"><span>Тарифы от {rub(plans[0].month)}</span></a>
+            <a class="gel" href="#tarify" data-block="11_hero"><span>Выбрать карту</span><Icon name="chev" /></a>
+            <a class="steel" href="#zayavka" data-lead="Заявка с сайта" data-block="11_hero_lead"><span>Оставить заявку</span></a>
           </div>
           <ul class="x-chips">
             <li class="holo-edge"><b class="chr">{rating}</b><span>Яндекс Карты<br />{site.rating.text}</span></li>
@@ -90,7 +91,7 @@ const hours = site.hours.map((h) => `${h.days} ${h.time}`);
       <div class="tape" aria-hidden="true">
         <div class="tape-in">
           {[0, 1].map(() => (
-            <span>Тренажёрный зал<Icon name="chev" />Кардиозона<Icon name="chev" />Групповые<Icon name="chev" />SPA и хаммам<Icon name="chev" />Пробный день 1 ₽<Icon name="chev" />Парковка на 50 мест<Icon name="chev" /></span>
+            <span>Тренажёрный зал<Icon name="chev" />Кардиозона<Icon name="chev" />Групповые<Icon name="chev" />SPA и хаммам<Icon name="chev" />От {fromDay} ₽ в день<Icon name="chev" />Парковка на 50 мест<Icon name="chev" /></span>
           ))}
         </div>
       </div>
@@ -140,18 +141,18 @@ const hours = site.hours.map((h) => `${h.days} ${h.time}`);
         </ul>
       </section>
 
-      <!-- Пробный день -->
-      <section class="trial-wrap" aria-labelledby="trial-h">
-        <div class="x-trial" data-rise>
+      <!-- Цена дня -->
+      <section class="offer-wrap" aria-labelledby="offer-h">
+        <div class="x-offer" data-rise>
           <div class="coin-stage" aria-hidden="true">
-            <div class="coin"><i class="cf"><span>1 ₽</span></i><i class="cb"><span>210</span></i></div>
+            <div class="coin"><i class="cf"><span>{fromDay} ₽</span></i><i class="cb"><span>210</span></i></div>
           </div>
-          <div class="trial-txt">
-            <p class="trial-k">Для новых гостей</p>
-            <h2 id="trial-h">Пробный день за&nbsp;1&nbsp;₽</h2>
-            <p>{trial.text} Потренируйтесь на тренажёрах, посмотрите раздевалки и SPA-зону.</p>
-            <ul class="terms">{promos[0].terms.map((t) => <li><Icon name="check" />{t}</li>)}</ul>
-            <a class="steel steel-dark" href="#zayavka" data-lead={trial.title} data-block="11_trial"><span>Записаться на пробный день</span><Icon name="chev" /></a>
+          <div class="offer-txt">
+            <p class="offer-k">{dayCard.name}</p>
+            <h2 id="offer-h">От {fromDay}&nbsp;₽ в&nbsp;день</h2>
+            <p>{rub(dayCard.month)} в месяц: зал и кардиозона {dayCard.hours}. Администратор перезвонит и поможет выбрать тариф.</p>
+            <ul class="terms">{dayCard.features.map((t) => <li><Icon name="check" />{t}</li>)}</ul>
+            <a class="steel steel-dark" href="#zayavka" data-lead="Заявка с сайта" data-block="11_offer"><span>Оставить заявку</span><Icon name="chev" /></a>
           </div>
         </div>
       </section>
@@ -159,8 +160,8 @@ const hours = site.hours.map((h) => `${h.days} ${h.time}`);
       <!-- Тарифы -->
       <section class="x-sec dark prices" id="tarify" aria-labelledby="price-h">
         <div class="x-head">
-          <h2 id="price-h"><span class="chr-d">Три тарифа.</span><br />Без вступительного взноса</h2>
-          <p class="muted">{noFee.text} Регистрация и браслет входят в стоимость абонемента.</p>
+          <h2 id="price-h"><span class="chr-d">Три тарифа.</span><br />От {fromDay}&nbsp;₽ в&nbsp;день</h2>
+          <p class="muted">Безлимит в своё время, при оплате за год дешевле.</p>
         </div>
         <div class="x-plans">
           {plans.map((p) => (
@@ -238,7 +239,7 @@ const hours = site.hours.map((h) => `${h.days} ${h.time}`);
       <section class="x-sec dark cta" id="zayavka" aria-labelledby="cta-h">
         <div class="cta-in">
           <div class="cta-txt">
-            <h2 id="cta-h"><span class="chr-d">Приходи сиять.</span><br />Первый день за&nbsp;1&nbsp;₽</h2>
+            <h2 id="cta-h"><span class="chr-d">Приходи сиять.</span><br />От {fromDay}&nbsp;₽ в&nbsp;день</h2>
             <p class="muted">Оставьте имя и телефон. Администратор перезвонит в часы работы клуба и подберёт удобное время.</p>
             <dl class="info">
               <div><dt>Адрес</dt><dd>{site.address.locality}, {site.address.street}<br />{site.district}</dd></div>
@@ -247,7 +248,7 @@ const hours = site.hours.map((h) => `${h.days} ${h.time}`);
               <div><dt>Парковка</dt><dd>{site.parking}</dd></div>
             </dl>
             <div class="msg">
-              <a class="steel steel-w" href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener"><Icon name="wa" /><span>WhatsApp</span></a>
+              <a class="steel steel-w" href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener"><Icon name="wa" /><span>WhatsApp</span></a>
               <a class="steel steel-w" href={telegramLink('concept11')} target="_blank" rel="noopener"><Icon name="tg" /><span>Telegram</span></a>
             </div>
           </div>
@@ -577,16 +578,16 @@ const hours = site.hours.map((h) => `${h.days} ${h.time}`);
   .facts span { font-size: 0.95rem; color: var(--muted); max-width: 14rem; }
   @media (min-width: 900px) { .facts { grid-template-columns: repeat(4, 1fr); } }
 
-  /* ---------- Пробный день ---------- */
-  .trial-wrap { padding: 0 var(--g) clamp(80px, 10vw, 140px); max-width: 1540px; margin-inline: auto; }
-  .x-trial {
+  /* ---------- Цена дня ---------- */
+  .offer-wrap { padding: 0 var(--g) clamp(80px, 10vw, 140px); max-width: 1540px; margin-inline: auto; }
+  .x-offer {
     position: relative; overflow: hidden; display: grid; gap: 24px; align-items: center; border-radius: 40px; padding: clamp(28px, 5vw, 72px);
     color: #1b0a03; background: radial-gradient(90% 120% at 15% 0%, #ffb08c 0%, transparent 55%), linear-gradient(160deg, #ff6a33 0%, #ff5722 50%, #e2400f 100%);
     box-shadow: inset 0 2px 0 rgb(255 255 255 / 0.45), inset 0 -6px 24px rgb(120 20 0 / 0.3), 0 40px 80px -40px rgb(255 87 34 / 0.75);
   }
-  .trial-k { font-weight: 650; font-size: 0.95rem; }
-  .x-trial h2 { font-weight: 900; font-size: clamp(2.6rem, 1.4rem + 5vw, 6rem); line-height: 0.9; letter-spacing: -0.035em; margin: 10px 0 18px; }
-  .trial-txt > p:not(.trial-k) { max-width: 34rem; font-size: 1.08rem; line-height: 1.5; }
+  .offer-k { font-weight: 650; font-size: 0.95rem; }
+  .x-offer h2 { font-weight: 900; font-size: clamp(2.6rem, 1.4rem + 5vw, 6rem); line-height: 0.9; letter-spacing: -0.035em; margin: 10px 0 18px; }
+  .offer-txt > p:not(.offer-k) { max-width: 34rem; font-size: 1.08rem; line-height: 1.5; }
   .terms { list-style: none; display: grid; gap: 8px; margin: 20px 0 28px; font-weight: 550; }
   .terms li { display: flex; gap: 10px; align-items: center; }
   .terms :global(svg) { width: 20px; height: 20px; flex: none; }
@@ -598,7 +599,7 @@ const hours = site.hours.map((h) => `${h.days} ${h.time}`);
   .cb { transform: rotateY(180deg); }
   .cf span, .cb span { font: italic 900 clamp(4rem, 8vw, 7rem)/1 var(--disp); letter-spacing: -0.05em; background: linear-gradient(180deg, #3a3d45, #0e0f13 55%, #5a5e68); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 0 rgb(255 255 255 / 0.7)); }
   .cb span { font-size: clamp(3rem, 6vw, 5rem); }
-  @media (min-width: 900px) { .x-trial { grid-template-columns: 0.9fr 1.1fr; gap: 56px; } }
+  @media (min-width: 900px) { .x-offer { grid-template-columns: 0.9fr 1.1fr; gap: 56px; } }
 
   /* ---------- Тарифы ---------- */
   .x-plans { display: grid; gap: 18px; }

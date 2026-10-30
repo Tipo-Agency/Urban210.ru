@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 const dir = new URL('../src/content/blog/', import.meta.url);
 const files = readdirSync(dir).filter((f) => f.endsWith('.md'));
 const slugs = new Set(files.map((f) => f.replace(/\.md$/, '')));
-const pages = new Set(['/', '/price/', '/zal/', '/group/', '/spa/', '/trainers/', '/personal/', '/promo/', '/promo/1-rubl/', '/promo/trade-in/', '/promo/1-plus-1/', '/contacts/', '/virtual-tour/', '/blog/', '/policy/', '/rules/', '/oferta/']);
+const pages = new Set(['/', '/price/', '/zal/', '/group/', '/spa/', '/trainers/', '/personal/', '/promo/', '/promo/trade-in/', '/promo/1-plus-1/', '/contacts/', '/virtual-tour/', '/blog/', '/policy/', '/rules/', '/oferta/']);
 let bad = 0;
 const words = [];
 for (const f of files) {

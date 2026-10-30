@@ -11,7 +11,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, reasons, programs } from '../../../data/content';
 
 const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -23,10 +23,12 @@ const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
 const rating = site.rating.value.toString().replace('.', ',');
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const z = Object.fromEntries(zones.map((x) => [x.id, x]));
-const [trialPromo, tradein, friend] = [promos.find((p) => p.slug === '1-rubl')!, promos.find((p) => p.slug === 'trade-in')!, promos.find((p) => p.slug === '1-plus-1')!];
+const [tradein, friend] = [promos.find((p) => p.slug === 'trade-in')!, promos.find((p) => p.slug === '1-plus-1')!];
+const dayRate = perDay(plans[0].month, 30);
+const shownReasons = reasons.filter((r) => !r.title.startsWith('Нет вступ'));
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
 const facts = [
-  { shape: 'sq', big: '0 ₽', text: 'вступительный взнос' },
+  { shape: 'sq', big: `${dayRate} ₽`, text: 'в день по дневной карте' },
   { shape: 'ci', big: '06:30', text: 'открываемся по будням' },
   { shape: 'tr', big: '50', text: 'мест бесплатной парковки' },
   { shape: 'hf', big: rating, text: `Яндекс Карты, ${site.rating.text}` },
@@ -49,7 +51,7 @@ const tags = programs.flatMap((p) => p.items);
           <a href="#zony">зоны</a><a href="#tarify">тарифы</a><a href="#trenery">тренеры</a><a href="#otzyvy">отзывы</a><a href="#zayavka">адрес</a>
         </nav>
         <a class="bh-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="bh-btn bh-btn-s" href="#zayavka" data-lead={trial.title} data-block="22_header"><span>пробный<span class="bh-hide-s">&nbsp;день за</span>&nbsp;1&nbsp;₽</span><b><Icon name="chev" /></b></a>
+        <a class="bh-btn bh-btn-s" href="#zayavka" data-lead="Заявка с сайта" data-block="22_header"><span>оставить заявку</span><b><Icon name="chev" /></b></a>
       </div>
     </header>
 
@@ -63,10 +65,10 @@ const tags = programs.flatMap((p) => p.items);
             <span class="l l2">свою</span>
             <span class="l l3">форму<i aria-hidden="true"></i></span>
           </h1>
-          <p class="bh-lead">Зал, кардио, групповые и SPA в одном клубе. Первый день в Urban210 за&nbsp;1&nbsp;₽, вступительного взноса нет.</p>
+          <p class="bh-lead">Зал, кардио, групповые и SPA в одном клубе. Дневная карта от&nbsp;{dayRate}&nbsp;₽ в&nbsp;день.</p>
           <div class="bh-cta">
-            <a class="bh-btn" href="#zayavka" data-lead={trial.title} data-block="22_hero"><span>Записаться за 1 ₽</span><b><Icon name="chev" /></b></a>
-            <a class="bh-link" href="#tarify">тарифы от {num(plans[0].month)} ₽</a>
+            <a class="bh-btn" href="#tarify" data-block="22_hero"><span>Выбрать карту</span><b><Icon name="chev" /></b></a>
+            <a class="bh-link" href="#zayavka" data-lead="Заявка с сайта" data-block="22_hero">оставить заявку</a>
           </div>
         </div>
 
@@ -80,7 +82,7 @@ const tags = programs.flatMap((p) => p.items);
           <span class="hc hc-bar"></span>
           <span class="hc hc-half"></span>
           <span class="hc hc-line"></span>
-          <span class="hc hc-stamp"><b>1 ₽</b><small>пробный<br />день</small></span>
+          <span class="hc hc-stamp"><b>{dayRate} ₽</b><small>в день</small></span>
           <span class="hc hc-vert">urban210 · железнодорожный район · с 6:30</span>
         </div>
       </div>
@@ -99,11 +101,11 @@ const tags = programs.flatMap((p) => p.items);
     <!-- Принципы клуба -->
     <section class="bh-sec bh-w bh-why" aria-labelledby="bh-why-h" data-m>
       <div class="bh-why-head">
-        <h2 id="bh-why-h" class="bh-h2" data-s style="--x:-40px">четыре <span class="o">правила</span> клуба</h2>
+        <h2 id="bh-why-h" class="bh-h2" data-s style="--x:-40px">три <span class="o">правила</span> клуба</h2>
         <span class="bh-why-pie bh-spin" aria-hidden="true"></span>
       </div>
       <ol class="bh-rules">
-        {reasons.map((r, i) => (
+        {shownReasons.map((r, i) => (
           <li data-s style={`--y:40px;--d:${i * 90}ms`}>
             <span class={`rl rl-${i}`} aria-hidden="true"></span>
             <h3>{r.title}</h3>
@@ -174,7 +176,7 @@ const tags = programs.flatMap((p) => p.items);
       <div class="bh-w">
         <div class="bh-sec-head" data-m>
           <h2 id="bh-price-h" class="bh-h2" data-s style="--x:-40px">три формы <span class="o">абонемента</span></h2>
-          <p class="bh-sec-note" data-s style="--x:40px;--d:120ms">Половина дня, полный день или всё сразу. Вступительного взноса нет ни в одном.</p>
+          <p class="bh-sec-note" data-s style="--x:40px;--d:120ms">Половина дня, полный день или всё сразу. Дневная карта от {dayRate}&nbsp;₽ в&nbsp;день.</p>
         </div>
         <div class="bh-plans" data-m>
           {plans.map((p, i) => (
@@ -198,19 +200,19 @@ const tags = programs.flatMap((p) => p.items);
           ))}
         </div>
 
-        <div class="bh-trial" data-m>
+        <div class="bh-day" data-m>
           <div class="tr-art" aria-hidden="true">
             <span class="tr-ci" data-s style="--x:120px;--y:-80px;--r:-90deg;--s:.5"></span>
             <span class="tr-bar" data-s style="--y:-200px;--d:120ms"></span>
             <span class="tr-sq" data-s style="--x:-120px;--r:90deg;--d:200ms"></span>
-            <span class="tr-one" data-s style="--y:40px;--d:280ms">1</span>
+            <span class="tr-one" data-s style="--y:40px;--d:280ms">{dayRate}</span>
             <span class="tr-rub" data-s style="--x:40px;--d:340ms">₽</span>
           </div>
           <div class="tr-tx" data-s style="--y:40px;--d:200ms">
-            <h3>пробный день</h3>
-            <p>{trial.text}</p>
-            <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-            <a class="bh-btn" href="#zayavka" data-lead={trial.title} data-block="22_trial"><span>{trialPromo.cta}</span><b><Icon name="chev" /></b></a>
+            <h3>{plans[0].name.toLowerCase()}</h3>
+            <p>{rub(plans[0].month)} в месяц, это {dayRate}&nbsp;₽ в&nbsp;день. Тренажёрный зал и кардиозона {plans[0].hours}.</p>
+            <ul>{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+            <a class="bh-btn" href="#zayavka" data-lead="Заявка с сайта" data-block="22_day"><span>Оставить заявку</span><b><Icon name="chev" /></b></a>
           </div>
         </div>
 
@@ -535,7 +537,7 @@ const tags = programs.flatMap((p) => p.items);
   .rl-2 { background: var(--ye); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
   .rl-3 { background: var(--ink); border-radius: 46px 46px 0 0; height: 23px; margin-top: 12px; }
   @media (min-width: 900px) {
-    .bh-rules { grid-template-columns: repeat(4, 1fr); border-bottom: var(--rule); }
+    .bh-rules { grid-template-columns: repeat(3, 1fr); border-bottom: var(--rule); }
     .bh-rules li { grid-template-columns: 1fr; padding: 28px 26px 36px; border-bottom: 0; border-left: var(--rule); align-content: start; gap: 16px; }
     .bh-rules li:first-child { border-left: 0; padding-left: 0; }
     .bh-rules p { grid-column: auto; }
@@ -644,13 +646,13 @@ const tags = programs.flatMap((p) => p.items);
     .pl-fig { height: 140px; }
   }
 
-  .bh-trial { position: relative; margin-top: clamp(56px, 8vw, 110px); display: grid; grid-template-columns: minmax(0, 1fr); border: var(--rule); background: var(--paper); }
+  .bh-day { position: relative; margin-top: clamp(56px, 8vw, 110px); display: grid; grid-template-columns: minmax(0, 1fr); border: var(--rule); background: var(--paper); }
   .tr-art { position: relative; aspect-ratio: 1; overflow: hidden; background: var(--bl); border-bottom: var(--rule); isolation: isolate; }
   .tr-art span { position: absolute; display: block; }
   .tr-ci { width: 78%; aspect-ratio: 1; border-radius: 50%; background: var(--or); right: -6%; top: 6%; z-index: 1; }
   .tr-bar { left: 14%; top: 0; width: 6%; height: 100%; background: var(--ink); z-index: 2; }
   .tr-sq { left: 0; bottom: 0; width: 38%; aspect-ratio: 1; background: var(--ye); z-index: 2; }
-  .tr-one { z-index: 3; left: 22%; top: 4%; font-weight: 600; font-size: min(78vw, 560px); line-height: 0.82; letter-spacing: -0.06em; color: var(--paper); }
+  .tr-one { z-index: 3; left: 22%; top: 4%; font-weight: 600; font-size: min(54vw, 400px); line-height: 0.82; letter-spacing: -0.06em; color: var(--paper); }
   .tr-rub { z-index: 3; right: 8%; bottom: 6%; font-weight: 600; font-size: min(28vw, 190px); line-height: 0.8; color: var(--ink); }
   .tr-tx { padding: 28px 22px 30px; display: grid; gap: 16px; justify-items: start; align-content: center; }
   .tr-tx h3 { font-weight: 700; font-size: clamp(3rem, 13vw, 5.6rem); line-height: 0.86; letter-spacing: -0.05em; margin: 0; }
@@ -661,9 +663,9 @@ const tags = programs.flatMap((p) => p.items);
   .tr-tx li:nth-child(2)::before { background: var(--bl); border-radius: 0; }
   .tr-tx li:nth-child(3)::before { background: var(--ye); clip-path: polygon(50% 0, 100% 100%, 0 100%); border-radius: 0; }
   @media (min-width: 900px) {
-    .bh-trial { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .bh-day { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
     .tr-art { border-bottom: 0; border-right: var(--rule); }
-    .tr-one { font-size: min(40vw, 560px); }
+    .tr-one { font-size: min(27vw, 400px); }
     .tr-rub { font-size: min(14vw, 190px); }
     .tr-tx { padding: 48px 56px; }
   }

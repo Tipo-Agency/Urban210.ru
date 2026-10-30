@@ -1,7 +1,7 @@
 ---
 // Концепция 02 «Красный свет»: зал как клуб ночью. Фото и видео в красном дуотоне (CSS blend),
 // узкий Tektur капсом через ось ширины, дышащий свет на первом экране, перекрёстные бегущие ленты.
-// Зоны «включают свет», когда доходят до экрана, «1 ₽» загорается как неоновая вывеска.
+// Зоны «включают свет», когда доходят до экрана, цена дня загорается как неоновая вывеска.
 import { Image } from 'astro:assets';
 import tkCyr from '@fontsource-variable/tektur/files/tektur-cyrillic-standard-normal.woff2?url';
 import tkLat from '@fontsource-variable/tektur/files/tektur-latin-standard-normal.woff2?url';
@@ -11,7 +11,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, nav, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, programs, zones } from '../../../data/content';
 
 const fonts = `
@@ -20,8 +20,10 @@ const fonts = `
 @font-face{font-family:'Tektur r';font-style:normal;font-display:swap;font-weight:400 900;font-stretch:75% 100%;src:url(${tkExt}) format('woff2');unicode-range:U+0100-02BA,U+20A0-20AB,U+20AD-20C0}`;
 
 const rating = site.rating.value.toString().replace('.', ',');
+const dayCard = plans[0];
+const fromDay = perDay(dayCard.month, 30);
 const cap = (t: string) => t[0].toUpperCase() + t.slice(1);
-const tape = ['Первый день 1 ₽', 'Вступительный взнос 0 ₽', '60+ тренажёров', `${rating} на Яндекс Картах`, 'Парковка на 50 мест', 'Сауна и хаммам', 'До 23:30 по будням'];
+const tape = [`От ${fromDay} ₽ в день`, 'Без очередей к тренажёрам', '60+ тренажёров', `${rating} на Яндекс Картах`, 'Парковка на 50 мест', 'Сауна и хаммам', 'До 23:30 по будням'];
 const rooms = [
   { t: 'Железо', sub: zones[0].title, s: cap(zones[0].text), i: '/images/free-weights.jpg', href: zones[0].href, pos: '50% 60%' },
   { t: 'Кардио', sub: zones[1].title, s: zones[1].text, i: '/images/cardio.jpg', href: zones[1].href, pos: '50% 55%' },
@@ -41,7 +43,7 @@ const quotes = reviews.slice(0, 3).map((r) => ({ q: r.text.split('. ').slice(0, 
       <a class="r-logo" href="/concepts/02/" aria-label="Urban210, на главную">URBAN<b>210</b><Icon name="chev" /></a>
       <nav class="r-nav" aria-label="Меню"><a href="#rooms">Зоны</a><a href="#price">Цены</a><a href="#team">Тренеры</a><a href="#contacts">Контакты</a></nav>
       <a class="r-tel" href={site.phone.href}>{site.phone.display}</a>
-      <a class="r-pill" href="#lead" data-lead={trial.title} data-block="02_header"><span class="r-pd">Пробный день</span><span class="r-pm">День</span>&nbsp;за 1 ₽</a>
+      <a class="r-pill" href="#price" data-block="02_header"><span class="r-pd">Выбрать карту</span><span class="r-pm">Цены</span></a>
     </header>
 
     <section class="r-hero" aria-labelledby="r-h">
@@ -54,9 +56,9 @@ const quotes = reviews.slice(0, 3).map((r) => ({ q: r.text.split('. ').slice(0, 
         <p class="r-live"><i aria-hidden="true"></i>{site.address.locality}, {site.address.short}</p>
         <h1 id="r-h"><span>Зал</span><span>не гаснет</span><span class="r-hot">до 23:30</span></h1>
         <div class="r-hero-row">
-          <p>По будням с 6:30 до 23:30, в выходные до 22:30. Первый день за 1 ₽, вступительного взноса нет.</p>
+          <p>По будням с 6:30 до 23:30, в выходные до 22:30. Дневная карта от {fromDay} ₽ в день.</p>
           <div class="r-acts">
-            <a class="r-btn" href="#lead" data-lead={trial.title} data-block="02_hero">Первый день за 1 ₽<Icon name="chev" /></a>
+            <a class="r-btn" href="#price" data-block="02_hero">Выбрать карту<Icon name="chev" /></a>
             <a class="r-ghost" href="#price">Цены от {rub(plans[0].month)}</a>
           </div>
         </div>
@@ -104,7 +106,7 @@ const quotes = reviews.slice(0, 3).map((r) => ({ q: r.text.split('. ').slice(0, 
     <section class="r-sec" id="price" aria-labelledby="r-p">
       <div class="r-head">
         <h2 id="r-p">Сколько стоит</h2>
-        <p>Цена за месяц. Без вступительного взноса, при оплате за год дешевле.</p>
+        <p>Цена за месяц, при оплате за год дешевле.</p>
       </div>
       <div class="r-plans">
         {plans.map((p) => (
@@ -122,12 +124,12 @@ const quotes = reviews.slice(0, 3).map((r) => ({ q: r.text.split('. ').slice(0, 
         ))}
       </div>
 
-      <div class="r-trial" data-rise>
-        <p class="r-neon" aria-hidden="true">1 ₽</p>
-        <div class="r-trial-txt">
-          <h3>{trial.title}</h3>
-          <p>{trial.text}</p>
-          <a class="r-btn" href="#lead" data-lead={trial.title} data-block="02_trial">Записаться<Icon name="chev" /></a>
+      <div class="r-offer" data-rise>
+        <p class="r-neon" aria-hidden="true">{fromDay} ₽</p>
+        <div class="r-offer-txt">
+          <h3>От {fromDay} ₽ в день</h3>
+          <p>{dayCard.name}: {rub(dayCard.month)} в месяц. Зал и кардиозона {dayCard.hours}.</p>
+          <a class="r-btn" href="#lead" data-lead="Заявка с сайта" data-block="02_offer">Оставить заявку<Icon name="chev" /></a>
         </div>
       </div>
       <p class="r-note">Персональные тренировки: {personal.pack} занятий за {rub(personal.price)}. {personal.firstFree}.</p>
@@ -171,11 +173,11 @@ const quotes = reviews.slice(0, 3).map((r) => ({ q: r.text.split('. ').slice(0, 
       <div class="r-lead-glow" aria-hidden="true"></div>
       <div class="r-lead-in">
         <div class="r-lead-txt">
-          <h2 id="r-l">Приходи<br />на первый<br /><span class="r-hot">день за 1 ₽</span></h2>
-          <p>{trial.text} Оставь телефон, администратор перезвонит и подберёт время.</p>
-          <p class="r-alt"><a href={site.phone.href}>{site.phone.display}</a><a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a><a href={telegramLink('concept_02')} target="_blank" rel="noopener">Telegram</a></p>
+          <h2 id="r-l">Приходи<br />в зал<br /><span class="r-hot">от {fromDay} ₽ в день</span></h2>
+          <p>Оставь телефон, администратор перезвонит, поможет выбрать карту и подберёт время.</p>
+          <p class="r-alt"><a href={site.phone.href}>{site.phone.display}</a><a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a><a href={telegramLink('concept_02')} target="_blank" rel="noopener">Telegram</a></p>
         </div>
-        <LeadForm block="02_final" id="r02" title="Записаться на первый день" />
+        <LeadForm block="02_final" id="r02" title="Оставить заявку" />
       </div>
     </section>
 
@@ -361,14 +363,14 @@ const quotes = reviews.slice(0, 3).map((r) => ({ q: r.text.split('. ').slice(0, 
   .r-plan.is-hot .r-btn:hover { background: #000; }
   @media (min-width: 960px) { .r-plans { grid-template-columns: repeat(3, 1fr); } .r-plan { grid-template-rows: auto auto auto auto 1fr auto; } }
 
-  .r-trial { position: relative; display: grid; gap: 24px; margin-top: 12px; padding: clamp(28px, 4vw, 56px); border: 1px solid var(--line); border-radius: 2px; overflow: hidden; background: radial-gradient(60% 120% at 20% 50%, rgb(255 43 28 / 0.18), transparent 70%), #0e0505; }
+  .r-offer { position: relative; display: grid; gap: 24px; margin-top: 12px; padding: clamp(28px, 4vw, 56px); border: 1px solid var(--line); border-radius: 2px; overflow: hidden; background: radial-gradient(60% 120% at 20% 50%, rgb(255 43 28 / 0.18), transparent 70%), #0e0505; }
   .r-neon { font-family: var(--tk); font-stretch: 75%; font-weight: 900; font-size: clamp(9rem, 4rem + 16vw, 19rem); line-height: 0.75; color: #fff4f0; white-space: nowrap; text-shadow: 0 0 8px #ff6a4a, 0 0 28px #ff2b1c, 0 0 70px #ff2b1c, 0 0 140px rgb(255 43 28 / 0.6); }
-  .r-trial-txt { display: grid; gap: 16px; justify-items: start; max-width: 520px; }
-  .r-trial h3 { font-size: clamp(2.4rem, 1.6rem + 2.6vw, 4rem); }
-  .r-trial p { color: var(--mut); }
-  @media (min-width: 960px) { .r-trial { grid-template-columns: auto 1fr; align-items: center; column-gap: clamp(40px, 6vw, 120px); } }
-  :global(.js) .r-trial[data-rise] .r-neon { opacity: 0.12; text-shadow: none; }
-  :global(.js) .r-trial[data-rise].in .r-neon { animation: r-flicker 1.1s linear 0.2s both; }
+  .r-offer-txt { display: grid; gap: 16px; justify-items: start; max-width: 520px; }
+  .r-offer h3 { font-size: clamp(2.4rem, 1.6rem + 2.6vw, 4rem); }
+  .r-offer p { color: var(--mut); }
+  @media (min-width: 960px) { .r-offer { grid-template-columns: auto 1fr; align-items: center; column-gap: clamp(40px, 6vw, 120px); } }
+  :global(.js) .r-offer[data-rise] .r-neon { opacity: 0.12; text-shadow: none; }
+  :global(.js) .r-offer[data-rise].in .r-neon { animation: r-flicker 1.1s linear 0.2s both; }
   .r-note { margin-top: 20px; font-size: 0.92rem; color: var(--mut); }
 
   /* ---------- Тренеры ---------- */
@@ -448,6 +450,6 @@ const quotes = reviews.slice(0, 3).map((r) => ({ q: r.text.split('. ').slice(0, 
     .r-tape { overflow-x: auto; }
     :global(.js) .r-room[data-rise] .r-room-ph :global(img) { filter: grayscale(1) contrast(1.35) brightness(1.1); transform: none; transition: none; }
     :global(.js) .r-room[data-rise] .r-room-t { opacity: 1; }
-    :global(.js) .r-trial[data-rise] .r-neon, :global(.js) .r-trial[data-rise].in .r-neon { opacity: 1; animation: none; text-shadow: 0 0 8px #ff6a4a, 0 0 28px #ff2b1c, 0 0 70px #ff2b1c; }
+    :global(.js) .r-offer[data-rise] .r-neon, :global(.js) .r-offer[data-rise].in .r-neon { opacity: 1; animation: none; text-shadow: 0 0 8px #ff6a4a, 0 0 28px #ff2b1c, 0 0 70px #ff2b1c; }
   }
 </style>

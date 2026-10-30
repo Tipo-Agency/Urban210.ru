@@ -16,7 +16,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, programs } from '../../../data/content';
 
 const fonts = `
@@ -62,6 +62,7 @@ const perDayRows = plans.map((p) => ({
   month: p.month, year: p.year, id: p.id, tag: p.tag,
 }));
 const maxDay = 90;
+const dayRate = perDay(day.month, 30);
 
 // Матрица: что входит в каждый тариф
 const matrix: [string, number, number, number][] = [
@@ -96,7 +97,7 @@ const hoursLine = site.hours.map((h) => `${h.days} ${h.time}`).join(', ');
           <a href="#chasy">Часы</a><a href="#ceny">Цены</a><a href="#klub">Клуб</a><a href="#lyudi">Тренеры</a><a href="#otzyvy">Отзывы</a>
         </nav>
         <p class="top-now mono" data-now aria-live="off"><i></i><span data-now-label>Хабаровск</span></p>
-        <a class="b b-ink b-s" href="#zayavka" data-lead={trial.title} data-block="19_header">День за 1 ₽<Icon name="chev" class="chev" /></a>
+        <a class="b b-ink b-s" href="#zayavka" data-lead="Заявка с сайта" data-block="19_header">Оставить заявку<Icon name="chev" class="chev" /></a>
       </div>
     </header>
 
@@ -106,9 +107,9 @@ const hoursLine = site.hours.map((h) => `${h.days} ${h.time}`).join(', ');
         <div class="n-hero-txt">
           <p class="kick mono"><span>Urban210</span><span>Фитнес-клуб, Хабаровск</span></p>
           <h1 id="h1-19">Клуб, который можно посчитать</h1>
-          <p class="sub">Площадь, часы, цена одного дня и всё, что входит в абонемент. Без громких слов, только цифры. Первый день стоит {trial.price}&nbsp;₽.</p>
+          <p class="sub">Площадь, часы, цена одного дня и всё, что входит в абонемент. Без громких слов, только цифры. День по дневной карте стоит от {dayRate}&nbsp;₽.</p>
           <div class="n-hero-cta">
-            <a class="b b-acc" href="#zayavka" data-lead={trial.title} data-block="19_hero">Пробный день за 1 ₽<Icon name="chev" class="chev" /></a>
+            <a class="b b-acc" href="#tarify" data-block="19_hero">Выбрать карту<Icon name="chev" class="chev" /></a>
             <a class="ln" href="#ceny">Сколько стоит день<Icon name="chev1" /></a>
           </div>
         </div>
@@ -227,12 +228,6 @@ const hoursLine = site.hours.map((h) => `${h.days} ${h.time}`).join(', ');
           <div class="bars-legend mono" aria-hidden="true"><span><i class="sw sw-g"></i>оплата за месяц</span><span><i class="sw sw-a"></i>оплата за год</span></div>
           <div class="bars-plot">
             <div class="bars-grid" aria-hidden="true">{[0, 20, 40, 60, 80].map((v) => <span style={`--p:${v / maxDay * 100}%`}><b class="mono">{v} ₽</b></span>)}</div>
-            <div class="bar-row bar-trial">
-              <p class="bar-name">Пробный день</p>
-              <div class="bar-pair">
-                <span class="bar bar-a grow" style={`--w:${Math.max(trial.price / maxDay * 100, 0.6)}%`}><b class="mono">{trial.price} ₽</b></span>
-              </div>
-            </div>
             {perDayRows.map((r) => (
               <div class="bar-row">
                 <p class="bar-name">{r.name}<small>{r.hours}</small></p>
@@ -263,7 +258,7 @@ const hoursLine = site.hours.map((h) => `${h.days} ${h.time}`).join(', ');
             </article>
           ))}
         </div>
-        <p class="src mono">Источник: тарифы клуба. Вступительного взноса нет. Экономия: цена года против двенадцати оплат по месяцу.</p>
+        <p class="src mono">Источник: тарифы клуба. Экономия: цена года против двенадцати оплат по месяцу.</p>
       </section>
 
       <!-- Рис. 3. Матрица -->
@@ -397,9 +392,9 @@ const hoursLine = site.hours.map((h) => `${h.days} ${h.time}`).join(', ');
       <section class="n-final" id="zayavka" aria-labelledby="h-final">
         <div class="w n-final-in">
           <div class="n-final-txt">
-            <p class="n-final-n" aria-hidden="true">1<small>₽</small></p>
-            <h2 id="h-final">Самая маленькая цифра на этой странице</h2>
-            <p class="fig-d">{trial.text} Оставьте номер, администратор перезвонит и подберёт время.</p>
+            <p class="n-final-n" aria-hidden="true">{dayRate}<small>₽</small></p>
+            <h2 id="h-final">Столько стоит день по дневной карте</h2>
+            <p class="fig-d">{day.name}: {rub(day.month)} в месяц, {day.hours}. Оставьте номер, администратор перезвонит и поможет выбрать карту.</p>
             <ul class="n-final-l mono">
               <li><Icon name="clock" />{hoursLine}</li>
               <li><Icon name="pin" />{site.address.short}, парковка 50 мест</li>
@@ -739,7 +734,6 @@ const hoursLine = site.hours.map((h) => `${h.days} ${h.time}`).join(', ');
   .bar b { position: absolute; left: calc(100% + 8px); top: 50%; transform: translateY(-50%); font-size: 0.82rem; font-weight: 500; white-space: nowrap; }
   .bar.bar-g { background: var(--g); }
   .bar.bar-a { background: var(--acc); }
-  .bar-trial .bar-name { color: var(--acc-t); }
   .c19 { --lab: 0px; }
   @media (min-width: 760px) {
     .bars-plot { --lab: 240px; }

@@ -11,7 +11,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos } from '../../../data/content';
 
 const CYR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -35,7 +35,8 @@ const personalLine = `${personal.pack} тренировок, ${rub(personal.pric
 const planCol = { day: 'c-white', full: 'c-yel', all: 'c-lil' } as const;
 const trainerCol = ['c-mint', 'c-lil', 'c-yel'];
 const reviewCol = ['c-white', 'c-lil', 'c-mint', 'c-yel'];
-const tape = ['Пробный день за 1 ₽', 'Без вступительного взноса', 'Парковка на 50 мест', 'Сауна и хаммам', `${rating} на Яндекс Картах`, 'Пн–Пт 06:30–23:30'];
+const dayRate = perDay(plans[0].month, 30);
+const tape = [`${plans[0].name} от ${dayRate} ₽ в день`, 'Парковка на 50 мест', 'Сауна и хаммам', `${rating} на Яндекс Картах`, 'Пн–Пт 06:30–23:30'];
 const year = new Date().getFullYear();
 ---
 <Layout title="Концепция 18 «Блоки»" description="Концепция дизайна сайта Urban210: необрутализм, яркие плашки, толстые рамки и жёсткие тени." noindex bare>
@@ -52,7 +53,7 @@ const year = new Date().getFullYear();
           <a href="#zony">Зоны</a><a href="#ceny">Цены</a><a href="#trenery">Тренеры</a><a href="#otzyvy">Отзывы</a><a href="#zapis">Контакты</a>
         </nav>
         <a class="bk-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="bk-btn bk-btn-s c-yel" href="#zapis" data-lead={trial.title} data-block="18_header"><span>1 ₽ пробный</span><Icon name="chev" /></a>
+        <a class="bk-btn bk-btn-s c-yel" href="#zapis" data-lead="Заявка с сайта" data-block="18_header"><span>Оставить заявку</span><Icon name="chev" /></a>
       </div>
     </header>
 
@@ -68,10 +69,10 @@ const year = new Date().getFullYear();
               <span class="bk-h1-l bk-h1-b c-lil">Парься.</span>
               <span class="bk-h1-l bk-h1-b c-or">Повторяй.</span>
             </h1>
-            <p class="bk-hero-p">{site.facts.area[0].toUpperCase() + site.facts.area.slice(1)}, {site.facts.machines} {site.facts.brands}, групповые программы и SPA с сауной и хаммамом. Первый день стоит 1 ₽.</p>
+            <p class="bk-hero-p">{site.facts.area[0].toUpperCase() + site.facts.area.slice(1)}, {site.facts.machines} {site.facts.brands}, групповые программы и SPA с сауной и хаммамом. Дневная карта от {dayRate} ₽ в день.</p>
             <div class="bk-hero-cta">
-              <a class="bk-btn c-or" href="#zapis" data-lead={trial.title} data-block="18_hero"><span>Записаться за 1 ₽</span><Icon name="chev" /></a>
-              <a class="bk-btn c-white" href="#ceny"><span>Цены от {num(day.month)} ₽</span></a>
+              <a class="bk-btn c-or" href="#ceny" data-block="18_hero"><span>Выбрать карту</span><Icon name="chev" /></a>
+              <a class="bk-btn c-white" href="#zapis" data-lead="Заявка с сайта" data-block="18_hero"><span>Оставить заявку</span></a>
             </div>
           </div>
 
@@ -79,7 +80,7 @@ const year = new Date().getFullYear();
             <Image src={img('/images/community/12.jpg')} alt="Гостья клуба у ярких шкафчиков в раздевалке Urban210" widths={[400, 600]} sizes="(min-width: 1100px) 420px, calc(100vw - 32px)" loading="eager" fetchpriority="high" format="webp" quality={60} />
             <span class="bk-stk bk-stk-round" aria-hidden="true">
               <svg viewBox="0 0 120 120"><path d="M60 2l9.6 13.4 15.6-5.4 1.5 16.4 16.3 2.6-5.1 15.7 13.5 9.3-12.1 11.2 7.4 14.7-16 3.9-.4 16.5-15.5-5.9L65.6 118 60 102.6 54.4 118l-9.2-13.6-15.5 5.9-.4-16.5-16-3.9 7.4-14.7L8.6 64l13.5-9.3L17 39l16.3-2.6 1.5-16.4 15.6 5.4z" /></svg>
-              <b>1 ₽</b><small>первый<br />день</small>
+              <b>{dayRate} ₽</b><small>в день<br />по дневной</small>
             </span>
           </figure>
 
@@ -89,7 +90,7 @@ const year = new Date().getFullYear();
           </a>
           <div class="bk-box bk-stat c-lil" data-rise style="--d:260ms"><b>06:30</b><span>открываемся по будням, закрываемся в 23:30</span></div>
           <div class="bk-box bk-stat c-mint" data-rise style="--d:320ms"><b>50</b><span>мест на бесплатной парковке</span></div>
-          <div class="bk-box bk-stat c-white" data-rise style="--d:380ms"><b>0 ₽</b><span>вступительный взнос</span></div>
+          <div class="bk-box bk-stat c-white" data-rise style="--d:380ms"><b>{num(day.month)} ₽</b><span>в месяц по дневной карте, это {dayRate} ₽ в день</span></div>
         </div>
       </section>
 
@@ -158,14 +159,14 @@ const year = new Date().getFullYear();
             </article>
           ))}
 
-          <div class="bk-box bk-trial c-or" data-rise>
-            <p class="bk-trial-n" aria-hidden="true">1&nbsp;₽</p>
-            <div class="bk-trial-txt">
-              <h3>{trial.title}</h3>
-              <p>{trial.text}</p>
-              <a class="bk-btn c-white" href="#zapis" data-lead={trial.title} data-block="18_trial"><span>Забрать день</span><Icon name="chev" /></a>
+          <div class="bk-box bk-day c-or" data-rise>
+            <p class="bk-day-n" aria-hidden="true">{dayRate}&nbsp;₽</p>
+            <div class="bk-day-txt">
+              <h3>{day.name}: {dayRate}&nbsp;₽ в&nbsp;день</h3>
+              <p>{num(day.month)} ₽ в месяц. Тренажёрный зал и кардиозона {day.hours}, раздевалки, душевые и парковка.</p>
+              <a class="bk-btn c-white" href="#zapis" data-lead="Заявка с сайта" data-block="18_day"><span>Оставить заявку</span><Icon name="chev" /></a>
             </div>
-            <span class="bk-stk bk-stk-tag c-yel bk-trial-stk" aria-hidden="true">Нужен только паспорт</span>
+            <span class="bk-stk bk-stk-tag c-yel bk-day-stk" aria-hidden="true">{day.hours[0].toUpperCase() + day.hours.slice(1)}</span>
           </div>
 
           {[{ p: tradein, c: 'c-mint', big: '999 ₽' }, { p: friend, c: 'c-lil', big: '1+1' }].map(({ p, c, big }, i) => (
@@ -227,17 +228,17 @@ const year = new Date().getFullYear();
       <section class="bk-w bk-sec bk-cta" id="zapis" aria-labelledby="bk-c-h">
         <div class="bk-grid">
           <div class="bk-box bk-cta-main c-lil" data-rise>
-            <h2 id="bk-c-h" class="bk-h2">Приходи на&nbsp;пробный день</h2>
-            <p class="bk-cta-p">Оставь имя и телефон. Администратор перезвонит в часы работы клуба и подберёт время.</p>
+            <h2 id="bk-c-h" class="bk-h2">Приходи в&nbsp;клуб</h2>
+            <p class="bk-cta-p">Оставь имя и телефон. Администратор перезвонит в часы работы клуба и поможет выбрать карту.</p>
             <div class="bk-info">
               <div class="c-white"><span>Адрес</span><b>{site.address.short}</b><a href={site.maps.yandex} target="_blank" rel="noopener">На карте<Icon name="chev" /></a></div>
               <div class="c-white"><span>Часы</span>{site.hours.map((h) => <b>{`${h.days} ${h.time}`}</b>)}</div>
-              <div class="c-white"><span>Телефон</span><b><a href={site.phone.href}>{site.phone.display}</a></b><span class="bk-info-l"><a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a><a href={telegramLink('concept18')} target="_blank" rel="noopener">Telegram</a></span></div>
+              <div class="c-white"><span>Телефон</span><b><a href={site.phone.href}>{site.phone.display}</a></b><span class="bk-info-l"><a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a><a href={telegramLink('concept18')} target="_blank" rel="noopener">Telegram</a></span></div>
               <div class="c-white"><span>Парковка</span><b>50 мест бесплатно</b><span class="bk-info-s">под видеонаблюдением</span></div>
             </div>
           </div>
           <div class="bk-box bk-cta-form c-white" data-rise style="--d:120ms">
-            <LeadForm id="bk-form" block="18_final" title="Записаться за 1 ₽" />
+            <LeadForm id="bk-form" block="18_final" />
           </div>
         </div>
       </section>
@@ -477,13 +478,13 @@ const year = new Date().getFullYear();
   .bk-plan li.is-no { opacity: 0.55; text-decoration: line-through; text-decoration-thickness: 2px; }
   .bk-plan li.is-no .bk-ck { background: transparent; color: var(--ink); border: 2px solid var(--ink); }
   .bk-plan .bk-btn { margin-top: 10px; }
-  .bk-trial { display: grid; gap: 16px; padding: 22px 20px 26px; margin-top: 18px; overflow: visible; }
-  .bk-trial-n { font-size: clamp(7rem, 4rem + 18vw, 15rem); font-weight: 900; line-height: 0.78; letter-spacing: -0.08em; font-variation-settings: 'SHRP' 100; color: var(--ink); padding-top: 0.04em; }
-  .bk-trial-txt { display: grid; gap: 14px; align-content: center; }
-  .bk-trial-txt h3 { font-size: clamp(2rem, 1.4rem + 2vw, 3.2rem); }
-  .bk-trial-txt p { font-weight: 550; max-width: 40ch; }
-  .bk-trial-txt .bk-btn { justify-self: start; }
-  .bk-trial-stk { position: absolute; top: -20px; right: 14px; --r: -5deg; }
+  .bk-day { display: grid; gap: 16px; padding: 22px 20px 26px; margin-top: 18px; overflow: visible; }
+  .bk-day-n { font-size: clamp(7rem, 4rem + 18vw, 15rem); font-weight: 900; line-height: 0.78; letter-spacing: -0.08em; font-variation-settings: 'SHRP' 100; color: var(--ink); padding-top: 0.04em; }
+  .bk-day-txt { display: grid; gap: 14px; align-content: center; }
+  .bk-day-txt h3 { font-size: clamp(2rem, 1.4rem + 2vw, 3.2rem); }
+  .bk-day-txt p { font-weight: 550; max-width: 40ch; }
+  .bk-day-txt .bk-btn { justify-self: start; }
+  .bk-day-stk { position: absolute; top: -20px; right: 14px; --r: -5deg; }
   .bk-ticket { display: grid; grid-template-columns: auto 1fr; gap: 0; overflow: hidden; }
   .bk-ticket-big { display: grid; place-items: center; padding: 16px 14px; border-right: 3px dashed var(--ink); font-size: clamp(1.9rem, 1.3rem + 2vw, 3rem); font-weight: 900; letter-spacing: -0.05em; line-height: 0.9; writing-mode: vertical-rl; transform: rotate(180deg); }
   .bk-ticket-txt { display: grid; gap: 10px; padding: 18px 18px 20px; align-content: start; }
@@ -491,8 +492,8 @@ const year = new Date().getFullYear();
   .bk-ticket-txt p { font-size: 0.96rem; font-weight: 500; }
   @media (min-width: 900px) {
     .bk-plan { grid-column: span 4 !important; padding: 30px 26px 26px; }
-    .bk-trial { grid-column: 1 / -1 !important; grid-template-columns: auto 1fr; gap: clamp(28px, 4vw, 64px); padding: 30px 40px; align-items: center; margin-top: 26px; }
-    .bk-trial-stk { right: 40px; }
+    .bk-day { grid-column: 1 / -1 !important; grid-template-columns: auto 1fr; gap: clamp(28px, 4vw, 64px); padding: 30px 40px; align-items: center; margin-top: 26px; }
+    .bk-day-stk { right: 40px; }
     .bk-ticket { grid-column: span 6 !important; }
     .bk-ticket-big { writing-mode: horizontal-tb; transform: none; min-width: 170px; padding: 20px; font-size: clamp(2.4rem, 1.4rem + 2vw, 3.4rem); }
     .bk-ticket-txt { padding: 24px 26px 26px; }

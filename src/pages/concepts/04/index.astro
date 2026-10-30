@@ -10,7 +10,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, programs } from '../../../data/content';
 import heroImg from '../../../assets/images/group-strength.jpg';
 
@@ -20,6 +20,8 @@ const we = site.hours[1];
 const hoursData = JSON.stringify(site.hours.map((h) => ({ days: h.schema.days, open: h.schema.opens, close: h.schema.closes })));
 const classes = programs.flatMap((p) => p.items);
 const zoneList = zones.map((z) => ({ ...z, img: z.image ? img(z.image) : null }));
+const dayCard = plans[0];
+const fromDay = perDay(dayCard.month, 30);
 const maxDay = Math.max(...plans.map((p) => perDay(p.month, 30)));
 const quotes = reviews.slice(0, 3).map((r) => ({ ...r, short: r.text.split('. ').slice(0, 2).join('. ').replace(/\.?$/, '.') }));
 const team = trainers.map((t) => ({ ...t, img: img(t.photo.replace('.jpg', '-glow.webp')) }));
@@ -28,7 +30,7 @@ const stats = [
   { n: '1300', u: 'м²', l: 'площадь клуба' },
   { n: '60+', u: '', l: `тренажёров ${site.facts.brands}` },
   { n: '150', u: 'м²', l: 'зал групповых программ' },
-  { n: '0', u: '₽', l: 'вступительный взнос' },
+  { n: String(fromDay), u: '₽', l: 'в день по дневной карте' },
 ];
 ---
 <Layout title="Концепция 04 «Спринт»" description="Концепция дизайна сайта Urban210: спортивный плакат с таймером и интервалами." noindex bare>
@@ -39,7 +41,7 @@ const stats = [
         <a href="#zones">Зоны</a><a href="#price">Тарифы</a><a href="#team">Тренеры</a><a href="#reviews">Отзывы</a><a href="#go">Контакты</a>
       </nav>
       <a class="s4-tel" href={site.phone.href}>{site.phone.display}</a>
-      <a class="s4-btn s4-btn-sm" href="#go" data-lead={trial.title} data-block="s4_header">1 ₽ первый день</a>
+      <a class="s4-btn s4-btn-sm" href="#price" data-block="s4_header">Выбрать карту</a>
       <span class="s4-progress" aria-hidden="true"></span>
     </header>
 
@@ -47,11 +49,11 @@ const stats = [
     <section class="s4-hero" aria-labelledby="s4-h">
       <div class="s4-hero-txt">
         <p class="s4-kick"><span class="s4-dot"></span>Фитнес-клуб в Хабаровске</p>
-        <h1 id="s4-h"><span>Первый</span><span>день</span><span>за <mark>1 ₽</mark></span></h1>
-        <p class="s4-lead">Полный доступ в зал на один день. {site.facts.machines}, свободные веса до 60 кг, групповые и SPA. Без вступительного взноса.</p>
+        <h1 id="s4-h"><span>Зал</span><span>от <mark>{fromDay} ₽</mark></span><span>в день</span></h1>
+        <p class="s4-lead">{dayCard.name} за {rub(dayCard.month)} в месяц. {site.facts.machines}, свободные веса до 60 кг, групповые и SPA.</p>
         <div class="s4-cta">
-          <a class="s4-btn" href="#go" data-lead={trial.title} data-block="s4_hero">Записаться<Icon name="chev" /></a>
-          <a class="s4-link" href="#price">Тарифы от {rub(plans[0].month)}</a>
+          <a class="s4-btn" href="#price" data-block="s4_hero">Выбрать карту<Icon name="chev" /></a>
+          <a class="s4-link" href="#go" data-lead="Заявка с сайта" data-block="s4_hero_lead">Оставить заявку</a>
         </div>
       </div>
 
@@ -130,8 +132,8 @@ const stats = [
     <section class="s4-sec" id="price" aria-labelledby="s4-p">
       <div class="s4-wrap">
         <div class="s4-head">
-          <h2 id="s4-p" class="s4-h2">Тарифы <span>без взноса</span></h2>
-          <p>Безлимит в своё время. Платите только за тариф. Полоска показывает цену одного дня.</p>
+          <h2 id="s4-p" class="s4-h2">Тарифы <span>от {fromDay} ₽</span></h2>
+          <p>Безлимит в своё время. Полоска показывает цену одного дня.</p>
         </div>
         <div class="s4-plans">
           {plans.map((p) => (
@@ -155,13 +157,13 @@ const stats = [
           ))}
         </div>
 
-        <div class="s4-trial">
-          <p class="s4-trial-n" aria-hidden="true">1<span>₽</span></p>
-          <div class="s4-trial-txt">
-            <h3>{trial.title}</h3>
-            <p>{trial.text}</p>
+        <div class="s4-offer">
+          <p class="s4-offer-n" aria-hidden="true">{fromDay}<span>₽</span></p>
+          <div class="s4-offer-txt">
+            <h3>От {fromDay} ₽ в день</h3>
+            <p>{dayCard.name}: {rub(dayCard.month)} в месяц. Зал и кардиозона {dayCard.hours}.</p>
           </div>
-          <a class="s4-btn s4-btn-light" href="#go" data-lead={trial.title} data-block="s4_trial">Записаться<Icon name="chev" /></a>
+          <a class="s4-btn s4-btn-light" href="#go" data-lead="Заявка с сайта" data-block="s4_offer">Оставить заявку<Icon name="chev" /></a>
         </div>
       </div>
     </section>
@@ -209,13 +211,13 @@ const stats = [
     <section class="s4-go" id="go" aria-labelledby="s4-g">
       <div class="s4-wrap s4-go-in">
         <div class="s4-go-txt">
-          <h2 id="s4-g"><span>На старт</span><span>за 1 ₽</span></h2>
-          <p>Оставьте телефон. Администратор перезвонит в часы работы клуба и подберёт время для пробного дня.</p>
+          <h2 id="s4-g"><span>На старт</span><span>в зал</span></h2>
+          <p>Оставьте телефон. Администратор перезвонит в часы работы клуба, поможет выбрать карту и подберёт время.</p>
           <dl class="s4-info">
             <div><dt>Адрес</dt><dd>{site.address.short}<br />{site.district}</dd></div>
             <div><dt>Часы</dt><dd>{wd.days} {wd.time}<br />{we.days} {we.time}</dd></div>
             <div><dt>Парковка</dt><dd>{site.parking}</dd></div>
-            <div><dt>Связь</dt><dd><a href={site.phone.href}>{site.phone.display}</a><br /><a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a> · <a href={telegramLink('s4_go')} target="_blank" rel="noopener">Telegram</a></dd></div>
+            <div><dt>Связь</dt><dd><a href={site.phone.href}>{site.phone.display}</a><br /><a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a> · <a href={telegramLink('s4_go')} target="_blank" rel="noopener">Telegram</a></dd></div>
           </dl>
         </div>
         <div class="s4-form"><LeadForm id="s4" block="s4_final" /></div>
@@ -476,12 +478,12 @@ const stats = [
   .p-full .s4-btn:hover { background: #0a1240; }
   @media (min-width: 980px) { .s4-plans { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
-  .s4-trial { margin-top: 16px; display: grid; gap: 20px; align-items: center; padding: clamp(24px, 3vw, 40px); border-radius: 6px; background: var(--ink); color: #fff; overflow: hidden; }
-  .s4-trial-n { font: 900 clamp(9rem, 6rem + 10vw, 16rem)/0.74 var(--cond); color: var(--o); letter-spacing: -0.02em; }
-  .s4-trial-n span { font-size: 0.5em; margin-left: 0.06em; }
-  .s4-trial h3 { font-size: clamp(2.6rem, 2rem + 2vw, 4rem); }
-  .s4-trial p:not(.s4-trial-n) { margin-top: 12px; color: rgb(255 255 255 / 0.75); max-width: 46ch; }
-  @media (min-width: 900px) { .s4-trial { grid-template-columns: auto 1fr auto; gap: clamp(28px, 4vw, 64px); } }
+  .s4-offer { margin-top: 16px; display: grid; gap: 20px; align-items: center; padding: clamp(24px, 3vw, 40px); border-radius: 6px; background: var(--ink); color: #fff; overflow: hidden; }
+  .s4-offer-n { font: 900 clamp(9rem, 6rem + 10vw, 16rem)/0.74 var(--cond); color: var(--o); letter-spacing: -0.02em; }
+  .s4-offer-n span { font-size: 0.5em; margin-left: 0.06em; }
+  .s4-offer h3 { font-size: clamp(2.6rem, 2rem + 2vw, 4rem); }
+  .s4-offer p:not(.s4-offer-n) { margin-top: 12px; color: rgb(255 255 255 / 0.75); max-width: 46ch; }
+  @media (min-width: 900px) { .s4-offer { grid-template-columns: auto 1fr auto; gap: clamp(28px, 4vw, 64px); } }
 
   /* ---------- Тренеры ---------- */
   .s4-team-sec { background: var(--gray); }

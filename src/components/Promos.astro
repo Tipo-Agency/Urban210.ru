@@ -1,22 +1,15 @@
 ---
-import { Image } from 'astro:assets';
-import { img } from '../data/images';
+// Акции клуба карточками со ссылкой на страницу акции.
+import Icon from './Icon.astro';
 import { promos } from '../data/content';
+const list = promos.filter((p) => p.slug !== '1-rubl');
 ---
-<section class="sec" data-block="promos" aria-labelledby="promo-t">
-  <div class="wrap">
-    <div class="head head-split">
-      <h2 id="promo-t">Акции</h2>
-      <p>Попробовать клуб за рубль, перейти из другого клуба или привести друга.</p>
-    </div>
-    <div class="promos">
-      {promos.map((p) => (
-        <a class="promo" href={`/promo/${p.slug}/`} data-rise>
-          <Image src={img(`/images/promo/${p.slug}.jpg`)} alt="" widths={[480, 900]} sizes="(min-width: 900px) 33vw, 100vw" format="avif" quality={45} />
-          <h3>{p.title}</h3>
-          <p>{p.short}</p>
-        </a>
-      ))}
-    </div>
-  </div>
-</section>
+<div class="f5-grid f5-grid-2">
+  {list.map((p, i) => (
+    <a class:list={['f5-card', i === 0 ? 'is-org' : 'is-cob']} href={`/promo/${p.slug}/`}>
+      <h3>{p.title}</h3>
+      <p>{p.short}. {p.text}</p>
+      <span class="f5-card-more">Подробнее<Icon name="chev" /></span>
+    </a>
+  ))}
+</div>

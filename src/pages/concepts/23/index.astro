@@ -14,7 +14,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, reasons, programs } from '../../../data/content';
 
 const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -59,7 +59,9 @@ const num = (n: number) => n.toLocaleString('ru-RU').replace(/\s/g, ' ');
 const rating = site.rating.value.toString().replace('.', ',');
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const z = Object.fromEntries(zones.map((x) => [x.id, x]));
-const [trialPromo, tradein, friend] = [promos.find((p) => p.slug === '1-rubl')!, promos.find((p) => p.slug === 'trade-in')!, promos.find((p) => p.slug === '1-plus-1')!];
+const [tradein, friend] = [promos.find((p) => p.slug === 'trade-in')!, promos.find((p) => p.slug === '1-plus-1')!];
+const dayRate = perDay(plans[0].month, 30);
+const shownReasons = reasons.filter((r) => !r.title.startsWith('Нет вступ'));
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
 const planSkin = ['paper', 'orange', 'green'];
 const planWord = ['солнце', 'солнце и луна', 'солнце, луна и пар'];
@@ -86,7 +88,7 @@ const blobs = ['62% 38% 55% 45% / 48% 60% 40% 52%', '45% 55% 40% 60% / 60% 42% 5
           <a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#trenery">Тренеры</a><a href="#otzyvy">Отзывы</a><a href="#zayavka">Адрес</a>
         </nav>
         <a class="pk-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="pk-btn pk-btn-s" href="#zayavka" data-lead={trial.title} data-block="23_header"><span>Пробный<span class="pk-hide-s">&nbsp;день</span>&nbsp;за&nbsp;1&nbsp;₽</span></a>
+        <a class="pk-btn pk-btn-s" href="#zayavka" data-lead="Заявка с сайта" data-block="23_header"><span class="pk-hide-s">Оставить заявку</span><span class="pk-hide-l">Заявка</span></a>
       </div>
     </header>
 
@@ -99,10 +101,10 @@ const blobs = ['62% 38% 55% 45% / 48% 60% 40% 52%', '45% 55% 40% 60% / 60% 42% 5
             <span class="l">Раньше</span>
             <span class="l l2">солнца<svg class="pk-swash" viewBox="0 0 400 34" preserveAspectRatio="none" aria-hidden="true"><path d="M4 22C70 9 190 4 396 12l-2 9C230 15 100 20 8 31z" /></svg></span>
           </h1>
-          <p class="pk-lead">Urban210 открывается в&nbsp;6:30 по будням и в&nbsp;7:30 по выходным. Зал, кардио, групповые и SPA. Первый день за&nbsp;1&nbsp;₽, вступительного взноса нет.</p>
+          <p class="pk-lead">Urban210 открывается в&nbsp;6:30 по будням и в&nbsp;7:30 по выходным. Зал, кардио, групповые и SPA. Дневная карта от&nbsp;{dayRate}&nbsp;₽ в&nbsp;день.</p>
           <div class="pk-cta">
-            <a class="pk-btn" href="#zayavka" data-lead={trial.title} data-block="23_hero">Записаться за 1 ₽<Icon name="chev" /></a>
-            <a class="pk-link" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+            <a class="pk-btn" href="#tarify" data-block="23_hero">Выбрать карту<Icon name="chev" /></a>
+            <a class="pk-link" href="#zayavka" data-lead="Заявка с сайта" data-block="23_hero">Оставить заявку</a>
           </div>
         </div>
 
@@ -132,13 +134,13 @@ const blobs = ['62% 38% 55% 45% / 48% 60% 40% 52%', '45% 55% 40% 60% / 60% 42% 5
       </div>
     </section>
 
-    <!-- Четыре простые вещи -->
+    <!-- Три простые вещи -->
     <section class="pk-sec pk-why" aria-labelledby="pk-why-h">
       <div class="pk-w" data-m>
-        <h2 id="pk-why-h" class="pk-h2" data-s style="--x:-30px;--r:-2deg">Четыре простые вещи</h2>
+        <h2 id="pk-why-h" class="pk-h2" data-s style="--x:-30px;--r:-2deg">Три простые вещи</h2>
         <p class="pk-poet pk-why-poet" data-s style="--d:120ms">из-за которых в зал хочется вернуться</p>
         <ol class="pk-reasons">
-          {reasons.map((r, i) => (
+          {shownReasons.map((r, i) => (
             <li data-s style={`--y:40px;--r:${i % 2 ? 3 : -3}deg;--d:${i * 90}ms`}>
               <span class={`rs rs-${i}`} style={`border-radius:${blobs[i]}`} aria-hidden="true"></span>
               <h3>{r.title}</h3>
@@ -218,7 +220,7 @@ const blobs = ['62% 38% 55% 45% / 48% 60% 40% 52%', '45% 55% 40% 60% / 60% 42% 5
       <div class="pk-w">
         <div class="pk-head" data-m>
           <h2 id="pk-price-h" class="pk-h2" data-s style="--x:-30px;--r:-2deg">Абонемент по солнцу</h2>
-          <p class="pk-note" data-s style="--d:120ms">Дневная карта до 16:00, полный день до закрытия, всё включено с группами и SPA. Вступительного взноса нет.</p>
+          <p class="pk-note" data-s style="--d:120ms">Дневная карта до 16:00, полный день до закрытия, всё включено с группами и SPA. Дневная карта выходит от {dayRate}&nbsp;₽ в&nbsp;день.</p>
         </div>
         <div class="pk-plans" data-m>
           {plans.map((p, i) => (
@@ -245,9 +247,9 @@ const blobs = ['62% 38% 55% 45% / 48% 60% 40% 52%', '45% 55% 40% 60% / 60% 42% 5
           ))}
         </div>
 
-        <div class="pk-trial" data-m>
+        <div class="pk-day" data-m>
           <div class="tr-art" aria-hidden="true">
-            <span class="tr-coin" data-s style="--y:-120px;--r:-40deg;--s:.6"><b>1</b><i>₽</i></span>
+            <span class="tr-coin" data-s style="--y:-120px;--r:-40deg;--s:.6"><b>{dayRate}</b><i>₽</i></span>
             <svg class="tr-birds" viewBox="0 0 200 120" data-s style="--x:-80px;--y:40px;--d:200ms">
               <use href="#pk-bird" x="10" y="60" width="44" height="28" />
               <use href="#pk-bird" x="80" y="20" width="30" height="19" />
@@ -255,11 +257,11 @@ const blobs = ['62% 38% 55% 45% / 48% 60% 40% 52%', '45% 55% 40% 60% / 60% 42% 5
             </svg>
           </div>
           <div class="tr-tx" data-s style="--y:40px;--d:160ms">
-            <p class="pk-poet">одна монета, один день</p>
-            <h3>Пробный день</h3>
-            <p>{trial.text}</p>
-            <ul>{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-            <a class="pk-btn pk-btn-ink" href="#zayavka" data-lead={trial.title} data-block="23_trial">{trialPromo.cta}<Icon name="chev" /></a>
+            <p class="pk-poet">монета к монете, день за днём</p>
+            <h3>{plans[0].name}</h3>
+            <p>{rub(plans[0].month)} в месяц, это {dayRate}&nbsp;₽ в&nbsp;день. Тренажёрный зал и кардиозона {plans[0].hours}.</p>
+            <ul>{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+            <a class="pk-btn pk-btn-ink" href="#zayavka" data-lead="Заявка с сайта" data-block="23_day">Оставить заявку<Icon name="chev" /></a>
           </div>
         </div>
 
@@ -488,10 +490,12 @@ const blobs = ['62% 38% 55% 45% / 48% 60% 40% 52%', '45% 55% 40% 60% / 60% 42% 5
   .pk-tel { display: none; font-weight: 650; text-decoration: none; white-space: nowrap; }
   .pk-top .pk-btn { margin-left: auto; }
   .pk-hide-s { display: none; }
+  .pk-hide-l { display: inline; }
   @media (min-width: 1100px) {
     .pk-nav, .pk-tel { display: flex; }
     .pk-top .pk-btn { margin-left: 0; }
     .pk-hide-s { display: inline; }
+    .pk-hide-l { display: none; }
   }
 
   /* Первый экран */
@@ -548,7 +552,7 @@ const blobs = ['62% 38% 55% 45% / 48% 60% 40% 52%', '45% 55% 40% 60% / 60% 42% 5
   .pk-reasons h3 { font-size: 1.75rem; line-height: 1.02; margin: 0; color: var(--paper); }
   .pk-reasons p { font-size: 1.02rem; line-height: 1.55; color: #d6dcd0; max-width: 36ch; }
   @media (min-width: 900px) {
-    .pk-reasons { grid-template-columns: repeat(4, 1fr); gap: 40px; }
+    .pk-reasons { grid-template-columns: repeat(3, 1fr); gap: 40px; }
     .pk-reasons li:nth-child(even) { margin-top: 56px; }
   }
 
@@ -651,10 +655,10 @@ const blobs = ['62% 38% 55% 45% / 48% 60% 40% 52%', '45% 55% 40% 60% / 60% 42% 5
     .pc:nth-child(2) { margin-top: -20px; }
   }
 
-  .pk-trial { position: relative; margin-top: clamp(64px, 9vw, 120px); display: grid; grid-template-columns: minmax(0, 1fr); background: var(--pink); overflow: hidden; }
+  .pk-day { position: relative; margin-top: clamp(64px, 9vw, 120px); display: grid; grid-template-columns: minmax(0, 1fr); background: var(--pink); overflow: hidden; }
   .tr-art { position: relative; height: 340px; }
   .tr-coin { position: absolute; left: 50%; top: 40px; width: 250px; margin-left: -125px; aspect-ratio: 1; border-radius: 50%; background: var(--or); display: flex; align-items: center; justify-content: center; gap: 2px; filter: url(#pk-paper); box-shadow: inset 0 0 0 12px var(--ink); }
-  .tr-coin b { font-family: var(--fd); font-weight: 400; font-size: 9.5rem; line-height: 1; color: var(--ink); }
+  .tr-coin b { font-family: var(--fd); font-weight: 400; font-size: 7.4rem; line-height: 1; color: var(--ink); }
   .tr-coin i { font-style: normal; font-family: var(--fd); font-size: 3.4rem; align-self: flex-end; margin-bottom: 64px; }
   .tr-birds { position: absolute; left: 10px; top: 10px; width: 160px; fill: var(--ink); }
   .tr-tx { padding: 8px 24px 34px; display: grid; gap: 14px; justify-items: start; }
@@ -664,10 +668,10 @@ const blobs = ['62% 38% 55% 45% / 48% 60% 40% 52%', '45% 55% 40% 60% / 60% 42% 5
   .tr-tx ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
   .tr-tx li { background: var(--paper); padding: 6px 12px 5px; font-size: 0.9rem; font-weight: 600; border-radius: 44% 56% 50% 50% / 60% 50% 50% 40%; }
   @media (min-width: 900px) {
-    .pk-trial { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); align-items: center; }
+    .pk-day { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); align-items: center; }
     .tr-art { height: 500px; }
     .tr-coin { width: 380px; margin-left: -190px; top: 60px; }
-    .tr-coin b { font-size: 14rem; }
+    .tr-coin b { font-size: 11rem; }
     .tr-coin i { font-size: 5rem; margin-bottom: 96px; }
     .tr-birds { width: 220px; left: 30px; top: 20px; }
     .tr-tx { padding: 56px 56px 56px 0; }

@@ -8,7 +8,7 @@ import Final from '../../components/Final.astro';
 import Cta from '../../components/Cta.astro';
 import { img } from '../../data/images';
 import { SITE_URL } from '../../data/site';
-import { plans, rub } from '../../data/pricing';
+import { plans, perDay, rub } from '../../data/pricing';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -65,10 +65,10 @@ const goal = post.data.cta;
       <div class="prose"><Content /></div>
       <aside>
         <div class="aside-sticky aside-card on-accent">
-          <p class="num">1 ₽</p>
-          <h2 style="font-size:1.4rem">Пробный день в Urban210</h2>
-          <p>Зал, тренажёры и экскурсия по клубу. Абонемент потом от {rub(plans[0].month)} в месяц, без вступительного взноса.</p>
-          <Cta variant="dark" goal={goal} block="blog_aside" wide>{goal === 'Пробный день за 1 ₽' ? 'Записаться' : goal}</Cta>
+          <p class="num">{perDay(plans[0].month, 30)} ₽</p>
+          <h2 style="font-size:1.4rem">в день в Urban210</h2>
+          <p>Дневная карта {rub(plans[0].month)} в месяц: зал и кардиозона, парковка, раздевалки с душем.</p>
+          <Cta variant="dark" goal={goal} block="blog_aside" wide>{goal === 'Пробный день за 1 ₽' || goal === 'Оставить заявку' ? 'Оставить заявку' : goal}</Cta>
           <a class="link" href="/price/">Все тарифы</a>
         </div>
       </aside>

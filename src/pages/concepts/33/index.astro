@@ -1,7 +1,7 @@
 ---
 // Концепция 33 «Красная линия»: почти чёрная страница и одна тонкая оранжевая линия.
 // Линия идёт по левому полю и рисуется по мере прокрутки. На своём пути она подчёркивает заголовок,
-// обводит фото, ведёт к популярному тарифу, обводит цену пробного дня и заканчивается на кнопке заявки.
+// обводит фото, ведёт к популярному тарифу, обводит цену дня и заканчивается на кнопке заявки.
 // Геометрию считает маленький скрипт по реальным блокам страницы, поэтому линия совпадает с вёрсткой на любой ширине.
 import onCyr from '@fontsource-variable/onest/files/onest-cyrillic-wght-normal.woff2?url';
 import onLat from '@fontsource-variable/onest/files/onest-latin-wght-normal.woff2?url';
@@ -13,7 +13,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink } from '../../../data/site';
-import { plans, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, promos, personalText } from '../../../data/content';
 
 const UR = 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116';
@@ -35,7 +35,7 @@ const zoneList = [
   { ...z.group, text: cap(z.group.text), photo: '/images/group.jpg', alt: 'Групповая тренировка в большом зале' },
   { ...z.spa, photo: null, alt: '' },
 ];
-const trialPromo = promos.find((p) => p.slug === '1-rubl')!;
+const dayPrice = perDay(plans[0].month, 30);
 const side = promos.filter((p) => p.slug !== '1-rubl');
 const personalLine = `${personal.pack} тренировок: ${rub(personal.price)}`;
 ---
@@ -55,7 +55,7 @@ const personalLine = `${personal.pack} тренировок: ${rub(personal.pric
           <a href="#zony">Зоны</a><a href="#tarify">Тарифы</a><a href="#trenery">Тренеры</a><a href="#otzyvy">Отзывы</a>
         </nav>
         <a class="rl-tel" href={site.phone.href}>{site.phone.display}</a>
-        <a class="rl-btn rl-btn-line rl-btn-s" href="#zayavka" data-lead={trial.title} data-block="33_header">1 ₽<span class="rl-hide-s">&nbsp;пробный день</span></a>
+        <a class="rl-btn rl-btn-line rl-btn-s" href="#tarify" data-block="33_header">Выбрать карту</a>
       </div>
     </header>
 
@@ -67,10 +67,10 @@ const personalLine = `${personal.pack} тренировок: ${rub(personal.pric
         <figure class="rl-hero-ph" data-l="photo">
           <Image src={img('/images/community/2.jpg')} alt="Гость клуба тренируется с гантелью" widths={[480, 600]} sizes="(min-width: 1000px) 390px, 220px" loading="eager" fetchpriority="high" format="webp" quality={60} />
         </figure>
-        <p class="rl-hero-tx">{cap(site.facts.area)} в&nbsp;Железнодорожном районе: {site.facts.machines} {site.facts.brands}, групповые программы и&nbsp;SPA. Вступительного взноса нет.</p>
+        <p class="rl-hero-tx">{cap(site.facts.area)} в&nbsp;Железнодорожном районе: {site.facts.machines} {site.facts.brands}, групповые программы и&nbsp;SPA. Безлимит от&nbsp;{dayPrice}&nbsp;₽ в день.</p>
         <div class="rl-hero-act">
-          <a class="rl-btn" href="#zayavka" data-lead={trial.title} data-block="33_hero">Пробный день за 1 ₽<Icon name="chev" /></a>
-          <a class="rl-quiet" href="#tarify">Тарифы от {num(plans[0].month)} ₽</a>
+          <a class="rl-btn" href="#tarify" data-block="33_hero">Выбрать карту<Icon name="chev" /></a>
+          <a class="rl-quiet" href="#zayavka" data-lead="Заявка с сайта" data-block="33_hero">Оставить заявку</a>
         </div>
         <dl class="rl-hero-facts">
           {site.hours.map((h) => <div><dt>{h.days}</dt><dd>{h.time}</dd></div>)}
@@ -129,16 +129,16 @@ const personalLine = `${personal.pack} тренировок: ${rub(personal.pric
       </div>
     </section>
 
-    <!-- Пробный день: линия обводит цену -->
-    <section class="rl-sec" aria-labelledby="rl-trial-h">
-      <div class="rl-w rl-trial">
-        <p class="rl-one" data-l="one" aria-hidden="true"><b>1</b><span>₽</span></p>
-        <div class="rl-trial-tx">
-          <p class="rl-mark">03<span>Первый визит</span></p>
-          <h2 id="rl-trial-h" class="rl-h2">Пробный день за&nbsp;1&nbsp;₽</h2>
-          <p class="rl-p">{trial.text}</p>
-          <ul class="rl-terms">{trialPromo.terms.map((t) => <li>{t}</li>)}</ul>
-          <a class="rl-btn" href="#zayavka" data-lead={trial.title} data-block="33_trial">{trialPromo.cta}<Icon name="chev" /></a>
+    <!-- Цена дня: линия обводит цену -->
+    <section class="rl-sec" aria-labelledby="rl-offer-h">
+      <div class="rl-w rl-offer">
+        <p class="rl-one" data-l="one" aria-hidden="true"><b>{dayPrice}</b><span>₽</span></p>
+        <div class="rl-offer-tx">
+          <p class="rl-mark">03<span>Цена дня</span></p>
+          <h2 id="rl-offer-h" class="rl-h2">Безлимит от&nbsp;{dayPrice}&nbsp;₽ в день</h2>
+          <p class="rl-p">{plans[0].name}: {rub(plans[0].month)} в месяц, {plans[0].hours}. Безлимит в зал и кардиозону.</p>
+          <ul class="rl-terms">{plans[0].features.slice(1).map((t) => <li>{t}</li>)}</ul>
+          <a class="rl-btn" href="#zayavka" data-lead="Заявка с сайта" data-block="33_offer">Оставить заявку<Icon name="chev" /></a>
         </div>
         <ul class="rl-side">
           {side.map((pr) => (
@@ -326,7 +326,7 @@ const personalLine = `${personal.pack} тренировок: ${rub(personal.pric
         add([[xc, mid.t], [mid.r, mid.t]], ya - y0, ds);
       }
 
-      // 4. Пробный день: рамка вокруг «1 ₽», вход по нижней стороне
+      // 4. Цена дня: рамка вокруг «43 ₽», вход по нижней стороне
       const one = R(q('one'));
       const o = { l: one.l, t: one.t, r: one.r, b: one.b };
       const oLen = add([[rail, o.b], [o.l, o.b]], o.b - y0);
@@ -551,12 +551,12 @@ const personalLine = `${personal.pack} тренировок: ${rub(personal.pric
   .rl-plan li { padding: 12px 0; border-top: 1px solid var(--hair); font-size: 0.9375rem; color: var(--soft); }
   .rl-plan li.no { color: var(--dim); text-decoration: line-through; text-decoration-color: #3a3a38; }
 
-  /* ---------- Пробный день ---------- */
-  .rl-trial { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: start; }
+  /* ---------- Цена дня ---------- */
+  .rl-offer { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: start; }
   .rl-one { grid-column: 1 / 6; display: flex; align-items: flex-start; justify-content: center; gap: 8px; padding: 48px 0 56px; font-weight: 600; letter-spacing: -0.07em; }
-  .rl-one b { font-size: 320px; line-height: 0.74; }
+  .rl-one b { font-size: 240px; line-height: 0.74; }
   .rl-one span { font-size: 96px; line-height: 0.8; color: var(--soft); letter-spacing: 0; }
-  .rl-trial-tx { grid-column: 7 / 13; display: grid; gap: 24px; justify-items: start; }
+  .rl-offer-tx { grid-column: 7 / 13; display: grid; gap: 24px; justify-items: start; }
   .rl-terms { display: grid; gap: 8px; font-family: var(--m); font-size: 0.8125rem; color: var(--mute); margin-bottom: 16px !important; }
   .rl-terms li::before { content: '+ '; color: var(--dim); }
   .rl-side { grid-column: 1 / 13; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); margin-top: 96px; }
@@ -615,7 +615,7 @@ const personalLine = `${personal.pack} тренировок: ${rub(personal.pric
   /* ---------- Средняя ширина ---------- */
   @media (max-width: 1279px) {
     .rl-h1 { font-size: 136px; }
-    .rl-one b { font-size: 260px; }
+    .rl-one b { font-size: 200px; }
     .rl-h2-xl { font-size: 72px; }
   }
   @media (max-width: 999px) {
@@ -626,8 +626,8 @@ const personalLine = `${personal.pack} тренировок: ${rub(personal.pric
     .rl-hero-tx { grid-column: 1 / 8; }
     .rl-hero-act { grid-column: 8 / 13; }
     .rl-plans, .rl-team { grid-template-columns: 1fr; row-gap: 64px; }
-    .rl-one, .rl-trial-tx, .rl-side { grid-column: 1 / 13; }
-    .rl-trial-tx { margin-top: 64px; }
+    .rl-one, .rl-offer-tx, .rl-side { grid-column: 1 / 13; }
+    .rl-offer-tx { margin-top: 64px; }
     .rl-final-tx, .rl-form { grid-column: 1 / 13; }
   }
 
@@ -665,10 +665,10 @@ const personalLine = `${personal.pack} тренировок: ${rub(personal.pric
     .rl-price { margin-top: 32px !important; }
 
     .rl-one { padding: 32px 0 40px; }
-    .rl-one b { font-size: 200px; }
-    .rl-one span { font-size: 64px; }
-    .rl-trial-tx { margin-top: 48px; gap: 20px; }
-    .rl-trial-tx .rl-btn { width: 100%; }
+    .rl-one b { font-size: 150px; }
+    .rl-one span { font-size: 54px; }
+    .rl-offer-tx { margin-top: 48px; gap: 20px; }
+    .rl-offer-tx .rl-btn { width: 100%; }
     .rl-side { grid-template-columns: 1fr; row-gap: 32px; margin-top: 64px; }
     .rl-side li:first-child, .rl-side li:last-child { grid-column: 1; }
 

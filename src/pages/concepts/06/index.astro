@@ -10,7 +10,7 @@ import LeadForm from '../../../components/LeadForm.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site, whatsappLink, telegramLink, nav } from '../../../data/site';
-import { plans, perDay, rub, trial, personal } from '../../../data/pricing';
+import { plans, perDay, rub, personal } from '../../../data/pricing';
 import { reviews, trainers, zones, programs } from '../../../data/content';
 import cutout from '../../../assets/images/trainers/lazko-cutout.webp';
 
@@ -20,8 +20,10 @@ const posters = [
   { z: zones.find((z) => z.id === 'group')!, line: ['Вместе', 'проще.'], alt: 'Групповая тренировка в зале 150 м²', extra: programs.flatMap((p) => p.items).join(' · ') },
 ];
 const spa = zones.find((z) => z.id === 'spa')!;
+const dayCard = plans[0];
+const fromDay = perDay(dayCard.month, 30);
 const stats = [
-  ['0 ₽', 'вступительный взнос'],
+  [`${fromDay} ₽`, 'в день по дневной карте'],
   ['60+', 'тренажёров Technogym и Matrix'],
   ['1300+', 'м² на двух этажах'],
   ['50', 'мест бесплатной парковки'],
@@ -36,7 +38,7 @@ const year = new Date().getFullYear();
         <a href="#zones">Клуб</a><a href="#price">Тарифы</a><a href="#team">Команда</a><a href="#lead">Контакты</a>
       </nav>
       <a class="c6-tel" href={site.phone.href}>{site.phone.display}</a>
-      <a class="c6-btn c6-btn-sm" href="#lead" data-lead={trial.title} data-block="06_header">1 ₽ первый день</a>
+      <a class="c6-btn c6-btn-sm" href="#price" data-block="06_header">Выбрать карту</a>
     </header>
 
     <!-- Первый экран: плакат -->
@@ -45,21 +47,21 @@ const year = new Date().getFullYear();
         <video data-hero-video data-src="/video/hero-bw.mp4" poster="/video/hero-bw-poster.jpg" muted loop playsinline preload="none"></video>
       </div>
       <h1 id="c6-h" class="c6-hero-h">
-        <span class="sr">Начни с одного дня: пробный день в Urban210 за 1 ₽</span>
+        <span class="sr">Начни с {fromDay} ₽ в день: фитнес-клуб Urban210</span>
         <span class="c6-hl" aria-hidden="true"><span style="--d:0">Начни</span></span>
-        <span class="c6-hl" aria-hidden="true"><span style="--d:1">с одного</span></span>
-        <span class="c6-hl" aria-hidden="true"><span style="--d:2">дня<em>.</em></span></span>
+        <span class="c6-hl" aria-hidden="true"><span style="--d:1">с {fromDay}&nbsp;₽</span></span>
+        <span class="c6-hl" aria-hidden="true"><span style="--d:2">в день<em>.</em></span></span>
       </h1>
       <Image class="c6-cut" src={cutout} alt="Александр Лазько, координатор тренажёрного зала Urban210" widths={[420, 640, 900]} sizes="(min-width: 980px) 46vw, 100vw" loading="eager" fetchpriority="high" format="webp" quality={55} />
       <div class="c6-hero-ghost" aria-hidden="true">
         <span class="c6-hl"><span style="--d:0">Начни</span></span>
-        <span class="c6-hl"><span style="--d:1">с одного</span></span>
-        <span class="c6-hl"><span style="--d:2">дня<em>.</em></span></span>
+        <span class="c6-hl"><span style="--d:1">с {fromDay}&nbsp;₽</span></span>
+        <span class="c6-hl"><span style="--d:2">в день<em>.</em></span></span>
       </div>
       <div class="c6-hero-foot">
-        <p class="c6-hero-sub"><b>Пробный день за 1 ₽.</b> Полный доступ в зал на целый день. Фитнес-клуб Urban210, Хабаровск, {site.address.short}.</p>
+        <p class="c6-hero-sub"><b>{dayCard.name}: {rub(dayCard.month)} в месяц.</b> Безлимит в зал и кардиозону {dayCard.hours}. Фитнес-клуб Urban210, Хабаровск, {site.address.short}.</p>
         <div class="c6-hero-act">
-          <a class="c6-btn" href="#lead" data-lead={trial.title} data-block="06_hero">Записаться за 1 ₽<Icon name="chev" /></a>
+          <a class="c6-btn" href="#price" data-block="06_hero">Выбрать карту<Icon name="chev" /></a>
           <a class="c6-rate" href={site.maps.yandexReviews} target="_blank" rel="noopener"><b>4,7</b><span><Icon name="star" />{site.rating.text}<br />на Яндекс Картах</span></a>
         </div>
       </div>
@@ -68,7 +70,7 @@ const year = new Date().getFullYear();
     <!-- Манифест -->
     <section class="c6-man" aria-labelledby="c6-m">
       <h2 id="c6-m" class="c6-split" data-rise>
-        <span class="c6-ln"><span>Без взноса.</span></span>
+        <span class="c6-ln"><span>Без суеты.</span></span>
         <span class="c6-ln"><span>Без очередей.</span></span>
         <span class="c6-ln"><span>Без оправданий.</span></span>
       </h2>
@@ -121,8 +123,8 @@ const year = new Date().getFullYear();
     <section class="c6-price" id="price" aria-labelledby="c6-p">
       <div class="c6-wrap">
         <div class="c6-head">
-          <h2 id="c6-p" class="c6-split" data-rise><span class="c6-ln"><span>Три тарифа.</span></span><span class="c6-ln"><span>Ноль взносов.</span></span></h2>
-          <p>Платите только за тренировки. Регистрация и браслет входят в стоимость абонемента.</p>
+          <h2 id="c6-p" class="c6-split" data-rise><span class="c6-ln"><span>Три тарифа.</span></span><span class="c6-ln"><span>От {fromDay} ₽ в день.</span></span></h2>
+          <p>Безлимит в своё время, при оплате за год дешевле.</p>
         </div>
         <div class="c6-plans">
           {plans.map((p) => (
@@ -145,12 +147,12 @@ const year = new Date().getFullYear();
       </div>
     </section>
 
-    <section class="c6-trial" aria-labelledby="c6-tr">
-      <div class="c6-trial-num" aria-hidden="true">1₽</div>
-      <div class="c6-trial-txt">
-        <h2 id="c6-tr">{trial.title}</h2>
-        <p>{trial.text} Нужен только паспорт.</p>
-        <a class="c6-btn c6-btn-k" href="#lead" data-lead={trial.title} data-block="06_trial">Хочу попробовать<Icon name="chev" /></a>
+    <section class="c6-offer" aria-labelledby="c6-tr">
+      <div class="c6-offer-num" aria-hidden="true">{fromDay}₽</div>
+      <div class="c6-offer-txt">
+        <h2 id="c6-tr">От {fromDay} ₽ в день</h2>
+        <p>{dayCard.name}: {rub(dayCard.month)} в месяц. Зал и кардиозона {dayCard.hours}.</p>
+        <a class="c6-btn c6-btn-k" href="#lead" data-lead="Заявка с сайта" data-block="06_offer">Оставить заявку<Icon name="chev" /></a>
       </div>
     </section>
 
@@ -203,9 +205,9 @@ const year = new Date().getFullYear();
           <ol class="c6-steps">
             <li>Оставь имя и телефон</li>
             <li>Администратор перезвонит и подберёт время</li>
-            <li>Приходи с паспортом и тренируйся весь день за 1 ₽</li>
+            <li>Приходи с паспортом, оформим карту и покажем зал</li>
           </ol>
-          <p class="c6-lead-alt">Удобнее написать: <a href={whatsappLink('Здравствуйте! Хочу на пробный день в Urban210')} target="_blank" rel="noopener">WhatsApp</a> или <a href={telegramLink('concept06')} target="_blank" rel="noopener">Telegram</a></p>
+          <p class="c6-lead-alt">Удобнее написать: <a href={whatsappLink('Здравствуйте! Хочу записаться в Urban210')} target="_blank" rel="noopener">WhatsApp</a> или <a href={telegramLink('concept06')} target="_blank" rel="noopener">Telegram</a></p>
         </div>
         <div class="c6-form"><LeadForm block="06_final" id="c6" /></div>
       </div>
@@ -448,14 +450,14 @@ const year = new Date().getFullYear();
     .c6-plan.is-hot + .c6-plan { border-left: 0; }
   }
 
-  /* ---------- Пробный день ---------- */
-  .c6-trial { position: relative; z-index: 3; display: grid; gap: 24px; align-items: center; overflow: hidden; background: var(--o); color: var(--k); padding: clamp(40px, 6vw, 80px) var(--gut); }
-  .c6-trial-num { font-weight: 900; font-size: clamp(9rem, 40vw, 30rem); letter-spacing: -0.08em; line-height: 0.74; margin-left: -0.04em; }
-  .c6-trial-txt { display: grid; gap: 16px; max-width: 46ch; }
-  .c6-trial h2 { font-weight: 900; text-transform: uppercase; font-size: clamp(2rem, 1.4rem + 2.4vw, 3.6rem); line-height: 0.9; letter-spacing: -0.045em; }
-  .c6-trial p { font-weight: 500; font-size: 1.05rem; }
-  .c6-trial .c6-btn { width: fit-content; margin-top: 8px; }
-  @media (min-width: 980px) { .c6-trial { grid-template-columns: auto 1fr; gap: 64px; padding-inline: max(var(--gut), calc((100vw - 1440px) / 2 + var(--gut))); } }
+  /* ---------- Цена дня ---------- */
+  .c6-offer { position: relative; z-index: 3; display: grid; gap: 24px; align-items: center; overflow: hidden; background: var(--o); color: var(--k); padding: clamp(40px, 6vw, 80px) var(--gut); }
+  .c6-offer-num { font-weight: 900; font-size: clamp(9rem, 40vw, 30rem); letter-spacing: -0.08em; line-height: 0.74; margin-left: -0.04em; }
+  .c6-offer-txt { display: grid; gap: 16px; max-width: 46ch; }
+  .c6-offer h2 { font-weight: 900; text-transform: uppercase; font-size: clamp(2rem, 1.4rem + 2.4vw, 3.6rem); line-height: 0.9; letter-spacing: -0.045em; }
+  .c6-offer p { font-weight: 500; font-size: 1.05rem; }
+  .c6-offer .c6-btn { width: fit-content; margin-top: 8px; }
+  @media (min-width: 980px) { .c6-offer { grid-template-columns: auto 1fr; gap: 64px; padding-inline: max(var(--gut), calc((100vw - 1440px) / 2 + var(--gut))); } }
 
   /* ---------- Команда ---------- */
   .c6-team { position: relative; z-index: 3; background: var(--k); padding-block: clamp(80px, 10vw, 150px); }
