@@ -9,7 +9,7 @@ HOST=tipa-prod
 DIR=/var/www/urban210
 REL="$DIR/releases/$(date +%Y%m%d-%H%M%S)"
 
-PUBLIC_SITE_URL=https://urban210.ru PUBLIC_YM_ID=108422317 PUBLIC_CALLTOUCH_ID=aauqct0x PUBLIC_CALLTOUCH_SITE_ID=52901 npm run build
+PUBLIC_SITE_URL=https://urban210.ru PUBLIC_YM_ID=113934981 PUBLIC_VK_PIXEL_ID=3810570 PUBLIC_CALLTOUCH_ID=aauqct0x PUBLIC_CALLTOUCH_SITE_ID=52901 npm run build
 test -f dist/client/index.html && test -f dist/server/entry.mjs
 
 ssh "$HOST" "mkdir -p $REL"
