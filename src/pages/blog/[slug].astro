@@ -10,7 +10,7 @@ import Final from '../../components/Final.astro';
 import Cta from '../../components/Cta.astro';
 import { img } from '../../data/images';
 import { SITE_URL } from '../../data/site';
-import { plans, perDay, rub } from '../../data/pricing';
+import { plans, rub, term, fromPerDay } from '../../data/pricing';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -79,8 +79,8 @@ const ld: Record<string, unknown>[] = [
       <div class="f5-prose post-body"><Content /></div>
       <aside class="f5-aside" aria-label="Карта в Urban210">
         <div class="f5-card is-org post-offer">
-          <p class="post-offer-num">от {perDay(dayPlan.month, 30)} ₽ <span>в день</span></p>
-          <p>{dayPlan.name} {rub(dayPlan.month)} в месяц: зал и кардиозона, бесплатная парковка, раздевалки с душем.</p>
+          <p class="post-offer-num">от {fromPerDay} ₽ <span>в день</span></p>
+          <p>Дневной абонемент на год {rub(term("day12").price.fresh)} или {dayPlan.name.toLowerCase()} {rub(dayPlan.month)} в месяц: зал и кардиозона, бесплатная парковка, раздевалки с душем.</p>
           <div class="post-offer-btns">
             <a class="f5-pill f5-pill-ink" href="/price/#cards">Выбрать карту</a>
             <Cta variant="ghost" goal={goal} block="blog_aside">Оставить заявку</Cta>

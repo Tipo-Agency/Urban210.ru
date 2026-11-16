@@ -1,38 +1,39 @@
 ---
-// Выбор карты: переключатель месяц/год и три тарифа. Каждая кнопка открывает заявку с названием тарифа.
-// Добавляет разметку Offer для тарифов.
+// Выбор карты: переключатель «Помесячно / Абонемент». Помесячно: три карты со стартовым взносом.
+// Абонемент: карты на 3, 6 и 12 месяцев с ценами для новых, бывших и действующих членов клуба.
+// Каждая кнопка открывает заявку с названием тарифа. Добавляет разметку Offer для тарифов.
 import Icon from './Icon.astro';
-import { plans, perDay, rub } from '../data/pricing';
+import { plans, terms, perDay, rub, startFee, renewDays, fromPerDay } from '../data/pricing';
 import { promos } from '../data/content';
 import { SITE_URL } from '../data/site';
 interface Props { title?: string; text?: string; block?: string; promosShown?: boolean; headingLevel?: 'h1' | 'h2' }
 const { title = 'Выберите карту', text, block = 'price', promosShown = true } = Astro.props;
-const dayPrice = perDay(plans[0].month, 30);
 const extra = promos.filter((p) => p.slug !== '1-rubl');
 const ld = {
   '@context': 'https://schema.org',
   '@type': 'OfferCatalog',
   name: 'Абонементы фитнес-клуба Urban210',
-  itemListElement: plans.flatMap((p) => [
-    { '@type': 'Offer', name: `${p.name}, 1 месяц`, price: p.month, priceCurrency: 'RUB', url: SITE_URL + '/price/' },
-    { '@type': 'Offer', name: `${p.name}, 12 месяцев`, price: p.year, priceCurrency: 'RUB', url: SITE_URL + '/price/' },
-  ]),
+  itemListElement: [
+    ...plans.map((p) => ({ '@type': 'Offer', name: `${p.name}, 1 месяц`, price: p.month, priceCurrency: 'RUB', url: SITE_URL + '/price/' })),
+    ...terms.map((t) => ({ '@type': 'Offer', name: t.name, price: t.price.fresh, priceCurrency: 'RUB', url: SITE_URL + '/price/' })),
+  ],
 };
+const months = (n: number) => (n === 3 ? '3 месяца' : `${n} месяцев`);
 ---
 <section class="f5-sec" id="cards" aria-labelledby={`${block}-plans-t`}>
   <div class="f5-prices">
     <div class="f5-head f5-head-row">
       <div>
         <h2 id={`${block}-plans-t`}>{title}</h2>
-        <p>{text ?? `Безлимит в своё время: от ${dayPrice} ₽ в день. Оставьте заявку, и администратор оформит карту.`}</p>
+        <p>{text ?? `Безлимит в своё время: от ${fromPerDay} ₽ в день. Оставьте заявку, и администратор оформит карту.`}</p>
       </div>
       <fieldset class="f5-period">
-        <legend class="sr">Период оплаты</legend>
+        <legend class="sr">Срок карты</legend>
         <input type="radio" name="f5-period" id="f5-m" checked /><label for="f5-m">Месяц</label>
-        <input type="radio" name="f5-period" id="f5-y" /><label for="f5-y">Год <em>выгоднее</em></label>
+        <input type="radio" name="f5-period" id="f5-y" /><label for="f5-y">3–12 мес. <em>выгоднее</em></label>
       </fieldset>
     </div>
-    <div class="f5-plans">
+    <div class="f5-plans pm">
       {plans.map((p) => (
         <article class={`f5-plan ${p.id === 'full' ? 'is-hot' : ''}`}>
           <div class="f5-plan-top">
@@ -40,16 +41,34 @@ const ld = {
             {p.tag && <span class="f5-plan-tag">{p.tag}</span>}
           </div>
           <p class="f5-plan-hours">{p.hours}</p>
-          <p class="f5-plan-price">
-            <span class="pm"><b>{rub(p.month)}</b><small>в месяц</small></span>
-            <span class="py"><b>{rub(p.year)}</b><small>за 12 месяцев, {rub(Math.round(p.year / 12))} в месяц</small></span>
-          </p>
-          <p class="f5-plan-day"><span class="pm">≈ {perDay(p.month, 30)} ₽ в день</span><span class="py">≈ {perDay(p.year, 365)} ₽ в день</span></p>
+          <p class="f5-plan-price"><b>{rub(p.month)}</b><small>в месяц</small></p>
+          <p class="f5-plan-day">≈ {perDay(p.month, 30)} ₽ в день</p>
           <ul class="f5-plan-list">
             {p.features.map((f) => <li><Icon name="check" />{f}</li>)}
             {p.excluded?.map((f) => <li class="no"><Icon name="minus" />{f}</li>)}
           </ul>
           <a class={`f5-pill ${p.id === 'full' ? 'f5-pill-wht' : 'f5-pill-ink'} f5-plan-btn`} href="#zayavka" data-lead={`Тариф «${p.name}»`} data-block={`${block}_${p.id}`}>Выбрать «{p.name}»</a>
+        </article>
+      ))}
+    </div>
+    <p class="f5-plans-note pm">Карты на месяц оформляются со стартовым взносом {rub(startFee)}. После окончания карты есть {renewDays} дней, чтобы продлить подписку.</p>
+    <div class="f5-plans py">
+      {terms.map((t) => (
+        <article class={`f5-plan ${t.id === 'unlim12' ? 'is-hot' : ''}`}>
+          <div class="f5-plan-top">
+            <h3>{t.name}</h3>
+            <span class="f5-plan-tag">{t.tag ?? months(t.months)}</span>
+          </div>
+          <p class="f5-plan-hours">{t.tag ? `${months(t.months)}, ` : ''}{t.hours}</p>
+          <p class="f5-plan-price"><b>{rub(t.price.fresh)}</b><small>новым клиентам, {rub(Math.round(t.price.fresh / t.months))} в месяц</small></p>
+          <p class="f5-plan-day">≈ {perDay(t.price.fresh, t.days)} ₽ в день</p>
+          {(t.price.former !== t.price.fresh || t.price.member !== t.price.fresh) && (
+            <p class="f5-plan-alt">Бывшим членам клуба {rub(t.price.former)}<br />Членам клуба {rub(t.price.member)}</p>
+          )}
+          <ul class="f5-plan-list">
+            {t.features.map((f) => <li><Icon name="check" />{f}</li>)}
+          </ul>
+          <a class={`f5-pill ${t.id === 'unlim12' ? 'f5-pill-wht' : 'f5-pill-ink'} f5-plan-btn`} href="#zayavka" data-lead={`Абонемент «${t.name}»`} data-block={`${block}_${t.id}`}>Выбрать</a>
         </article>
       ))}
     </div>
@@ -61,3 +80,11 @@ const ld = {
   </div>
   <script type="application/ld+json" set:html={JSON.stringify(ld)} />
 </section>
+
+<style>
+  .f5-prices:has(#f5-y:checked) .f5-plans.py { display: grid; }
+  .f5-plans-note { margin-top: 14px; color: var(--mut); font-size: 0.95rem; }
+  .f5-prices:has(#f5-y:checked) .f5-plans-note.pm { display: none; }
+  .f5-plan-alt { font-size: 0.9rem; font-weight: 600; color: var(--mut); line-height: 1.45; }
+  .f5-plan.is-hot .f5-plan-alt { color: rgb(255 255 255 / 0.88); }
+</style>

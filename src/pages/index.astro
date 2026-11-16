@@ -1,5 +1,5 @@
 ---
-// Главная (дизайн 05 «Дружелюбный», тёмный, выбран 30.10.2026): оффер от 43 ₽ в день, сразу выбор карты и заявка,
+// Главная (дизайн 05 «Дружелюбный», тёмный, выбран 30.10.2026): оффер «от N ₽ в день» (дневной абонемент на год), сразу выбор карты и заявка,
 // дальше зоны, отзывы, тренеры, акции и свежие статьи со ссылками на внутренние страницы.
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
@@ -16,11 +16,11 @@ import AppBlock from '../components/AppBlock.astro';
 import MapBlock from '../components/MapBlock.astro';
 import { img } from '../data/images';
 import { site } from '../data/site';
-import { plans, perDay, rub } from '../data/pricing';
+import { plans, rub, term, fromPerDay } from '../data/pricing';
 import { zones, programs, faqGeneral } from '../data/content';
 
 const dayPlan = plans[0];
-const dayPrice = perDay(dayPlan.month, 30);
+const dayPrice = fromPerDay;
 const zal = zones.find((z) => z.id === 'zal')!;
 const cardio = zones.find((z) => z.id === 'cardio')!;
 const group = zones.find((z) => z.id === 'group')!;
@@ -37,7 +37,7 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf()
 ---
 <Layout
   image="/og/home.jpg"
-  title="Фитнес-клуб Urban210 в Хабаровске: тренажёрный зал от 43 ₽ в день"
+  title={`Фитнес-клуб Urban210 в Хабаровске: тренажёрный зал от ${dayPrice} ₽ в день`}
   description={`Фитнес-клуб в Железнодорожном районе Хабаровска: ${site.facts.area}, ${site.facts.machines}, групповые программы, сауна и хаммам. Безлимит от ${dayPrice} ₽ в день, карта от ${rub(dayPlan.month)} в месяц.`}
 >
   <section class="f5-hero" aria-labelledby="f5-h">
@@ -45,7 +45,7 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf()
       <div class="f5-hero-text">
         <p class="f5-status" data-status><i></i><span>Хабаровск, {site.district}</span></p>
         <h1 id="f5-h">Безлимит в зал <span class="f5-price-chip">от&nbsp;{dayPrice}&nbsp;₽</span> в день</h1>
-        <p class="f5-hero-lead">{dayPlan.name}: {rub(dayPlan.month)} в месяц. {site.facts.machines} {site.facts.brands}, групповые программы, сауна и хаммам.</p>
+        <p class="f5-hero-lead">Дневной абонемент на год {rub(term("day12").price.fresh)}, карта на месяц от {rub(dayPlan.month)}. {site.facts.machines} {site.facts.brands}, групповые программы, сауна и хаммам.</p>
         <div class="f5-cta">
           <a class="f5-go" href="#cards"><span>Выбрать карту</span><i><Icon name="chev" /></i></a>
           <a class="f5-pill f5-pill-ghost" href="#zayavka" data-lead="Заявка на карту" data-block="home_hero">Оставить заявку</a>

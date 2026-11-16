@@ -1,4 +1,4 @@
-import { perDay, personal, plans, rub } from "./pricing";
+import { perDay, personal, plans, rub, startFee, terms, term, fromPerDay } from "./pricing";
 import { site } from "./site";
 
 export type Faq = { q: string; a: string };
@@ -10,15 +10,15 @@ export const faqGeneral: Faq[] = [
   },
   {
     q: "Сколько стоит абонемент?",
-    a: `Помесячно от ${rub(plans[0].month)}: дневная карта ${rub(plans[0].month)}, «Полный день» ${rub(plans[1].month)}, «Всё включено» ${rub(plans[2].month)}. При оплате за год выходит дешевле: от ${rub(plans[0].year)} за 12 месяцев.`,
+    a: `Помесячно от ${rub(plans[0].month)}: дневная карта ${rub(plans[0].month)}, «Полный день» ${rub(plans[1].month)}, «Всё включено» ${rub(plans[2].month)}, при оформлении стартовый взнос ${rub(startFee)}. Абонементы на 3, 6 и 12 месяцев: от ${rub(Math.min(...terms.map((t) => t.price.fresh)))}, годовой безлимит ${rub(term("unlim12").price.fresh)}. Бывшим и действующим членам клуба дешевле.`,
   },
   {
     q: "Сколько стоит день тренировок?",
-    a: `От ${perDay(plans[0].month, 30)} ₽ в день: дневная карта стоит ${rub(plans[0].month)} в месяц. «Полный день» выходит ${perDay(plans[1].month, 30)} ₽ в день, «Всё включено» ${perDay(plans[2].month, 30)} ₽ в день.`,
+    a: `От ${fromPerDay} ₽ в день: дневной абонемент на 12 месяцев стоит ${rub(term("day12").price.fresh)}. Помесячно дневная карта выходит ${perDay(plans[0].month, 30)} ₽ в день, «Полный день» выходит ${perDay(plans[1].month, 30)} ₽ в день, «Всё включено» ${perDay(plans[2].month, 30)} ₽ в день.`,
   },
   {
     q: "Можно ли заморозить абонемент?",
-    a: "Да, один раз в год на 30 дней бесплатно, оформляется звонком администратору. При болезни абонемент можно продлить по справке.",
+    a: "Да, в абонемент на 12 месяцев входит 30 дней заморозки, на 6 месяцев 15 дней. Заморозку оформляет администратор по звонку. При болезни абонемент можно продлить по справке.",
   },
   {
     q: "Как часто нужно ходить?",
@@ -51,7 +51,7 @@ export const reasons = [
 export const comparison = {
   head: ["", "Urban210", "Сетевой клуб"],
   rows: [
-    ["Месяц безлимита", `от ${rub(plans[0].month)}`, "от 1900 ₽"],
+    ["Месяц безлимита", `от ${rub(plans[0].month)}, за год от ${rub(Math.round(term("day12").price.fresh / 12))}`, "от 1900 ₽"],
     ["Парковка", "Бесплатная, 50 мест", "Зависит от ТЦ"],
     ["SPA: сауна и хаммам", "В тарифе «Всё включено»", "На старших тарифах"],
   ],

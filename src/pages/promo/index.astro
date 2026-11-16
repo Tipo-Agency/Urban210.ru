@@ -5,9 +5,9 @@ import PageHero from '../../components/PageHero.astro';
 import Promos from '../../components/Promos.astro';
 import Final from '../../components/Final.astro';
 import Cta from '../../components/Cta.astro';
-import { plans, perDay } from '../../data/pricing';
+import { plans, perDay, fromPerDay } from '../../data/pricing';
 
-const dayPrice = perDay(plans[0].month, 30);
+const dayPrice = fromPerDay;
 ---
 <Layout
   title="Акции фитнес-клуба Urban210 в Хабаровске"
@@ -32,7 +32,7 @@ const dayPrice = perDay(plans[0].month, 30);
     <div class="f5-head f5-head-row">
       <div>
         <h2 id="pr-price">И без акций недорого</h2>
-        <p>Безлимит в зал от {dayPrice} ₽ в день. При оплате за год выходит ещё дешевле.</p>
+        <p>Безлимит в зал от {dayPrice} ₽ в день. Это дневной абонемент на год, помесячная карта от 1 900 ₽.</p>
       </div>
       <a class="f5-pill f5-pill-wht" href="/price/">Цены на карты</a>
     </div>

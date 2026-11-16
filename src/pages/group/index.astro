@@ -8,7 +8,8 @@ import Final from '../../components/Final.astro';
 import Icon from '../../components/Icon.astro';
 import { img } from '../../data/images';
 import { site } from '../../data/site';
-import { plans, perDay, rub } from '../../data/pricing';
+import { plans, perDay, rub, terms } from '../../data/pricing';
+const minTerm = Math.min(...terms.map((t) => t.price.fresh));
 import { programs } from '../../data/content';
 
 const all = plans[2];
@@ -28,7 +29,7 @@ const related = [
 ];
 
 const faq = [
-  { q: 'Сколько стоят групповые тренировки?', a: `Групповые программы входят в тариф «${all.name}»: ${rub(all.month)} в месяц, около ${perDay(all.month, 30)}\u00a0₽ в день, или ${rub(all.year)} за год. Платить за каждое занятие отдельно не нужно.` },
+  { q: 'Сколько стоят групповые тренировки?', a: `Групповые программы входят в тариф «${all.name}»: ${rub(all.month)} в месяц, около ${perDay(all.month, 30)}\u00a0₽ в день. Ещё они входят во все абонементы на 3, 6 и 12 месяцев, от ${rub(minTerm)}. Платить за каждое занятие отдельно не нужно.` },
   { q: 'Какие направления есть?', a: `${list.join(', ')}. Силовые, функциональные, танцевальные и мягкий фитнес.` },
   { q: 'Как записаться на занятие?', a: 'Через приложение клуба: там расписание и онлайн-запись. Доступ в приложение откроется после оформления карты.' },
   { q: 'Я никогда не занимался в группе. С чего начать?', a: 'С мягкого фитнеса или силовых программ: инструктор подскажет вес и технику. Через пару недель можно переходить на функциональные тренировки.' },
@@ -94,7 +95,7 @@ const faq = [
     <div class="f5-card is-cob z-teaser">
       <div>
         <h2 id="gr-price-t">Все групповые в тарифе «{all.name}»</h2>
-        <p>{rub(all.month)} в месяц или {rub(all.year)} за год. В тариф также входят тренажёрный зал в любое время, сауна и хаммам.</p>
+        <p>{rub(all.month)} в месяц. Групповые есть и во всех абонементах на 3, 6 и 12 месяцев, от {rub(minTerm)}. В тариф также входят тренажёрный зал в любое время, сауна и хаммам.</p>
       </div>
       <a class="f5-pill f5-pill-wht" href="/price/">Сравнить тарифы</a>
     </div>

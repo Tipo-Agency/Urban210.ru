@@ -9,9 +9,10 @@ import Final from '../../components/Final.astro';
 import Icon from '../../components/Icon.astro';
 import { img } from '../../data/images';
 import { site } from '../../data/site';
-import { plans, perDay, rub } from '../../data/pricing';
+import { plans, perDay, rub, fromPerDay } from '../../data/pricing';
 
 const dayPrice = perDay(plans[0].month, 30);
+const minDay = fromPerDay;
 const area = site.facts.area[0].toUpperCase() + site.facts.area.slice(1);
 
 const zones = [
@@ -30,11 +31,11 @@ const faq = [
 ---
 <Layout
   title="Тренажёрный зал в Хабаровске: Technogym и Matrix"
-  description={`Тренажёрный зал в Хабаровске: ${site.facts.area}, ${site.facts.machines} ${site.facts.brands}, свободные веса до 60 кг, кардиозона. Без очередей, от ${dayPrice}\u00a0₽ в день.`}
+  description={`Тренажёрный зал в Хабаровске: ${site.facts.area}, ${site.facts.machines} ${site.facts.brands}, свободные веса до 60 кг, кардиозона. Без очередей, от ${minDay}\u00a0₽ в день.`}
 >
   <PageHero
     title="Тренажёрный зал в Хабаровске"
-    lead={`${area}, ${site.facts.machines} ${site.facts.brands}, свободные веса и кардиозона. Безлимит от ${dayPrice}\u00a0₽ в день, по будням с 6:30 до 23:30.`}
+    lead={`${area}, ${site.facts.machines} ${site.facts.brands}, свободные веса и кардиозона. Безлимит от ${minDay}\u00a0₽ в день, по будням с 6:30 до 23:30.`}
     crumbs={[{ href: '/zones/', label: 'Зоны клуба' }, { href: '/zal/', label: 'Тренажёрный зал' }]}
     image="/images/zal.jpg"
     alt="Тренажёрный зал Urban210 с панорамными окнами"
@@ -90,7 +91,7 @@ const faq = [
     </div>
   </section>
 
-  <Plans block="zal" text={`Тренажёрный зал и кардиозона есть в любой карте: от ${dayPrice}\u00a0₽ в день. Групповые и сауна в тарифе «${plans[2].name}».`} />
+  <Plans block="zal" text={`Тренажёрный зал и кардиозона есть в любой карте: от ${minDay}\u00a0₽ в день. Групповые и сауна в тарифе «${plans[2].name}».`} />
 
   <Faq items={faq} title="Вопросы о тренажёрном зале" />
 

@@ -8,11 +8,15 @@ import Faq from '../../components/Faq.astro';
 import Final from '../../components/Final.astro';
 import Cta from '../../components/Cta.astro';
 import Icon from '../../components/Icon.astro';
-import { plans, perDay, rub, personal } from '../../data/pricing';
+import { plans, term, perDay, rub, personal, startFee, renewDays, fromPerDay } from '../../data/pricing';
 import { faqGeneral } from '../../data/content';
 
 const [day, full, all] = plans;
-const dayPrice = perDay(day.month, 30);
+const dayPrice = fromPerDay;
+const unlim12 = term('unlim12');
+const day12 = term('day12');
+// Какой абонемент на срок ближе к каждой месячной карте
+const yearFor = [day12, unlim12, unlim12];
 
 // Что входит в каждую карту: true — входит, false — нет, строка — значение
 const rows: [string, (boolean | string)[]][] = [
@@ -26,24 +30,25 @@ const rows: [string, (boolean | string)[]][] = [
   ['SPA: финская сауна, хаммам, релакс-зона', [false, false, true]],
   ['Приоритетное обслуживание', [false, false, true]],
   ['Цена за месяц', plans.map((p) => rub(p.month))],
-  ['Цена за 12 месяцев', plans.map((p) => rub(p.year))],
+  ['Стартовый взнос', plans.map(() => rub(startFee))],
 ];
 
 const faq = [
   ...faqGeneral.slice(0, 3),
-  { q: 'Можно ли заморозить карту?', a: 'Да, один раз в год на 30 дней бесплатно. Заморозку оформляет администратор по звонку. Если заболели, карту можно продлить по справке.' },
-  { q: 'Можно ли оплатить частями?', a: `Если годовая карта сразу выходит дорого, можно платить помесячно: от ${rub(day.month)} в месяц. Можно ли разбить на части оплату годовой карты, подскажет администратор при оформлении.` },
+  { q: 'Можно ли заморозить карту?', a: 'Заморозка входит в абонементы на 12 месяцев (30 дней) и на 6 месяцев (15 дней). Заморозку оформляет администратор по звонку. Если заболели, карту можно продлить по справке.' },
+  { q: 'Почему цены на срок разные для разных клиентов?', a: `Есть три цены: для новых клиентов, для бывших членов клуба и для тех, у кого абонемент действует сейчас. Например, безлимит на 12 месяцев стоит ${rub(unlim12.price.fresh)}, ${rub(unlim12.price.former)} и ${rub(unlim12.price.member)}. После окончания абонемента есть ${renewDays} дней на продление.` },
+  { q: 'Можно ли оплатить частями?', a: `Если абонемент на год сразу выходит дорого, можно взять на 3 месяца за ${rub(term('unlim3').price.fresh)} или платить помесячно: от ${rub(day.month)} в месяц плюс стартовый взнос ${rub(startFee)}. Можно ли разбить на части оплату годовой карты, подскажет администратор при оформлении.` },
   { q: 'Чем дневная карта отличается от «Полного дня»?', a: `Дневная карта действует ${day.hours}. Это самый дешёвый вариант, если вы тренируетесь утром или днём. «Полный день» открывает клуб на всё время работы и включает пробную тренировку с тренером.` },
 ];
 ---
 <Layout
   image="/og/price.jpg"
   title="Цены на абонементы в фитнес-клуб в Хабаровске"
-  description={`Абонементы в фитнес-клуб Urban210 в Хабаровске: от ${rub(day.month)} в месяц или от ${dayPrice} ₽ в день. Сравнение трёх карт, цены за год, персональный тренер.`}
+  description={`Абонементы в фитнес-клуб Urban210 в Хабаровске: от ${rub(day.month)} в месяц или от ${dayPrice} ₽ в день. Месячные карты, абонементы на 3, 6 и 12 месяцев, персональный тренер.`}
 >
   <PageHero
     title="Цены на абонементы в фитнес-клуб"
-    lead={`Три карты с безлимитом в выбранное время. Самая доступная выходит от ${dayPrice} ₽ в день, при оплате за год ещё дешевле.`}
+    lead={`Три месячные карты и абонементы на 3, 6 и 12 месяцев. На год выходит от ${dayPrice} ₽ в день.`}
     crumbs={[{ href: '/price/', label: 'Цены' }]}
     image="/images/reception.jpg"
     alt="Ресепшен фитнес-клуба Urban210"
@@ -57,7 +62,7 @@ const faq = [
 
   <section class="f5-sec" id="compare" aria-labelledby="cmp-t">
     <div class="f5-head">
-      <h2 id="cmp-t">Что входит в каждую карту</h2>
+      <h2 id="cmp-t">Что входит в месячные карты</h2>
       <p>Каждая следующая карта включает всё из предыдущей и добавляет своё.</p>
     </div>
     <div class="cmp-wrap">
@@ -89,7 +94,7 @@ const faq = [
   <section class="f5-sec" aria-labelledby="day-t">
     <div class="f5-head">
       <h2 id="day-t">Сколько стоит день тренировок</h2>
-      <p>Делим цену карты на 30 дней месяца или на 365 дней года. Чем чаще вы ходите, тем дешевле выходит одно посещение.</p>
+      <p>Делим цену карты на 30 дней месяца, а цену абонемента на 365 дней года. Чем чаще вы ходите, тем дешевле выходит одно посещение.</p>
     </div>
     <div class="f5-grid f5-grid-3">
       {plans.map((p, i) => (
@@ -97,8 +102,8 @@ const faq = [
           <h3>{p.name}</h3>
           <p class="perday"><b>{perDay(p.month, 30)} ₽</b> в день при оплате за месяц</p>
           <p>{rub(p.month)} в месяц, {p.hours}.</p>
-          <p class="perday sm"><b>{perDay(p.year, 365)} ₽</b> в день при оплате за год</p>
-          <p>{rub(p.year)} за 12 месяцев, это {rub(Math.round(p.year / 12))} в месяц.</p>
+          <p class="perday sm"><b>{perDay(yearFor[i].price.fresh, 365)} ₽</b> в день, {yearFor[i].name.toLowerCase()}</p>
+          <p>{rub(yearFor[i].price.fresh)} новым клиентам, это {rub(Math.round(yearFor[i].price.fresh / 12))} в месяц.</p>
         </article>
       ))}
     </div>

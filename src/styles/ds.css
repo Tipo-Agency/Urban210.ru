@@ -216,8 +216,11 @@
   .f5-plan.is-hot .f5-plan-list li.no { color: rgb(255 255 255 / 0.88); }
   .f5-plan.is-hot .f5-plan-list li.no svg { background: rgb(255 255 255 / 0.2); color: #fff; }
   .f5-plan-btn { margin-top: auto; width: 100%; }
+  .f5-plan-alt { font-size: 0.92rem; font-weight: 600; color: var(--mut); line-height: 1.45; }
+  .f5-plan.is-hot .f5-plan-alt { color: rgb(255 255 255 / 0.88); }
+  .f5-plans-note { margin-top: 14px; font-size: 0.95rem; color: var(--mut); }
   .f5-prices .py { display: none; }
-  .f5-prices:has(#f5-y:checked) .py { display: block; }
+  .f5-prices:has(#f5-y:checked) .py { display: grid; }
   .f5-prices:has(#f5-y:checked) .pm { display: none; }
 
   .f5-promos { list-style: none; display: grid; gap: 12px; margin-top: 12px; }

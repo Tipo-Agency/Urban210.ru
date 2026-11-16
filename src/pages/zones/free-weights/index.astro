@@ -8,9 +8,9 @@ import Final from '../../../components/Final.astro';
 import Icon from '../../../components/Icon.astro';
 import { img } from '../../../data/images';
 import { site } from '../../../data/site';
-import { plans, perDay, rub } from '../../../data/pricing';
+import { plans, perDay, rub, fromPerDay } from '../../../data/pricing';
 
-const dayPrice = perDay(plans[0].month, 30);
+const dayPrice = fromPerDay;
 
 const kit = [
   { title: 'Гантели до 60 кг', text: 'Полный ряд от лёгких до тяжёлых: хватает и для разминки, и для рабочих подходов.' },
@@ -82,7 +82,7 @@ const faq = [
     <div class="f5-card is-cob z-teaser">
       <div>
         <h2 id="fw-price-t">Свободные веса в любой карте</h2>
-        <p>{plans[0].name}: {rub(plans[0].month)} в месяц, около {dayPrice}&nbsp;₽ в день, {plans[0].hours}. «{plans[1].name}»: {rub(plans[1].month)} в месяц, в любое время работы клуба.</p>
+        <p>{plans[0].name}: {rub(plans[0].month)} в месяц, около {perDay(plans[0].month, 30)}&nbsp;₽ в день, {plans[0].hours}. «{plans[1].name}»: {rub(plans[1].month)} в месяц, в любое время работы клуба.</p>
       </div>
       <a class="f5-pill f5-pill-wht" href="/price/">Сравнить тарифы</a>
     </div>
