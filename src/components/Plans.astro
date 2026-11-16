@@ -18,7 +18,6 @@ const ld = {
     ...terms.map((t) => ({ '@type': 'Offer', name: t.name, price: t.price.fresh, priceCurrency: 'RUB', url: SITE_URL + '/price/' })),
   ],
 };
-const months = (n: number) => (n === 3 ? '3 месяца' : `${n} месяцев`);
 ---
 <section class="f5-sec" id="cards" aria-labelledby={`${block}-plans-t`}>
   <div class="f5-prices">
@@ -57,9 +56,9 @@ const months = (n: number) => (n === 3 ? '3 месяца' : `${n} месяцев
         <article class={`f5-plan ${t.id === 'unlim12' ? 'is-hot' : ''}`}>
           <div class="f5-plan-top">
             <h3>{t.name}</h3>
-            <span class="f5-plan-tag">{t.tag ?? months(t.months)}</span>
+            {t.tag && <span class="f5-plan-tag">{t.tag}</span>}
           </div>
-          <p class="f5-plan-hours">{t.tag ? `${months(t.months)}, ` : ''}{t.hours}</p>
+          <p class="f5-plan-hours">{t.hours}</p>
           <p class="f5-plan-price"><b>{rub(t.price.fresh)}</b><small>новым клиентам, {rub(Math.round(t.price.fresh / t.months))} в месяц</small></p>
           <p class="f5-plan-day">≈ {perDay(t.price.fresh, t.days)} ₽ в день</p>
           {(t.price.former !== t.price.fresh || t.price.member !== t.price.fresh) && (
