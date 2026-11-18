@@ -12,7 +12,7 @@
 ## Что настроено в коде
 
 - canonical, sitemap, robots, OG смотрят на https://urban210.ru (PUBLIC_SITE_URL).
-- Метрика 108422317 включается только на домене urban210.ru. Цели: `form_start`, `lead` (отправка формы), `cta_click` (открытие формы), `plan_choice` (выбор тарифа), `call_click`, `max_click`, `telegram_click`.
+- Метрика 103720803 (аккаунт Donskikhas) и пиксель VK Рекламы 3810570 включаются только на домене urban210.ru. Цели: `form_start`, `lead` (отправка формы), `cta_click` (открытие формы), `plan_choice` (выбор тарифа), `call_click`, `max_click`, `telegram_click`.
 - Calltouch: счётчик `aauqct0x` (подмена номера), site_id 52901.
 - Заявки: сервер отправляет их в Calltouch тем же методом `requests/52901/register`, что и старый сайт, плюс в Telegram и webhook, если заданы ключи. Если ни один канал не принял заявку, форма пишет «позвоните» и показывает телефон.
 - Редиректы со старых адресов (nginx, 301):

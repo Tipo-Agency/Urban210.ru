@@ -16,7 +16,7 @@ const out = join(root, 'public/og');
 const imgDir = join(root, 'src/assets/images');
 const url = (p) => pathToFileURL(p).href;
 // Цена дня из src/data/pricing.ts (самая доступная карта): обновить вместе с ценами
-const DAY_PRICE = 43;
+const DAY_PRICE = 41;
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // Неразрывные пробелы после коротких слов и перед ₽, чтобы не оставались висячие предлоги

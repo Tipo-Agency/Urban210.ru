@@ -11,7 +11,7 @@ const blog = defineCollection({
     image: z.string().default('/images/zal.jpg'),
     category: z.string().default('Начинающим'),
     keywords: z.array(z.string()).default([]),
-    cta: z.string().default('Пробный день за 1 ₽'),
+    cta: z.string().default('Оставить заявку'),
     faq: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
   }),
 });

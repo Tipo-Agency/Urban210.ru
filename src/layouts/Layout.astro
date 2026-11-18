@@ -13,10 +13,8 @@ interface Props {
   noindex?: boolean;
   jsonld?: Record<string, unknown>[];
   type?: 'website' | 'article';
-  // bare: страница рисует свою шапку и подвал (концепции дизайна)
-  bare?: boolean;
 }
-const { title, description, image = '/og/default.jpg', noindex = false, jsonld = [], type = 'website', bare = false } = Astro.props;
+const { title, description, image = '/og/default.jpg', noindex = false, jsonld = [], type = 'website' } = Astro.props;
 const path = Astro.url.pathname;
 const canonical = SITE_URL + path;
 // Суффикс бренда только если заголовок остаётся в пределах 60 знаков (иначе поисковик обрежет)
@@ -83,8 +81,8 @@ const gym = {
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={title} />
     <meta name="twitter:card" content="summary_large_image" />
-    {!bare && <link rel="preload" href="/fonts/geologica-cyrillic.woff2" as="font" type="font/woff2" crossorigin />}
-    {!bare && <link rel="preload" href="/fonts/geologica-latin.woff2" as="font" type="font/woff2" crossorigin />}
+    <link rel="preload" href="/fonts/geologica-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/geologica-latin.woff2" as="font" type="font/woff2" crossorigin />
     <script type="application/ld+json" set:html={JSON.stringify(gym)} />
     {jsonld.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
     <script is:inline>
@@ -96,9 +94,6 @@ const gym = {
   <body data-ym={YM_ID} data-ct-site={CT_SITE} data-vk={VK_PIXEL || undefined}>
     <a class="skip" href="#main">К содержанию</a>
 
-    {bare ? (
-      <main id="main"><slot /></main>
-    ) : (
       <div class="f5">
         <header class="f5-top" data-header>
           <div class="f5-bar">
@@ -170,7 +165,6 @@ const gym = {
           </div>
         </footer>
       </div>
-    )}
 
     <div class="mbar" data-mbar>
       <a class="ic" href={site.phone.href} aria-label="Позвонить"><Icon name="phone" /></a>

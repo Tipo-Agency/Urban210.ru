@@ -21,12 +21,14 @@ const { Content } = await render(post);
 const words = (post.body || '').split(/\s+/).length;
 const minutes = Math.max(3, Math.round(words / 180));
 const date = post.data.date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-const related = posts.filter((p) => p.id !== post.id && p.data.category === post.data.category).slice(0, 3);
+// «Читайте также»: три следующие статьи той же рубрики по кругу, чтобы каждая статья получала ссылки, а не только первые три
+const sameCat = posts.filter((p) => p.data.category === post.data.category).sort((a, b) => a.id.localeCompare(b.id));
+const at = sameCat.findIndex((p) => p.id === post.id);
+const related = sameCat.length > 1 ? [1, 2, 3].map((i) => sameCat[(at + i) % sameCat.length]).filter((p, i, arr) => p.id !== post.id && arr.indexOf(p) === i) : [];
 const more = related.length < 3 ? posts.filter((p) => p.id !== post.id && !related.includes(p)).slice(0, 3 - related.length) : [];
 const url = `${SITE_URL}/blog/${post.id}/`;
 const dayPlan = plans[0];
-// Пробного дня за 1 ₽ нет: старое значение по умолчанию превращаем в обычную заявку
-const goal = !post.data.cta || post.data.cta.includes('1 ₽') ? 'Оставить заявку' : post.data.cta;
+const goal = post.data.cta || 'Оставить заявку';
 
 // Хлебные крошки: Главная › Блог › Раздел (раздел ведёт на свой якорь в блоге)
 const cats = [...new Set([...posts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).map((p) => p.data.category))];
@@ -38,10 +40,11 @@ const ld: Record<string, unknown>[] = [
     headline: post.data.title,
     description: post.data.description,
     datePublished: post.data.date.toISOString().slice(0, 10),
-    image: SITE_URL + '/og.jpg',
+    dateModified: post.data.date.toISOString().slice(0, 10),
+    image: `${SITE_URL}/og/blog-${post.id}.jpg`,
     mainEntityOfPage: url,
     inLanguage: 'ru',
-    author: { '@type': 'Organization', name: 'Фитнес-клуб Urban210' },
+    author: { '@type': 'Organization', name: 'Фитнес-клуб Urban210', url: SITE_URL + '/' },
     publisher: { '@id': SITE_URL + '/#club' },
     keywords: post.data.keywords.join(', '),
   },

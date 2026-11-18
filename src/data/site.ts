@@ -40,10 +40,6 @@ export const site = {
       { title: "Ваш абонемент", text: "Данные карты всегда под рукой." },
     ],
   },
-  // Устарело (30.10.2026): WhatsApp, Telegram-бот и Instagram клуб не использует. Поля остались только для архивных концепций.
-  whatsapp: "79242054109",
-  telegramBot: "urban210_bot",
-  instagram: "https://www.instagram.com/fc.urban210",
   email: "info@urban210.ru",
   hours: [
     { days: "Пн–Пт", time: "06:30–23:30", schema: { days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "06:30", closes: "23:30" } },
@@ -51,11 +47,6 @@ export const site = {
   ],
   parking: "Бесплатная парковка на 50 мест под видеонаблюдением",
   rating: { value: 4.7, count: "2000+", text: "2000+ отзывов" },
-  maps: {
-    yandex: "https://yandex.ru/maps/org/urban_210/122837663271/",
-    yandexReviews: "https://yandex.ru/maps/org/urban_210/122837663271/reviews/",
-    twoGis: "https://2gis.ru/khabarovsk/firm/70000001028822631/",
-  },
   legal: {
     name: "ООО «Альянс»",
     inn: "2723055622",
@@ -70,14 +61,6 @@ export const site = {
     freeWeights: "свободные веса до 60 кг",
   },
 } as const;
-
-export function whatsappLink(text: string) {
-  return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}`;
-}
-
-export function telegramLink(start: string) {
-  return `https://t.me/${site.telegramBot}?start=${encodeURIComponent(start.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 64))}`;
-}
 
 // Мессенджеры, у которых уже есть ссылка. Пустые заглушки на сайт не выводятся.
 export function socialLinks() {
