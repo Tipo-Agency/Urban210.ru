@@ -58,7 +58,7 @@ export const site = {
     machines: "60+ тренажёров", // уточнить: на старом сайте 60+ и 100+
     brands: "Technogym и Matrix", // уточнить: в FAQ упоминались Cybex и Nautilus
     groupHall: "зал групповых программ 150 м²",
-    freeWeights: "свободные веса до 60 кг",
+    freeWeights: "гантели до 60 кг, штанги и скамьи",
   },
 } as const;
 
