@@ -11,13 +11,12 @@
     "preview": "astro preview --port 3210",
     "start": "HOST=0.0.0.0 PORT=${PORT:-3210} node dist/server/entry.mjs",
     "check": "node scripts/check-blog.mjs",
-    "og": "node scripts/og.mjs"
+    "og": "node scripts/og.mjs",
+    "check:dist": "node scripts/check-dist.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^9.5.5",
-    "astro": "^5.18.2",
-    "gsap": "^3.15.0",
-    "three": "^0.180.0"
+    "astro": "^5.18.2"
   },
   "devDependencies": {
     "lighthouse": "^12.8.2"
